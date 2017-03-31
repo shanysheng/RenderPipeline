@@ -1,1 +1,1 @@
-# orange is 3d rendering engine
+# Orange project is a 3d rendering engine.
