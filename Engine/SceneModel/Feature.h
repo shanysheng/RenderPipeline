@@ -1,7 +1,7 @@
 /*
 * Copyright 2017 sheng chongshan. All rights reserved.
 * email: shany.sheng@qq.com
-* License: https://github.com/shanysheng/RenderPipeline/master/LICENSE
+* License: https://github.com/shanysheng/RenderPipeline/bob/master/LICENSE
 */
 
 #ifndef PIPELINE_FEATURE_H_GUARD
