@@ -7,5 +7,13 @@
 #ifndef PIPELINE_MATRIX4X4_H_GUARD
 #define PIPELINE_MATRIX4X4_H_GUARD
 
+namespace pipeline{
+    
+    template<typename T>
+    class Matrix4x4
+    {
+    public:
+    };
+}
 
 #endif

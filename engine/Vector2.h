@@ -7,5 +7,13 @@
 #ifndef PIPELINE_VECTOR2_H_GUARD
 #define PIPELINE_VECTOR2_H_GUARD
 
+namespace pipeline{
+    
+    template<typename T>
+    class Vector2
+    {
+    public:
+    };
+}
 
 #endif

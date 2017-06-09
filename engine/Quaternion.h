@@ -7,5 +7,13 @@
 #ifndef PIPELINE_QUATERNION_H_GUARD
 #define PIPELINE_QUATERNION_H_GUARD
 
+namespace pipeline{
+    
+    template<typename T>
+    class Quaternion
+    {
+    public:
+    };
+}
 
 #endif

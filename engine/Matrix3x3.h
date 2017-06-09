@@ -7,5 +7,13 @@
 #ifndef PIPELINE_MATRIX3X3_H_GUARD
 #define PIPELINE_MATRIX3X3_H_GUARD
 
+namespace pipeline{
+    
+    template<typename T>
+    class Matrix3x3
+    {
+    public:
+    };
+}
 
 #endif
