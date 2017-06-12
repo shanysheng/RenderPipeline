@@ -9,10 +9,12 @@
 
 namespace pipeline{
     
-    template<typename T>
-    class Vector2
+    class Vector2f
     {
     public:
+        float x,y;
+        
+        Vector2f():x(0.0f), y(0.0f){};
     };
 }
 

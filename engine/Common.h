@@ -4,15 +4,11 @@
 * License: https://github.com/shanysheng/RenderPipeline/bob/master/LICENSE
 */
 
-#ifndef PIPELINE_MATRIX4X4_H_GUARD
-#define PIPELINE_MATRIX4X4_H_GUARD
+#ifndef PIPELINE_COMMON_H_GUARD
+#define PIPELINE_COMMON_H_GUARD
 
-namespace pipeline{
-    
-    class Matrix4x4
-    {
-    public:
-    };
-}
+#include <vector>
+#include <string>
+#include <stdint.h>
 
 #endif

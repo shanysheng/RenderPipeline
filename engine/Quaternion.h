@@ -9,10 +9,13 @@
 
 namespace pipeline{
     
-    template<typename T>
-    class Quaternion
+    class Quaternionf
     {
     public:
+        float x,y,z,w;
+        
+    public:
+        Quaternionf():x(0.0f), y(0.0f), z(0.0f), w(1.0f){};
     };
 }
 

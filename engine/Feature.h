@@ -7,5 +7,13 @@
 #ifndef PIPELINE_FEATURE_H_GUARD
 #define PIPELINE_FEATURE_H_GUARD
 
+namespace pipeline {
+
+    class IFeature
+    {
+    public:
+        
+    };
+}
 
 #endif

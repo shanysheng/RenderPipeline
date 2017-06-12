@@ -4,19 +4,20 @@
 * License: https://github.com/shanysheng/RenderPipeline/bob/master/LICENSE
 */
 
-#ifndef PIPELINE_COLORRGBA_H_GUARD
-#define PIPELINE_COLORRGBA_H_GUARD
+#ifndef PIPELINE_COLORRGB_H_GUARD
+#define PIPELINE_COLORRGB_H_GUARD
 
 namespace Pipeline{
 
-    template<typename T>
-    class ColorRGBA
+    class ColorRGB
     {
     public:
+        float r,g,b;
         
-    }
-
-
+    public:
+        ColorRGB():r(1.0f),g(1.0f),b(1.0f){}
+    };
+    
 }
 
 #endif

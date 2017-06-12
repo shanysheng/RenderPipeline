@@ -1,4 +1,4 @@
-#include "Math/Color.h"
+#include "Color.h"
 
 namespace pipeline {
     

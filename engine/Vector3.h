@@ -9,10 +9,12 @@
 
 namespace pipeline{
     
-    template<typename T>
-    class Vector3
+    class Vector3f
     {
     public:
+        float x,y,z;
+        
+        Vector3f():x(0.0f), y(0.0f), z(1.0f){};
     };
 }
 

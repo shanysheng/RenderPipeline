@@ -1,4 +1,4 @@
-#include "Math/ColorRGBA.h"
+#include "ColorRGB.h"
 
 namespace pipeline {
     

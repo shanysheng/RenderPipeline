@@ -9,7 +9,6 @@
 
 namespace pipeline{
     
-    template<typename T>
     class Matrix3x3
     {
     public:
