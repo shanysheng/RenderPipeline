@@ -10,5 +10,6 @@
 #include <vector>
 #include <string>
 #include <stdint.h>
+#include <cmath>
 
 #endif

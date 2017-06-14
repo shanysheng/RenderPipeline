@@ -7,228 +7,226 @@
 #ifndef PIPELINE_VECTOR2_H_GUARD
 #define PIPELINE_VECTOR2_H_GUARD
 
+#include "Common.h"
+
 namespace pipeline{
     
-   // Summary:
-    //     Representation of 2D vectors and points.
-    public struct Vector2
+    class Vector2f
     {
-        public const float kEpsilon = 1e-005f;
+    public:
+        float x,y;
+        
+        static const float epsilon;
+        static const Vector2f xAxis;
+        static const Vector2f yAxis;
+        static const Vector2f one;
+        static const Vector2f zero;
 
-        // Summary:
-        //     X component of the vector.
-        public float x;
-        //
-        // Summary:
-        //     Y component of the vector.
-        public float y;
+    public:
+        Vector2f(float x, float y);
+        Vector2f(const Vector2f& v);
+        
+        void Set(float inx, float iny);
+        
+        float* data ();
+        const float* data ()const;
+        float& operator[](int i);
+        const float& operator[](int i)const;
+        
+        // component-wise multiplication
+        Vector2f operator+(const Vector2f& rhs) const;
+        Vector2f operator-(const Vector2f& rhs) const;
+        Vector2f operator*(const Vector2f& rhs) const;
+        Vector2f operator/(const Vector2f& rhs) const;
+        Vector2f operator*(float scale) const;
+        Vector2f operator/(float scale) const;
+        
+        Vector2f& operator += (const Vector2f& rhs);
+        Vector2f& operator -= (const Vector2f& rhs);
+        Vector2f& operator *=(const Vector2f& rhs);
+        Vector2f& operator /=(const Vector2f& rhs);
+        Vector2f& operator *= (const float scale);
+        Vector2f& operator /= (const float scale);
+        
+        Vector2f operator -() const;
 
-        //
-        // Summary:
-        //     Constructs a new vector with given x, y components.
-        //
-        // Parameters:
-        //   x:
-        //
-        //   y:
-        public Vector2(float x, float y);
+        // dot product
+        float operator|(const Vector2f& V) const;
+        
+        // cross product
+        float operator^(const Vector2f& V) const;
+        
+        bool operator == (const Vector2f& rhs)const;
+        bool operator != (const Vector2f& rhs)const;
+        
+        float Length() const;
+        void Normalize();
 
-        public static Vector2 operator -(Vector2 a);
-        public static Vector2 operator -(Vector2 a, Vector2 b);
-        public static bool operator !=(Vector2 lhs, Vector2 rhs);
-        public static Vector2 operator *(float d, Vector2 a);
-        public static Vector2 operator *(Vector2 a, float d);
-        public static Vector2 operator /(Vector2 a, float d);
-        public static Vector2 operator +(Vector2 a, Vector2 b);
-        public static bool operator ==(Vector2 lhs, Vector2 rhs);
-        public static implicit operator Vector3(Vector2 v);
-        public static implicit operator Vector2(Vector3 v);
-
-        // Summary:
-        //     Shorthand for writing Vector2(0, -1).
-        public static Vector2 down { get; }
-        //
-        // Summary:
-        //     Shorthand for writing Vector2(-1, 0).
-        public static Vector2 left { get; }
-        //
-        // Summary:
-        //     Returns the length of this vector (Read Only).
-        public float magnitude { get; }
-        //
-        // Summary:
-        //     Returns this vector with a magnitude of 1 (Read Only).
-        public Vector2 normalized { get; }
-        //
-        // Summary:
-        //     Shorthand for writing Vector2(1, 1).
-        public static Vector2 one { get; }
-        //
-        // Summary:
-        //     Shorthand for writing Vector2(1, 0).
-        public static Vector2 right { get; }
-        //
-        // Summary:
-        //     Returns the squared length of this vector (Read Only).
-        public float sqrMagnitude { get; }
-        //
-        // Summary:
-        //     Shorthand for writing Vector2(0, 1).
-        public static Vector2 up { get; }
-        //
-        // Summary:
-        //     Shorthand for writing Vector2(0, 0).
-        public static Vector2 zero { get; }
-
-        public float this[int index] { get; set; }
-
-        // Summary:
-        //     Returns the angle in degrees between from and to.
-        //
-        // Parameters:
-        //   from:
-        //
-        //   to:
-        public static float Angle(Vector2 from, Vector2 to);
-        //
-        // Summary:
-        //     Returns a copy of vector with its magnitude clamped to maxLength.
-        //
-        // Parameters:
-        //   vector:
-        //
-        //   maxLength:
-        public static Vector2 ClampMagnitude(Vector2 vector, float maxLength);
-        //
-        // Summary:
-        //     Returns the distance between a and b.
-        //
-        // Parameters:
-        //   a:
-        //
-        //   b:
-        public static float Distance(Vector2 a, Vector2 b);
-        //
-        // Summary:
-        //     Dot Product of two vectors.
-        //
-        // Parameters:
-        //   lhs:
-        //
-        //   rhs:
-        public static float Dot(Vector2 lhs, Vector2 rhs);
-        public override bool Equals(object other);
-        public override int GetHashCode();
-        //
-        // Summary:
-        //     Linearly interpolates between vectors a and b by t.
-        //
-        // Parameters:
-        //   a:
-        //
-        //   b:
-        //
-        //   t:
-        public static Vector2 Lerp(Vector2 a, Vector2 b, float t);
-        //
-        // Summary:
-        //     Linearly interpolates between vectors a and b by t.
-        //
-        // Parameters:
-        //   a:
-        //
-        //   b:
-        //
-        //   t:
-        public static Vector2 LerpUnclamped(Vector2 a, Vector2 b, float t);
-        //
-        // Summary:
-        //     Returns a vector that is made from the largest components of two vectors.
-        //
-        // Parameters:
-        //   lhs:
-        //
-        //   rhs:
-        public static Vector2 Max(Vector2 lhs, Vector2 rhs);
-        //
-        // Summary:
-        //     Returns a vector that is made from the smallest components of two vectors.
-        //
-        // Parameters:
-        //   lhs:
-        //
-        //   rhs:
-        public static Vector2 Min(Vector2 lhs, Vector2 rhs);
-        //
-        // Summary:
-        //     Moves a point current towards target.
-        //
-        // Parameters:
-        //   current:
-        //
-        //   target:
-        //
-        //   maxDistanceDelta:
-        public static Vector2 MoveTowards(Vector2 current, Vector2 target, float maxDistanceDelta);
-        //
-        // Summary:
-        //     Makes this vector have a magnitude of 1.
-        public void Normalize();
-        //
-        // Summary:
-        //     Reflects a vector off the vector defined by a normal.
-        //
-        // Parameters:
-        //   inDirection:
-        //
-        //   inNormal:
-        public static Vector2 Reflect(Vector2 inDirection, Vector2 inNormal);
-        //
-        // Summary:
-        //     Multiplies every component of this vector by the same component of scale.
-        //
-        // Parameters:
-        //   scale:
-        public void Scale(Vector2 scale);
-        //
-        // Summary:
-        //     Multiplies two vectors component-wise.
-        //
-        // Parameters:
-        //   a:
-        //
-        //   b:
-        public static Vector2 Scale(Vector2 a, Vector2 b);
-        //
-        // Summary:
-        //     Set x and y components of an existing Vector2.
-        //
-        // Parameters:
-        //   new_x:
-        //
-        //   new_y:
-        public void Set(float new_x, float new_y);
-        [ExcludeFromDocs]
-        public static Vector2 SmoothDamp(Vector2 current, Vector2 target, ref Vector2 currentVelocity, float smoothTime);
-        [ExcludeFromDocs]
-        public static Vector2 SmoothDamp(Vector2 current, Vector2 target, ref Vector2 currentVelocity, float smoothTime, float maxSpeed);
-        public static Vector2 SmoothDamp(Vector2 current, Vector2 target, ref Vector2 currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
-        public float SqrMagnitude();
-        public static float SqrMagnitude(Vector2 a);
-        //
-        // Summary:
-        //     Returns a nicely formatted string for this vector.
-        //
-        // Parameters:
-        //   format:
-        public override string ToString();
-        //
-        // Summary:
-        //     Returns a nicely formatted string for this vector.
-        //
-        // Parameters:
-        //   format:
-        public string ToString(string format);
+        static float DotProduct(const Vector2f& lhs, const Vector2f& rhs);
+        static float CrossProduct(const Vector2f& lhs, const Vector2f& rhs);
+        static float DistSquared(const Vector2f& lhs, const Vector2f& rhs);
+        static float Distance(const Vector2f& lhs, const Vector2f& rhs);
+    };
+    
+    //-----------------------------------------------------------------------------------
+    inline Vector2f::Vector2f(float inx, float iny)
+    {
+        this->x = inx;
+        this->y = iny;
+    }
+    
+    inline Vector2f::Vector2f(const Vector2f& v)
+    {
+        this->x = v.x;
+        this->y = v.y;
+    }
+    
+    inline void Vector2f::Set(float inx, float iny)
+    {
+        this->x = inx;
+        this->y = iny;
+    }
+    
+    inline float* Vector2f::data() { return &x; }
+    inline const float* Vector2f::data()const { return &x; }
+    inline float& Vector2f::operator[](int i) { return (&x)[i]; }
+    inline const float& Vector2f::operator[](int i)const { return (&x)[i]; }
+    
+    // component-wise multiplication
+    inline Vector2f Vector2f::operator+(const Vector2f& rhs) const
+    {
+        return Vector2f(this->x+rhs.x, this->y+rhs.y);
+    }
+    
+    inline Vector2f Vector2f::operator-(const Vector2f& rhs) const
+    {
+        return Vector2f(this->x-rhs.x, this->y-rhs.y);
+    }
+    
+    inline Vector2f Vector2f::operator*(const Vector2f& rhs) const
+    {
+        return Vector2f(this->x*rhs.x, this->y*rhs.y);
+    }
+    
+    inline Vector2f Vector2f::operator/(const Vector2f& rhs) const
+    {
+        return Vector2f(this->x/rhs.x, this->y/rhs.y);
+    }
+    
+    inline Vector2f Vector2f::operator*(float scale) const
+    {
+        return Vector2f(x*scale, y*scale);
+    }
+    
+    inline Vector2f Vector2f::operator/(float scale) const
+    {
+        const float tmp = 1.f/scale;
+        return Vector2f(x*tmp, y*tmp);
+    }
+    
+    inline Vector2f& Vector2f::operator += (const Vector2f& rhs)
+    {
+        this->x += rhs.x;
+        this->y += rhs.y;
+        return *this;
+    }
+    
+    inline Vector2f& Vector2f::operator -= (const Vector2f& rhs)
+    {
+        this->x -= rhs.x;
+        this->y -= rhs.y;
+        return *this;
+    }
+    
+    inline Vector2f& Vector2f::operator *=(const Vector2f& rhs)
+    {
+        this->x *= rhs.x;
+        this->y *= rhs.y;
+        return *this;
+    }
+    
+    inline Vector2f& Vector2f::operator /=(const Vector2f& rhs)
+    {
+        this->x /= rhs.x;
+        this->y /= rhs.y;
+        return *this;
+    }
+    
+    inline Vector2f& Vector2f::operator *= (const float scale)
+    {
+        const float tmp = 1.f/scale;
+        x *= tmp;
+        y *= tmp;
+        return *this;
+    }
+    
+    inline Vector2f& Vector2f::operator /= (const float scale)
+    {
+        x /= scale;
+        y /= scale;
+        return *this;
+    }
+    
+    inline Vector2f Vector2f::operator -() const
+    {
+        return Vector2f(-x, -y);
+    }
+    
+    inline float Vector2f::operator|(const Vector2f& rhs) const
+    {
+        return this->x*rhs.x + this->y*rhs.y;
+    }
+    
+    inline float Vector2f::operator^(const Vector2f& rhs) const
+    {
+        return this->x*rhs.y - this->y*rhs.x;
+    }
+    
+    inline bool Vector2f::operator == (const Vector2f& rhs)const
+    {
+        return this->x == rhs.x && this->y == rhs.y;
+    }
+    
+    inline bool Vector2f::operator != (const Vector2f& rhs)const
+    {
+        return this->x != rhs.x || this->y != rhs.y;
+    }
+    
+    inline float Vector2f::Length() const
+    {
+        return std::sqrt(x*x+y*y);
+    }
+    
+    inline void Vector2f::Normalize()
+    {
+        float scale = 1.0f/Length();
+        x *= scale;
+        y *= scale;
+    }
+    
+    inline float Vector2f::DotProduct(const Vector2f& lhs, const Vector2f& rhs)
+    {
+        return lhs | rhs;
+    }
+    
+    inline float Vector2f::CrossProduct(const Vector2f& lhs, const Vector2f& rhs)
+    {
+        return lhs ^ rhs;
+    }
+    
+    inline float Vector2f::DistSquared(const Vector2f& lhs, const Vector2f& rhs)
+    {
+        float offsetx = lhs.x-rhs.x;
+        float offsety = lhs.x-rhs.y;
+        return offsetx*offsetx+offsety*offsety;
+    }
+    
+    inline float Vector2f::Distance(const Vector2f& lhs, const Vector2f& rhs)
+    {
+        float offsetx = lhs.x-rhs.x;
+        float offsety = lhs.x-rhs.y;
+        return std::sqrt(offsetx*offsetx+offsety*offsety);
+    }
 }
 
 #endif
