@@ -23,10 +23,10 @@ namespace pipeline{
         static const Vector3f zero;
         
     public:
-        Vector3f(float x, float y);
+        Vector3f(float inx, float iny, float inz);
         Vector3f(const Vector3f& v);
         
-        void Set(float inx, float iny);
+        void Set(float inx, float iny, float inz);
         
         float* data ();
         const float* data ()const;
@@ -51,10 +51,10 @@ namespace pipeline{
         Vector3f operator -() const;
         
         // dot product
-        float operator|(const Vector3f& V) const;
+        float operator|(const Vector3f& rhs) const;
         
         // cross product
-        float operator^(const Vector3f& V) const;
+        Vector3f operator^(const Vector3f& rhs) const;
         
         bool operator == (const Vector3f& rhs)const;
         bool operator != (const Vector3f& rhs)const;
@@ -63,28 +63,31 @@ namespace pipeline{
         void Normalize();
         
         static float DotProduct(const Vector3f& lhs, const Vector3f& rhs);
-        static float CrossProduct(const Vector3f& lhs, const Vector3f& rhs);
+        static Vector3f CrossProduct(const Vector3f& lhs, const Vector3f& rhs);
         static float DistSquared(const Vector3f& lhs, const Vector3f& rhs);
         static float Distance(const Vector3f& lhs, const Vector3f& rhs);
     };
     
     //-----------------------------------------------------------------------------------
-    inline Vector3f::Vector3f(float inx, float iny)
+    inline Vector3f::Vector3f(float inx, float iny, float inz)
     {
         this->x = inx;
         this->y = iny;
+        this->z = inz;
     }
     
     inline Vector3f::Vector3f(const Vector3f& v)
     {
         this->x = v.x;
         this->y = v.y;
+        this->z = v.z;
     }
     
-    inline void Vector3f::Set(float inx, float iny)
+    inline void Vector3f::Set(float inx, float iny, float inz)
     {
         this->x = inx;
         this->y = iny;
+        this->z = inz;
     }
     
     inline float* Vector3f::data() { return &x; }
@@ -95,39 +98,40 @@ namespace pipeline{
     // component-wise multiplication
     inline Vector3f Vector3f::operator+(const Vector3f& rhs) const
     {
-        return Vector3f(this->x+rhs.x, this->y+rhs.y);
+        return Vector3f(this->x+rhs.x, this->y+rhs.y, this->z+rhs.z);
     }
     
     inline Vector3f Vector3f::operator-(const Vector3f& rhs) const
     {
-        return Vector3f(this->x-rhs.x, this->y-rhs.y);
+        return Vector3f(this->x-rhs.x, this->y-rhs.y, this->z-rhs.z);
     }
     
     inline Vector3f Vector3f::operator*(const Vector3f& rhs) const
     {
-        return Vector3f(this->x*rhs.x, this->y*rhs.y);
+        return Vector3f(this->x*rhs.x, this->y*rhs.y, this->z*rhs.z);
     }
     
     inline Vector3f Vector3f::operator/(const Vector3f& rhs) const
     {
-        return Vector3f(this->x/rhs.x, this->y/rhs.y);
+        return Vector3f(this->x/rhs.x, this->y/rhs.y, this->z/rhs.z);
     }
     
     inline Vector3f Vector3f::operator*(float scale) const
     {
-        return Vector3f(x*scale, y*scale);
+        return Vector3f(x*scale, y*scale, z*scale);
     }
     
     inline Vector3f Vector3f::operator/(float scale) const
     {
         const float tmp = 1.f/scale;
-        return Vector3f(x*tmp, y*tmp);
+        return Vector3f(x*tmp, y*tmp, z*tmp);
     }
     
     inline Vector3f& Vector3f::operator += (const Vector3f& rhs)
     {
         this->x += rhs.x;
         this->y += rhs.y;
+        this->z += rhs.z;
         return *this;
     }
     
@@ -135,6 +139,7 @@ namespace pipeline{
     {
         this->x -= rhs.x;
         this->y -= rhs.y;
+        this->z -= rhs.z;
         return *this;
     }
     
@@ -142,6 +147,7 @@ namespace pipeline{
     {
         this->x *= rhs.x;
         this->y *= rhs.y;
+        this->z *= rhs.z;
         return *this;
     }
     
@@ -149,52 +155,57 @@ namespace pipeline{
     {
         this->x /= rhs.x;
         this->y /= rhs.y;
+        this->z /= rhs.z;
         return *this;
     }
     
     inline Vector3f& Vector3f::operator *= (const float scale)
     {
-        const float tmp = 1.f/scale;
-        x *= tmp;
-        y *= tmp;
+        x *= scale;
+        y *= scale;
+        z *= scale;
         return *this;
     }
     
     inline Vector3f& Vector3f::operator /= (const float scale)
     {
-        x /= scale;
-        y /= scale;
+        const float tmp = 1.f/scale;
+        x *= tmp;
+        y *= tmp;
+        z *= tmp;
         return *this;
     }
     
     inline Vector3f Vector3f::operator -() const
     {
-        return Vector3f(-x, -y);
+        return Vector3f(-x, -y, -z);
     }
     
     inline float Vector3f::operator|(const Vector3f& rhs) const
     {
-        return this->x*rhs.x + this->y*rhs.y;
+        return x * rhs.x + y * rhs.y + z * rhs.z;
     }
     
-    inline float Vector3f::operator^(const Vector3f& rhs) const
+    inline Vector3f Vector3f::operator^(const Vector3f& rhs) const
     {
-        return this->x*rhs.y - this->y*rhs.x;
+        return Vector3f (y * rhs.z - z * rhs.y,
+                         z * rhs.x - x * rhs.z,
+                         x * rhs.y - y * rhs.x);
     }
     
     inline bool Vector3f::operator == (const Vector3f& rhs)const
     {
-        return this->x == rhs.x && this->y == rhs.y;
+        return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z;
     }
     
     inline bool Vector3f::operator != (const Vector3f& rhs)const
     {
-        return this->x != rhs.x || this->y != rhs.y;
+        return this->x != rhs.x || this->y != rhs.y || this->z != rhs.z;
     }
     
     inline float Vector3f::Length() const
     {
-        return std::sqrt(x*x+y*y);
+        return std::sqrt(x*x+y*y+z*z);
     }
     
     inline void Vector3f::Normalize()
@@ -202,6 +213,7 @@ namespace pipeline{
         float scale = 1.0f/Length();
         x *= scale;
         y *= scale;
+        z *= scale;
     }
     
     inline float Vector3f::DotProduct(const Vector3f& lhs, const Vector3f& rhs)
@@ -209,7 +221,7 @@ namespace pipeline{
         return lhs | rhs;
     }
     
-    inline float Vector3f::CrossProduct(const Vector3f& lhs, const Vector3f& rhs)
+    inline Vector3f Vector3f::CrossProduct(const Vector3f& lhs, const Vector3f& rhs)
     {
         return lhs ^ rhs;
     }
@@ -217,15 +229,19 @@ namespace pipeline{
     inline float Vector3f::DistSquared(const Vector3f& lhs, const Vector3f& rhs)
     {
         float offsetx = lhs.x-rhs.x;
-        float offsety = lhs.x-rhs.y;
-        return offsetx*offsetx+offsety*offsety;
+        float offsety = lhs.y-rhs.y;
+        float offsetz = lhs.z-rhs.z;
+        
+        return offsetx*offsetx+offsety*offsety+offsetz*offsetz;
     }
     
     inline float Vector3f::Distance(const Vector3f& lhs, const Vector3f& rhs)
     {
         float offsetx = lhs.x-rhs.x;
-        float offsety = lhs.x-rhs.y;
-        return std::sqrt(offsetx*offsetx+offsety*offsety);
+        float offsety = lhs.y-rhs.y;
+        float offsetz = lhs.z-rhs.z;
+
+        return std::sqrt(offsetx*offsetx+offsety*offsety+offsetz*offsetz);
     }
 }
 

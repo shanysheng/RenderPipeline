@@ -24,10 +24,10 @@ namespace pipeline{
         static const Vector4f zero;
         
     public:
-        Vector4f(float x, float y);
+        Vector4f(float inx, float iny, float inz, float inw);
         Vector4f(const Vector4f& v);
         
-        void Set(float inx, float iny);
+        void Set(float inx, float iny, float inz, float inw);
         
         float* data ();
         const float* data ()const;
@@ -51,41 +51,43 @@ namespace pipeline{
         
         Vector4f operator -() const;
         
-        // dot product
-        float operator|(const Vector4f& V) const;
-        
         // cross product
-        float operator^(const Vector4f& V) const;
+        Vector4f operator^(const Vector4f& rhs) const;
         
         bool operator == (const Vector4f& rhs)const;
         bool operator != (const Vector4f& rhs)const;
         
-        float Length() const;
+        float Length3() const;
         void Normalize();
         
+        static float DotProduct3(const Vector4f& lhs, const Vector4f& rhs);
         static float DotProduct(const Vector4f& lhs, const Vector4f& rhs);
-        static float CrossProduct(const Vector4f& lhs, const Vector4f& rhs);
-        static float DistSquared(const Vector4f& lhs, const Vector4f& rhs);
-        static float Distance(const Vector4f& lhs, const Vector4f& rhs);
+        static Vector4f CrossProduct(const Vector4f& lhs, const Vector4f& rhs);
     };
     
     //-----------------------------------------------------------------------------------
-    inline Vector4f::Vector4f(float inx, float iny)
+    inline Vector4f::Vector4f(float inx, float iny, float inz, float inw)
     {
         this->x = inx;
         this->y = iny;
+        this->z = inz;
+        this->w = inw;
     }
     
     inline Vector4f::Vector4f(const Vector4f& v)
     {
         this->x = v.x;
         this->y = v.y;
+        this->z = v.z;
+        this->w = v.w;
     }
     
-    inline void Vector4f::Set(float inx, float iny)
+    inline void Vector4f::Set(float inx, float iny, float inz, float inw)
     {
         this->x = inx;
         this->y = iny;
+        this->z = inz;
+        this->w = inw;
     }
     
     inline float* Vector4f::data() { return &x; }
@@ -96,39 +98,41 @@ namespace pipeline{
     // component-wise multiplication
     inline Vector4f Vector4f::operator+(const Vector4f& rhs) const
     {
-        return Vector4f(this->x+rhs.x, this->y+rhs.y);
+        return Vector4f(this->x+rhs.x, this->y+rhs.y, this->z+rhs.z, this->w+rhs.w);
     }
     
     inline Vector4f Vector4f::operator-(const Vector4f& rhs) const
     {
-        return Vector4f(this->x-rhs.x, this->y-rhs.y);
+        return Vector4f(this->x-rhs.x, this->y-rhs.y, this->z-rhs.z, this->w-rhs.w);
     }
     
     inline Vector4f Vector4f::operator*(const Vector4f& rhs) const
     {
-        return Vector4f(this->x*rhs.x, this->y*rhs.y);
+        return Vector4f(this->x*rhs.x, this->y*rhs.y, this->x*rhs.z, this->w*rhs.w);
     }
     
     inline Vector4f Vector4f::operator/(const Vector4f& rhs) const
     {
-        return Vector4f(this->x/rhs.x, this->y/rhs.y);
+        return Vector4f(this->x/rhs.x, this->y/rhs.y, this->z/rhs.z, this->w/rhs.w);
     }
     
     inline Vector4f Vector4f::operator*(float scale) const
     {
-        return Vector4f(x*scale, y*scale);
+        return Vector4f(x*scale, y*scale, z*scale, w*scale);
     }
     
     inline Vector4f Vector4f::operator/(float scale) const
     {
         const float tmp = 1.f/scale;
-        return Vector4f(x*tmp, y*tmp);
+        return Vector4f(x*tmp, y*tmp, z*tmp, w*tmp);
     }
     
     inline Vector4f& Vector4f::operator += (const Vector4f& rhs)
     {
         this->x += rhs.x;
         this->y += rhs.y;
+        this->z += rhs.z;
+        this->w += rhs.w;
         return *this;
     }
     
@@ -136,6 +140,8 @@ namespace pipeline{
     {
         this->x -= rhs.x;
         this->y -= rhs.y;
+        this->z -= rhs.z;
+        this->w -= rhs.w;
         return *this;
     }
     
@@ -143,6 +149,8 @@ namespace pipeline{
     {
         this->x *= rhs.x;
         this->y *= rhs.y;
+        this->z *= rhs.z;
+        this->w *= rhs.w;
         return *this;
     }
     
@@ -150,6 +158,8 @@ namespace pipeline{
     {
         this->x /= rhs.x;
         this->y /= rhs.y;
+        this->z /= rhs.z;
+        this->w /= rhs.w;
         return *this;
     }
     
@@ -170,64 +180,57 @@ namespace pipeline{
     
     inline Vector4f Vector4f::operator -() const
     {
-        return Vector4f(-x, -y);
+        return Vector4f(-x, -y, -z, -w);
     }
     
-    inline float Vector4f::operator|(const Vector4f& rhs) const
+    inline Vector4f Vector4f::operator^(const Vector4f& rhs) const
     {
-        return this->x*rhs.x + this->y*rhs.y;
-    }
-    
-    inline float Vector4f::operator^(const Vector4f& rhs) const
-    {
-        return this->x*rhs.y - this->y*rhs.x;
+        return Vector4f(
+                        y * rhs.z - z * rhs.y,
+                        z * rhs.x - x * rhs.z,
+                        x * rhs.y - y * rhs.x,
+                        0.0f
+                        );
     }
     
     inline bool Vector4f::operator == (const Vector4f& rhs)const
     {
-        return this->x == rhs.x && this->y == rhs.y;
+        return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z && this->w == rhs.w;
     }
     
     inline bool Vector4f::operator != (const Vector4f& rhs)const
     {
-        return this->x != rhs.x || this->y != rhs.y;
+        return this->x != rhs.x || this->y != rhs.y || this->z != rhs.z || this->w != rhs.w;
     }
     
-    inline float Vector4f::Length() const
+    inline float Vector4f::Length3() const
     {
-        return std::sqrt(x*x+y*y);
+        return std::sqrt(x*x+y*y+z*z);
     }
     
     inline void Vector4f::Normalize()
     {
-        float scale = 1.0f/Length();
+        float scale = 1.0f/Length3();
         x *= scale;
         y *= scale;
+        z *= scale;
+    }
+    
+    inline float Vector4f::DotProduct3(const Vector4f& lhs, const Vector4f& rhs)
+    {
+        return lhs.x*rhs.x+lhs.y*rhs.y+lhs.z*rhs.z;
     }
     
     inline float Vector4f::DotProduct(const Vector4f& lhs, const Vector4f& rhs)
     {
-        return lhs | rhs;
+        return lhs.x*rhs.x+lhs.y*rhs.y+lhs.z*rhs.z+lhs.w*rhs.w;
     }
     
-    inline float Vector4f::CrossProduct(const Vector4f& lhs, const Vector4f& rhs)
+    inline Vector4f Vector4f::CrossProduct(const Vector4f& lhs, const Vector4f& rhs)
     {
         return lhs ^ rhs;
     }
     
-    inline float Vector4f::DistSquared(const Vector4f& lhs, const Vector4f& rhs)
-    {
-        float offsetx = lhs.x-rhs.x;
-        float offsety = lhs.x-rhs.y;
-        return offsetx*offsetx+offsety*offsety;
-    }
-    
-    inline float Vector4f::Distance(const Vector4f& lhs, const Vector4f& rhs)
-    {
-        float offsetx = lhs.x-rhs.x;
-        float offsety = lhs.x-rhs.y;
-        return std::sqrt(offsetx*offsetx+offsety*offsety);
-    }
 }
 
 #endif

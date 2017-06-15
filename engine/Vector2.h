@@ -23,7 +23,7 @@ namespace pipeline{
         static const Vector2f zero;
 
     public:
-        Vector2f(float x, float y);
+        Vector2f(float inx, float iny);
         Vector2f(const Vector2f& v);
         
         void Set(float inx, float iny);
@@ -51,10 +51,10 @@ namespace pipeline{
         Vector2f operator -() const;
 
         // dot product
-        float operator|(const Vector2f& V) const;
+        float operator|(const Vector2f& rhs) const;
         
         // cross product
-        float operator^(const Vector2f& V) const;
+        float operator^(const Vector2f& rhs) const;
         
         bool operator == (const Vector2f& rhs)const;
         bool operator != (const Vector2f& rhs)const;
@@ -154,16 +154,16 @@ namespace pipeline{
     
     inline Vector2f& Vector2f::operator *= (const float scale)
     {
-        const float tmp = 1.f/scale;
-        x *= tmp;
-        y *= tmp;
+        x *= scale;
+        y *= scale;
         return *this;
     }
     
     inline Vector2f& Vector2f::operator /= (const float scale)
     {
-        x /= scale;
-        y /= scale;
+        const float tmp = 1.f/scale;
+        x *= tmp;
+        y *= tmp;
         return *this;
     }
     
@@ -217,14 +217,16 @@ namespace pipeline{
     inline float Vector2f::DistSquared(const Vector2f& lhs, const Vector2f& rhs)
     {
         float offsetx = lhs.x-rhs.x;
-        float offsety = lhs.x-rhs.y;
+        float offsety = lhs.y-rhs.y;
+        
         return offsetx*offsetx+offsety*offsety;
     }
     
     inline float Vector2f::Distance(const Vector2f& lhs, const Vector2f& rhs)
     {
         float offsetx = lhs.x-rhs.x;
-        float offsety = lhs.x-rhs.y;
+        float offsety = lhs.y-rhs.y;
+        
         return std::sqrt(offsetx*offsetx+offsety*offsety);
     }
 }
