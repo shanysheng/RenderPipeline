@@ -7,19 +7,19 @@
 #ifndef PIPELINE_MATH_H_GUARD
 #define PIPELINE_MATH_H_GUARD
 
-#include "Color.h"
-#include "ColorRGB.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Matrix4x4.h"
-#include "Quaternion.h"
+#include "Common.h"
 
 namespace pipeline
 {
     class Mathf
     {
     public:
+        template< class T >
+        static inline T Clamp( const T value, const T minv, const T maxv )
+        {
+            T temp = value<minv ? minv : value;
+            return temp<maxv ? temp : maxv;
+        }
     };
 }
 
