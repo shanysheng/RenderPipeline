@@ -4,8 +4,8 @@
 * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
 */
 
-#ifndef PIPELINE_SCENEGRAPHITERATOR_H_GUARD
-#define PIPELINE_SCENEGRAPHITERATOR_H_GUARD
+#ifndef PIPELINE_SCENE_H_GUARD
+#define PIPELINE_SCENE_H_GUARD
 
 
 #endif

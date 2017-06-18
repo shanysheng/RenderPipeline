@@ -4,15 +4,16 @@
 * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
 */
 
-#ifndef PIPELINE_CAMERA_H_GUARD
-#define PIPELINE_CAMERA_H_GUARD
+#ifndef PIPELINE_TRANSFORM_H_GUARD
+#define PIPELINE_TRANSFORM_H_GUARD
 
 namespace pipeline {
-    
-    class Camera
+
+    class Transform
     {
     public:
         
     };
 }
+
 #endif

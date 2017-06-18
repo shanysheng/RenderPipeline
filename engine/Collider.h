@@ -4,8 +4,16 @@
 * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
 */
 
-#ifndef PIPELINE_SCENEGRAPH_H_GUARD
-#define PIPELINE_SCENEGRAPH_H_GUARD
+#ifndef PIPELINE_COLLIDER_H_GUARD
+#define PIPELINE_COLLIDER_H_GUARD
 
+namespace pipeline {
+
+    class Collider
+    {
+    public:
+        
+    };
+}
 
 #endif

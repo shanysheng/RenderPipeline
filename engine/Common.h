@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <string>
+#include <list>
 #include <stdint.h>
 #include <cmath>
 
