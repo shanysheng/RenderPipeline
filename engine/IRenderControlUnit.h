@@ -48,7 +48,7 @@ namespace pipeline{
         
     private:
         friend class CRenderingEngine;
-
+        
     protected:
         bool m_bStopped;
         IRenderControlUnit* m_pNextRCU;
