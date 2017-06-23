@@ -44,13 +44,13 @@ namespace pipeline{
         inline float Determinant() const;
         Matrix4x4f Inverse() const;
         
-        void SetAxisX( const Vector3f& vec3 );
-        void SetAxisY( const Vector3f& vec3 );
-        void SetAxisZ( const Vector3f& vec3 );
-        void SetAxis( int axis, const Vector3f& vec3 );
-        void SetPosition( const Vector3f& vec3 );
-        void SetRow( int row, const Vector4f& vec3 );
-        void SetColumn( int col, const Vector4f& vec3 );
+        void SetAxisX( const Vector3f& vec3);
+        void SetAxisY( const Vector3f& vec3);
+        void SetAxisZ( const Vector3f& vec3);
+        void SetAxis( int axis, const Vector3f& vec3);
+        void SetPosition( const Vector3f& vec3);
+        void SetRow( int row, const Vector4f& vec3);
+        void SetColumn( int col, const Vector4f& vec3);
         
         void SetTR (const Vector3f& pos, const Quaternionf& q);
         void SetTRS (const Vector3f& pos, const Quaternionf& q, const Vector3f& s);
@@ -64,10 +64,10 @@ namespace pipeline{
         void MultiplyPoint3 (const Vector3f& inV, Vector3f& output) const;
         
         Matrix4x4f& SetIdentity ();
-        Matrix4x4f& SetPerspective( float fovy, float aspect, float zNear, float zFar );
-        Matrix4x4f& SetPerspective( float left, float right, float top, float bottom, float zNear, float zFar );
-        Matrix4x4f& SetOrtho( float left, float right, float bottom, float top, float zNear, float zFar );
-        Matrix4x4f& SetFrustum( float left, float right, float bottom, float top, float nearval, float farval );
+        Matrix4x4f& SetPerspective( float fovy, float aspect, float zNear, float zFar);
+        Matrix4x4f& SetPerspective( float left, float right, float top, float bottom, float zNear, float zFar);
+        Matrix4x4f& SetOrtho( float left, float right, float bottom, float top, float zNear, float zFar);
+        Matrix4x4f& SetFrustum( float left, float right, float bottom, float top, float nearval, float farval);
     };
 }
 

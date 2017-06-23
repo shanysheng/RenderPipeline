@@ -190,7 +190,7 @@ namespace pipeline{
                         z * rhs.x - x * rhs.z,
                         x * rhs.y - y * rhs.x,
                         0.0f
-                        );
+                       );
     }
     
     inline bool Vector4f::operator == (const Vector4f& rhs)const

@@ -80,7 +80,7 @@ namespace pipeline{
                      this->r + rhs.r,
                      this->b + rhs.b,
                      this->a + rhs.a
-                     );
+                    );
     }
     
     inline Color& Color::operator+=(const Color& rhs)
@@ -98,7 +98,7 @@ namespace pipeline{
                      this->r - rhs.r,
                      this->b - rhs.b,
                      this->a - rhs.a
-                     );
+                    );
     }
     
     inline Color& Color::operator-=(const Color& rhs)
@@ -116,7 +116,7 @@ namespace pipeline{
                      this->r * rhs.r,
                      this->b * rhs.b,
                      this->a * rhs.a
-                     );
+                    );
     }
     
     inline Color& Color::operator*=(const Color& rhs)
@@ -134,7 +134,7 @@ namespace pipeline{
                      this->r * scale,
                      this->b * scale,
                      this->a * scale
-                     );
+                    );
     }
     
     inline Color& Color::operator*=(float scale)
@@ -152,7 +152,7 @@ namespace pipeline{
                      this->r / rhs.r,
                      this->b / rhs.b,
                      this->a / rhs.a
-                     );
+                    );
     }
     
     inline Color& Color::operator/=(const Color& rhs)
@@ -171,7 +171,7 @@ namespace pipeline{
                      this->r * InvScalar,
                      this->b * InvScalar,
                      this->a * InvScalar
-                     );
+                    );
     }
     
     inline Color& Color::operator/=(float Scalar)

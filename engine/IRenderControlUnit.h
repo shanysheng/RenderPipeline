@@ -26,25 +26,25 @@ namespace pipeline{
         IRenderControlUnit();
         virtual ~IRenderControlUnit();
         
-        virtual void PerFrame( CFrameInfo * pFI );
-        virtual void BeforeFirstFrame( CFrameInfo * pFI );
-        virtual void AfterLastFrame( CFrameInfo * pFI );
-        virtual void PostChildrenPerFrame(CFrameInfo * pFI );
-        virtual void PostChildrenBeforeFirstFrame( CFrameInfo * pFI );
-        virtual void PostChildrenAfterLastFrame( CFrameInfo * pFI );
+        virtual void PerFrame( CFrameInfo * pFI);
+        virtual void BeforeFirstFrame( CFrameInfo * pFI);
+        virtual void AfterLastFrame( CFrameInfo * pFI);
+        virtual void PostChildrenPerFrame(CFrameInfo * pFI);
+        virtual void PostChildrenBeforeFirstFrame( CFrameInfo * pFI);
+        virtual void PostChildrenAfterLastFrame( CFrameInfo * pFI);
         
         virtual void Stop ();
         virtual void Start();
         bool         IsStopped() const { return m_bStopped; }
         
-        void	SetNextRCU( IRenderControlUnit* pNextRCU );
-        void	AppendChildrenRCU(IRenderControlUnit * pRCUnit );
+        void	SetNextRCU( IRenderControlUnit* pNextRCU);
+        void	AppendChildrenRCU(IRenderControlUnit * pRCUnit);
         
     protected:
         
-        virtual void _DoPerFrame( CFrameInfo * pFI );
-        virtual void _DoBeforeFirstFrame( CFrameInfo * pFI );
-        virtual void _DoAfterLastFrame( CFrameInfo * pFI );
+        virtual void _DoPerFrame( CFrameInfo * pFI);
+        virtual void _DoBeforeFirstFrame( CFrameInfo * pFI);
+        virtual void _DoAfterLastFrame( CFrameInfo * pFI);
         
     private:
         friend class CRenderingEngine;
