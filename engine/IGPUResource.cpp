@@ -1,4 +1,4 @@
-#include "IGpuResource.h"
+#include "IGPUResource.h"
 
 namespace pipeline {
     
