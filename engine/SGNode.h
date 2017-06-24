@@ -12,18 +12,20 @@
 
 namespace pipeline {
     
-    class Transform
+    class Transform;
+    class Component;
     
     class SGNode
     {
     public:
         SGNode ();
-        SGNode (string name);
+        SGNode (std::string name);
         
         bool IsActive();
         bool IsHierarchyActive();
         void SetActive(bool bactive);
-        
+        void SetActiveRecursively (bool state);
+
         bool IsStatic();
         void SetStatic(bool bstatic);
         
@@ -33,15 +35,12 @@ namespace pipeline {
         const std::string& GetTag();
         void SetTag(const char* tagstr);
         
-        Component* AddComponent(int32_t componentType)
+        Component* AddComponent(int32_t componentType);
         Component* GetComponent(int32_t type);
         void GetComponents(int32_t type, std::list<Component*>& results);
         void GetComponentsInChildren(int32_t type, bool includeInactive, std::list<Component*>& results);
         void GetComponentsInParent(int32_t type, bool includeInactive, std::list<Component*>& results);
-     
-        void SetActive (bool value);
-        void SetActiveRecursively (bool state);
-        
+             
         void BroadcastMessage(const std::string& methodName, int32_t options);
         void SendMessage(const std::string& methodName, int32_t options);
         

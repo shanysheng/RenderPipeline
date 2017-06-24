@@ -12,5 +12,6 @@
 #include <list>
 #include <stdint.h>
 #include <cmath>
+#include <unordered_map>
 
 #endif
