@@ -4,8 +4,8 @@ namespace pipeline{
     
     CFrameInfo::CFrameInfo()
     {
-        FrameIndex = 0;
-        SynTimeMS = 0;
+        frame = 0;
+        timems = 0;
     }
     
     IRenderControlUnit::IRenderControlUnit()

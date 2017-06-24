@@ -16,8 +16,8 @@ namespace pipeline{
     {
         CFrameInfo();
         
-        uint64_t FrameIndex;
-        double	 SynTimeMS;
+        uint64_t frame;
+        double	 timems;
     };
     
     class IRenderControlUnit
