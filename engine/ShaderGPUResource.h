@@ -7,5 +7,21 @@
 #ifndef PIPELINE_SHADERGPURESOURCE_H_GUARD
 #define PIPELINE_SHADERGPURESOURCE_H_GUARD
 
+namespace pipeline {
+  
+    class ShaderGPUResource:public IGPUResource
+    {
+    public:
+        ShaderGPUResource();
+        virtual ~ShaderGPUResource();
+        
+        virtual void Bind(  ) const;
+        virtual void Bind() const;
+        virtual void Unbind() const;
+        
+ 
+    };
+    
+}
 
 #endif
