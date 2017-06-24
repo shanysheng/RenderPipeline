@@ -14,7 +14,7 @@ namespace pipeline {
     {
     public:
         TextureGPUResource();
-        TextureGPUResource(GLuint id);
+        TextureGPUResource(int32_t id);
         virtual ~TextureGPUResource();
         
         virtual void Bind() const ;
@@ -27,12 +27,12 @@ namespace pipeline {
         int32_t m_TextureID;
     };
         
-    inline GLuint CImageTextureGPUResource::GetTextureID()
+    inline int32_t CImageTextureGPUResource::GetTextureID()
     {
         return m_TextureID;
     }
     
-    inline void   CImageTextureGPUResource::SetTextureID(GLuint id)
+    inline void   CImageTextureGPUResource::SetTextureID(int32_t id)
     {
         m_TextureID = id;
     }
