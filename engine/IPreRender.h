@@ -15,18 +15,12 @@
 
 namespace pipeline{
     
-    
     class CCamera;
     class CRenderQueue;
-    
     class IRenderTarget;
-    
     class SceneManager;
-    
     class CRenderQueueManager;
-    
     class CPreRenderManager;
-    
     
     class IPreRender : public IRenderControlUnit
     {
