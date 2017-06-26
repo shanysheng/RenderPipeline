@@ -37,15 +37,10 @@ namespace pipeline{
         virtual IPreRender * Clone() const = 0;
         
         // 	virtual void PerFrame( CFrameInfo * pFI);
-        
         //	virtual void BeforeFirstFrame( CFrameInfo * pFI);
-        
         // 	virtual void AfterLastFrame( CFrameInfo * pFI);
-        
         // 	virtual void PostChildrenPerFrame(CFrameInfo * pFI);
-        
         // 	virtual void PostChildrenBeforeFirstFrame( CFrameInfo * pFI);
-        
         // 	virtual void PostChildrenAfterLastFrame( CFrameInfo * pFI);
     public:
         void SetInTraverseRoot( const std::vector<SGNode*>& roots);
