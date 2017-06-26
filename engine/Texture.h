@@ -4,18 +4,20 @@
 * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
 */
 
-#ifndef PIPELINE_TEXTUREGPURESOURCE_H_GUARD
-#define PIPELINE_TEXTUREGPURESOURCE_H_GUARD
+#ifndef PIPELINE_TEXTURE_H_GUARD
+#define PIPELINE_TEXTURE_H_GUARD
+
+#include "IGPUResource.h"
 
 namespace pipeline {
     
 
-    class TextureGPUResource : public IGPUResource
+    class Texture : public IGPUResource
     {
     public:
-        TextureGPUResource();
-        TextureGPUResource(int32_t id);
-        virtual ~TextureGPUResource();
+        Texture();
+        Texture(int32_t id);
+        virtual ~Texture();
         
         virtual void Bind() const ;
         virtual void Unbind() const ;
@@ -27,12 +29,12 @@ namespace pipeline {
         int32_t m_TextureID;
     };
         
-    inline int32_t CImageTextureGPUResource::GetTextureID()
+    inline int32_t Texture::GetTextureID()
     {
         return m_TextureID;
     }
     
-    inline void   CImageTextureGPUResource::SetTextureID(int32_t id)
+    inline void   Texture::SetTextureID(int32_t id)
     {
         m_TextureID = id;
     }
