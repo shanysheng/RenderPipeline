@@ -7,6 +7,9 @@
 #ifndef PIPELINE_BUFFERGPURESROUCE_H_GUARD
 #define PIPELINE_BUFFERGPURESROUCE_H_GUARD
 
+#include "Common.h"
+#include "IGPUResource.h"
+
 namespace pipeline {
     
     class CGPUChunkInfo
@@ -18,13 +21,13 @@ namespace pipeline {
         
     };
     
-    class CBufferGPUResource :public IGPUResource
+    class GeometryBuffer :public IGPUResource
     {
     public:
-        CBufferGPUResource();
-        CBufferGPUResource(int32_t indexbufferid, int32_t vertexbufferid);
+        GeometryBuffer();
+        GeometryBuffer(int32_t indexbufferid, int32_t vertexbufferid);
         
-        virtual ~CBufferGPUResource();
+        virtual ~GeometryBuffer();
         
         virtual void Bind()const;
         virtual void Unbind()const;
@@ -65,37 +68,37 @@ namespace pipeline {
         uint32_t        m_IndexCount;
     };
     
-    inline void CBufferGPUResource::SetVertexBufferID(int32_t p_VertexBufferID)
+    inline void GeometryBuffer::SetVertexBufferID(int32_t p_VertexBufferID)
     {
         m_VertexBufferID = p_VertexBufferID;
     }
     
-    inline void CBufferGPUResource::SetIndexBufferID(int32_t p_IndexBufferID)
+    inline void GeometryBuffer::SetIndexBufferID(int32_t p_IndexBufferID)
     {
         m_IndexBufferID = p_IndexBufferID;
     }
     
-    inline void CBufferGPUResource::SetVertexCount(uint32_t vertexCount)
+    inline void GeometryBuffer::SetVertexCount(uint32_t vertexCount)
     {
         m_VertexCount   = vertexCount;
     }
     
-    inline void CBufferGPUResource::SetIndexBufferComponentType(int32_t type)
+    inline void GeometryBuffer::SetIndexBufferComponentType(int32_t type)
     {
         m_IndexComponentType = type;
     }
     
-    inline void CBufferGPUResource::SetVertexBufferStride(int32_t stride)
+    inline void GeometryBuffer::SetVertexBufferStride(int32_t stride)
     {
         m_Stride = stride;
     }
     
-    inline void CBufferGPUResource::SetIndexCount(int32_t count)
+    inline void GeometryBuffer::SetIndexCount(int32_t count)
     {
         m_IndexCount = count ;
     }
     
-    inline int32_t CBufferGPUResource::GetIndexCount()
+    inline int32_t GeometryBuffer::GetIndexCount()
     {
         return m_IndexCount;
     }
