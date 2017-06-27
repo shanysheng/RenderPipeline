@@ -4,15 +4,18 @@
 * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
 */
 
-#ifndef PIPELINE_FEATURE_H_GUARD
-#define PIPELINE_FEATURE_H_GUARD
+#ifndef PIPELINE_IFEATURE_H_GUARD
+#define PIPELINE_IFEATURE_H_GUARD
+
+#include "Common.h"
 
 namespace pipeline {
 
     class IFeature
     {
     public:
-        
+        virtual ~IFeature(){}
+        int32_t FeatureType(){return -1;}
     };
 }
 
