@@ -35,10 +35,10 @@ namespace pipeline {
         int GetInt (int nameID);
         int GetInt (const string& name);
         
-        const Matrix4x4& GetMatrix (const string& name);
-        const Matrix4x4& GetMatrix (int nameID);
-        void GetMatrixArray (const string& name, std::vector<Matrix4x4> values);
-        void GetMatrixArray (int nameID, std::vector<Matrix4x4> values);
+        const Matrix4x4f& GetMatrix (const string& name);
+        const Matrix4x4f& GetMatrix (int nameID);
+        void GetMatrixArray (const string& name, std::vector<Matrix4x4f> values);
+        void GetMatrixArray (int nameID, std::vector<Matrix4x4f> values);
         
         Texture GetTexture (int nameID);
         Texture GetTexture (const string& name);
@@ -68,10 +68,10 @@ namespace pipeline {
         void SetInt (int nameID, int value);
         void SetInt (const string& name, int value);
         
-        void SetMatrix (const string& name, const Matrix4x4& value);
-        void SetMatrix (int nameID, const Matrix4x4& value);
-        void SetMatrixArray (const string& name, std::vector<Matrix4x4> values);
-        void SetMatrixArray (int nameID, std::vector<Matrix4x4> values);
+        void SetMatrix (const string& name, const Matrix4x4f& value);
+        void SetMatrix (int nameID, const Matrix4x4f& value);
+        void SetMatrixArray (const string& name, std::vector<Matrix4x4f> values);
+        void SetMatrixArray (int nameID, std::vector<Matrix4x4f> values);
         
         void SetTexture (const string& name, Texture value);
         void SetTexture (int nameID, Texture value);
