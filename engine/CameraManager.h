@@ -1,47 +1,36 @@
-#pragma once
+/*
+ * Copyright 2017 sheng chongshan. All rights reserved.
+ * email: shany.sheng@qq.com
+ * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
+ */
 
-#include "R3DRenderingSystem/Camera.h"
-#include <map>
 
-namespace Ranovae{
-	namespace Rendering{
+#ifndef PIPELINE_CAMERAMANAGER_H_GUARD
+#define PIPELINE_CAMERAMANAGER_H_GUARD
 
-		class CCamera;
+#include "Common.h"
+#include "Camera.h"
 
-		//------------------------------------------------------------------------------
-		//	Desc:		CCameraManager instance is a container for cameras, namely 
-		//				CCamera instances. There is a map inside, the key of which 
-		//				is the camera's name and is unique in whole map.
-		//
-		//------------------------------------------------------------------------------
-		class CCameraManager
-		{
-		public:
-			CCameraManager();
-			virtual ~CCameraManager();
-
-			CCamera * Give( const SFString& CameraName );
-
-			//------------------------------------------------------------------------------
-			//	Desc:	The overridden operator [](const SFString& CameraName ) can be 
-			//			used to find the render queue by a specified name. The function 
-			//			Give(const SFString& CameraName ) can be used to yield a named 
-			//			camera, which is either newly created instance, or an existing 
-			//			instance with the same name in the map.
-			//
-			//------------------------------------------------------------------------------
-			CCamera * operator [](const SFString& CameraName );
-
-			//------------------------------------------------------------------------------
-			//	Desc:
-			//
-			//
-			//  [6/14/2011 Ranovae/shamy]
-			//------------------------------------------------------------------------------
-			void	ClearResources();
-
-		protected:
-			std::map<SFString, CCamera*> m_Cameras;
-		};
-	}
+namespace pipeline{
+    
+    class Camera;
+    class CameraManager
+    {
+    public:
+        CameraManager();
+        virtual ~CameraManager();
+        
+        Camera * Give( const std::string& name );
+        Camera * operator [](const std::string& name );
+        
+        void	Clear();
+        
+    protected:
+        Camera m_Current;
+        Camera m_Main;
+        
+        std::map<std::string, Camera*> m_Cameras;
+    };
 }
+
+#endif
