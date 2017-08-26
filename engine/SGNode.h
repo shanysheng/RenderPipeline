@@ -65,7 +65,7 @@ namespace pipeline {
         //Component renderer;
         //Component rigidbody;
         
-        Transform transform
+        Transform transform;
     };
 }
 
