@@ -26,8 +26,8 @@ namespace pipeline {
         virtual uint32_t GetRenderTargetTextureId() const {return 0;}
         virtual uint32_t GetDepthTargetTextureId() const {return 0;}
         
-        virtual int		CreateRenderTexture(uint32_t in_Width, uint32_t in_Height) {return false;}
-        virtual int     ResizeRenderTexture(uint32_t in_Width, uint32_t in_Height) {return false;}
+        virtual int		CreateRenderTarget(uint32_t in_Width, uint32_t in_Height) {return false;}
+        virtual int     ResizeRenderTarget(uint32_t in_Width, uint32_t in_Height) {return false;}
         
         virtual int		CreateRenderWindow( const CWinInfo& WinInfo) {return false;}
     };

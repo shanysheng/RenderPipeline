@@ -7,5 +7,10 @@
 #ifndef PIPELINE_FEATURETYPE_H_GUARD
 #define PIPELINE_FEATURETYPE_H_GUARD
 
+namespace pipeline {
+
+    enum 
+    
+}
 
 #endif
