@@ -7,67 +7,55 @@
 #ifndef PIPELINE_LIGHT_H_GUARD
 #define PIPELINE_LIGHT_H_GUARD
 
+
+#include "Common.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Matrix4x4.h"
+#include "Color.h"
+#include "Rect.h"
+#include "Ray.h"
+
 namespace pipeline {
+    
+    enum LightType
+    {
+        LightType_Point,
+        LightType_Spot,
+        LightType_Directional
+    };
+    
+    enum LightRenderMode
+    {
+        RenderMode_PerVertex,
+        RenderMode_PerPixel,
+    };
+    
+    enum LightShadows
+    {
+        None_Shadow,
+        Soft_Shadow,
+        Hard_Shadow,
+    };
     
     class Light
     {
     public:
-        // Fields
-        //
-        private int m_BakedIndex;
-     
-        
-        
-        //
-        // Properties
-        //
-        bool alreadyLightmapped ;
-        
-        Vector2 areaSize;
-        
-        
-        
-        float bounceIntensity;
-        
-        Color color ;
-        
-        float colorTemperature;
-        int commandBufferCount;
-        Texture cookie ;
-        
-        float cookieSize ;
-        
-        int cullingMask ;
-        
-        Flare flare;
-        float intensity ;
-        
-        bool isBaked ;
-        
-        LightmapBakeType lightmapBakeType;
-        
-        
-        float range ;
+        LightType type;
+
+        Color m_Color ;
+        float m_Intensity ;
+        float m_Range ;
+        float m_SpotAngle ;
         
         LightRenderMode renderMode;
-        
-        
-        float shadowBias;
-        
-        int shadowCustomResolution ;
-        
-        float shadowNearPlane;
-        float shadowNormalBias ;
-        
-        LightShadowResolution shadowResolution ;
-        
+        int m_CullingMask ;
+
         LightShadows shadows ;
-        
-        float shadowStrength;
-        
-        float spotAngle ;
-        
-        LightType type;
+        float m_ShadowBias;
+        float m_ShadowNearPlane;
+        float m_ShadowNormalBias ;
+        float m_ShadowStrength;
     };
 }
 #endif
