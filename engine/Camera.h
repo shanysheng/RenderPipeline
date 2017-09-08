@@ -25,30 +25,8 @@ namespace pipeline {
     {
     public:
         Camera();
-        
-        bool orthographic;
 
-        float aspect ;
-        float fieldOfView ;
-        float nearClipPlane ;
-        float farClipPlane ;
-
-        float depth ;
-        Color backgroundColor;
-        
-        Vector3f    m_Position;
-        Vector3f    m_Target;
-        Vector3f    m_Updir;
-
-        Matrix4x4f cameraToWorldMatrix;
-        Matrix4x4f projectionMatrix ;
-        Matrix4x4f worldToCameraMatrix ;
-        Matrix4x4f cullingMatrix ;
-
-        Vector4f pixelRect ;
-        RenderTarget* targetTexture ;
- 
-        void CopyFrom (Camera other);
+        void CopyFrom (const Camera& other);
         void CalculateFrustumCorners (Rect viewport, float z, Vector3f outCorners[]);
   
         void DoClear ();
@@ -72,6 +50,30 @@ namespace pipeline {
         Vector3f ViewportToWorldPoint (Vector3f position);
         Vector3f WorldToScreenPoint (Vector3f position);
         Vector3f WorldToViewportPoint (Vector3f position);
+        
+    public:
+        
+        bool m_Orthographic;
+        
+        float m_Aspect ;
+        float m_FieldOfView ;
+        float m_NearClipPlane ;
+        float m_FarClipPlane ;
+        
+        float m_DefaultDepth ;
+        Color m_BackGroundColor;
+        
+        Vector3f    m_Position;
+        Vector3f    m_Target;
+        Vector3f    m_Updir;
+        
+        Matrix4x4f m_CameraToWorldMatrix;
+        Matrix4x4f m_ProjectionMatrix ;
+        Matrix4x4f m_WorldToCameraMatrix ;
+        Matrix4x4f m_CullingMatrix ;
+        
+        Vector4f m_ViewportRect ;
+        RenderTarget* targetTexture ;
     };
 }
 #endif
