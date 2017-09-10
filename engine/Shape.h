@@ -8,63 +8,43 @@
 #define PIPELINE_SHAPE_H_GUARD
 
 namespace pipeline {
+    
     class Shape
     {
     public:
         
-        Bounds bounds ;
-        
-        bool enabled;
-        
-        bool isPartOfStaticBatch ;
-        
         bool isVisible ;
         
+        bool isPartOfStaticBatch ;
+        int staticBatchIndex ;
+
         int lightmapIndex ;
-        
         Vector4 lightmapScaleOffset ;
-        
-        
        
-        
-        Matrix4x4f localToWorldMatrix ;
-        
         Material material ;
-        
         Material[] materials ;
         
-        MotionVectorGenerationMode motionVectorGenerationMode ;
-        
- 
         bool receiveShadows ;
-        
         ReflectionProbeUsage reflectionProbeUsage ;
-        
         ShadowCastingMode shadowCastingMode ;
-        
+
         Material sharedMaterial;
-        
         Material[] sharedMaterials ;
+
         int sortingGroupID ;
-        
         int sortingGroupOrder;
-        
         int sortingLayerID ;
-        
         string sortingLayerName;
         int sortingOrder ;
         
-        int staticBatchIndex ;
-        
+        Bounds bounds ;
         Transform staticBatchRootTransform;
         
-        
+        Matrix4x4f localToWorldMatrix ;
         Matrix4x4f worldToLocalMatrix;
         
         void GetClosestReflectionProbes (std::vector<ReflectionProbeBlendInfo> result);
        
-        
-        
         void RenderNow (int material);
         void SetPropertyBlock (MaterialPropertyBlock properties);
         void SetStaticBatchInfo (int firstSubMesh, int subMeshCount);
