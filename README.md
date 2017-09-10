@@ -4,9 +4,9 @@ RenderPipeline is an opensource implementation of book "Real-Time Graphics Rende
 https://shanysheng.github.io/
 
 # Overview
-asset: unity to json
-graphic: bgfx
-framework: render pipeline
+* asset: unity to json
+* graphic: bgfx
+* framework: render pipeline
 
 -----------------------------------------------------------------------
 
