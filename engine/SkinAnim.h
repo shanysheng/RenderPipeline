@@ -7,34 +7,52 @@
 #ifndef PIPELINE_SKINANIM_H_GUARD
 #define PIPELINE_SKINANIM_H_GUARD
 
-namespace pipelin {
+#include "Common.h"
+#include "SkinAnimClip.h"
+
+namespace pipeline {
+    
+    enum AnimationState
+    {
+        
+    };
+    
+    enum PlayMode
+    {
+        
+    };
+    
+    enum QueueMode
+    {
+        
+    };
     
     class SkinAnim
     {
     public:
         
         bool animatePhysics;
-        AnimationClip clip;
-        AnimationCullingType cullingType;
+        SkinAnimClip clip;
+        //AnimationCullingType cullingType;
         
         bool isPlaying;
-        Bounds localBounds ;
+        //Bound localBounds ;
         
         bool playAutomatically ;
         
-        WrapMode wrapMode ;
+        //WrapMode wrapMode ;
         
-        AnimationState ;
+        //AnimationState ;
         
-        void AddClip (AnimationClip clip, const std::string& newName, int firstFrame, int lastFrame);
-        void AddClip (AnimationClip clip, const std::string& newName);
+        void AddClip (SkinAnimClip clip, const std::string& newName, int firstFrame, int lastFrame);
+        void AddClip (SkinAnimClip clip, const std::string& newName);
         void Blend (const std::string& animation);
         void Blend (const std::string& animation, float targetWeight);
         
         void CrossFade (const std::string& animation);
         AnimationState CrossFadeQueued (const std::string& animation, float fadeLength, QueueMode queue);
         AnimationState CrossFadeQueued (const std::string& animation, float fadeLength);
-        AnimationClip GetClip (const std::string& name);
+        SkinAnimClip GetClip (const std::string& name);
         
         int GetClipCount ();
         int GetStateCount ();
@@ -45,14 +63,13 @@ namespace pipelin {
         
         bool Play ();
         bool Play (const std::string& animation);
-        bool Play (const std::string& animation);
         
-        private bool PlayDefaultAnimation (PlayMode mode);
+        bool PlayDefaultAnimation (PlayMode mode);
         
         AnimationState PlayQueued ();
         AnimationState PlayQueued (const std::string& animation);
         AnimationState PlayQueued (const std::string& animation, QueueMode queue);
-        void RemoveClip (AnimationClip clip);
+        void RemoveClip (SkinAnimClip clip);
         void RemoveClip (const std::string& clipName);
         void RemoveClip2 (const std::string& clipName);
         

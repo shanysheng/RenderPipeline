@@ -36,8 +36,6 @@ namespace pipeline {
         Matrix4x4f localToWorldMatrix;
         Vector3f lossyScale;
         
-        Transform root ;
-        Transform parent;
         
         Vector3f up ;
         Vector3f right ;
@@ -53,7 +51,7 @@ namespace pipeline {
         Transform FindChild (const std::string& name);
         Transform GetChild (int index);
         
-        Vector3f GetLocalEulerAngles (RotationOrder order);
+        Vector3f GetLocalEulerAngles ();
         Vector3f InverseTransformDirection (Vector3f direction);
         Vector3f InverseTransformDirection (float x, float y, float z);
         Vector3f InverseTransformPoint (Vector3f position);
@@ -69,13 +67,9 @@ namespace pipeline {
         void LookAt (Vector3f worldPosition, Vector3f worldUp);
         void LookAt (Transform target, Vector3f worldUp);
         
-        void Rotate (Vector3f eulerAngles, Space relativeTo);
         void Rotate (Vector3f eulerAngles);
         void Rotate (float xAngle, float yAngle, float zAngle);
-        
-        void Rotate (float xAngle, float yAngle, float zAngle, Space relativeTo);
         void Rotate (Vector3f axis, float angle);
-        void Rotate (Vector3f axis, float angle, Space relativeTo);
         
         void RotateAround (Vector3f point, Vector3f axis, float angle);
         void RotateAroundLocal (Vector3f axis, float angle);
@@ -84,7 +78,6 @@ namespace pipeline {
         void SetAsFirstSibling ();
         void SetAsLastSibling ();
         
-        void SetLocalEulerAngles (Vector3f euler, RotationOrder order);
         void SetLocalEulerHint (Vector3f euler);
         void SetParent (Transform parent, bool worldPositionStays);
         void SetParent (Transform parent);
@@ -99,9 +92,7 @@ namespace pipeline {
         Vector3f TransformVector (Vector3f vector);
         
         void Translate (Vector3f translation);
-        void Translate (Vector3f translation, [DefaultValue ("Space.Self")] Space relativeTo);
         void Translate (float x, float y, float z);
-        void Translate (float x, float y, float z, [DefaultValue ("Space.Self")] Space relativeTo);
         void Translate (Vector3f translation, Transform relativeTo);
         void Translate (float x, float y, float z, Transform relativeTo);
     };

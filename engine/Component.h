@@ -8,6 +8,7 @@
 #define PIPELINE_COMPONENT_H_GUARD
 
 #include "Common.h"
+#include "FeatureType.h"
 
 namespace pipeline {
 
@@ -20,27 +21,27 @@ namespace pipeline {
         
         
         
-        Component* GetComponent (Type type)
-        Component* GetComponent (const string& type);
+        Component* GetComponent (FeatureType type);
+        Component* GetComponent (const std::string& type);
         
-        Component* GetComponentInChildren (Type t, bool includeInactive);
-        Component* GetComponentInChildren (Type t);
+        Component* GetComponentInChildren (FeatureType t, bool includeInactive);
+        Component* GetComponentInChildren (FeatureType t);
         
-        Component* GetComponentInParent (Type t);
+        Component* GetComponentInParent (FeatureType t);
         
-        void GetComponents (Type type, std::vector<Component*> results);
+        void GetComponents (FeatureType type, std::vector<Component*> results);
         
-        T[] GetComponentsInChildren<T> ();
-        void GetComponentsInChildren<T> (std::vector<T> results);
-        void GetComponentsInChildren<T> (bool includeInactive, std::vector<T> result);
-        T[] GetComponentsInChildren<T> (bool includeInactive);
-        Component[] GetComponentsInChildren (Type t);
-        
-        void GetComponentsInParent<T> (bool includeInactive, std::vector<T> results);
-        T[] GetComponentsInParent<T> (bool includeInactive);
-        Component[] GetComponentsInParent (Type t);
-        T[] GetComponentsInParent<T> ();
-        Component[] GetComponentsInParent (Type t, bool includeInactive);
+//        T[] GetComponentsInChildren<T> ();
+//        void GetComponentsInChildren<T> (std::vector<T> results);
+//        void GetComponentsInChildren<T> (bool includeInactive, std::vector<T> result);
+//        T[] GetComponentsInChildren<T> (bool includeInactive);
+//        Component[] GetComponentsInChildren (FeatureType t);
+//
+//        void GetComponentsInParent<T> (bool includeInactive, std::vector<T> results);
+//        T[] GetComponentsInParent<T> (bool includeInactive);
+//        Component[] GetComponentsInParent (FeatureType t);
+//        T[] GetComponentsInParent<T> ();
+        //Component[] GetComponentsInParent (FeatureType t, bool includeInactive);
         
         
     };

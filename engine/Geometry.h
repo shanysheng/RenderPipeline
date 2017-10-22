@@ -22,13 +22,13 @@ namespace pipeline {
         TexCoord2,
         TexCoord3,
         Tangent
-    }
+    };
     
     enum InternalVertexChannelType
     {
         Float,
         Color = 2
-    }
+    };
     
     class Geometry
     {

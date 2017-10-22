@@ -65,6 +65,8 @@
 		331C15D41EFEAE740010EBAC /* Vector4.h in Sources */ = {isa = PBXBuildFile; fileRef = 336A8CFA1EED34AC001FFFEF /* Vector4.h */; };
 		3329C9771F041F610040641B /* CameraManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3329C9751F041F610040641B /* CameraManager.cpp */; };
 		3329C9781F041F610040641B /* CameraManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3329C9761F041F610040641B /* CameraManager.h */; };
+		335C24C01F9CFDC30024F891 /* Bound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 335C24BE1F9CFDC10024F891 /* Bound.cpp */; };
+		335C24C11F9CFDC30024F891 /* Bound.h in Headers */ = {isa = PBXBuildFile; fileRef = 335C24BF1F9CFDC20024F891 /* Bound.h */; };
 		336A8CFD1EED34AC001FFFEF /* Appearance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 336A8CAE1EED34AC001FFFEF /* Appearance.cpp */; };
 		336A8CFE1EED34AC001FFFEF /* Appearance.h in Headers */ = {isa = PBXBuildFile; fileRef = 336A8CAF1EED34AC001FFFEF /* Appearance.h */; };
 		336A8D001EED34AC001FFFEF /* GeometryBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 336A8CB11EED34AC001FFFEF /* GeometryBuffer.cpp */; };
@@ -159,6 +161,8 @@
 		3306C3841EF6E6CE0030B8C7 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shader.h; path = ../../../../engine/Shader.h; sourceTree = "<group>"; };
 		3329C9751F041F610040641B /* CameraManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CameraManager.cpp; path = ../../../../engine/CameraManager.cpp; sourceTree = "<group>"; };
 		3329C9761F041F610040641B /* CameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraManager.h; path = ../../../../engine/CameraManager.h; sourceTree = "<group>"; };
+		335C24BE1F9CFDC10024F891 /* Bound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Bound.cpp; path = ../../../../engine/Bound.cpp; sourceTree = "<group>"; };
+		335C24BF1F9CFDC20024F891 /* Bound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bound.h; path = ../../../../engine/Bound.h; sourceTree = "<group>"; };
 		336A8CAE1EED34AC001FFFEF /* Appearance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Appearance.cpp; path = ../../../../engine/Appearance.cpp; sourceTree = "<group>"; };
 		336A8CAF1EED34AC001FFFEF /* Appearance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Appearance.h; path = ../../../../engine/Appearance.h; sourceTree = "<group>"; };
 		336A8CB11EED34AC001FFFEF /* GeometryBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeometryBuffer.cpp; path = ../../../../engine/GeometryBuffer.cpp; sourceTree = "<group>"; };
@@ -270,6 +274,8 @@
 			children = (
 				336A8CAE1EED34AC001FFFEF /* Appearance.cpp */,
 				336A8CAF1EED34AC001FFFEF /* Appearance.h */,
+				335C24BE1F9CFDC10024F891 /* Bound.cpp */,
+				335C24BF1F9CFDC20024F891 /* Bound.h */,
 				336A8CB31EED34AC001FFFEF /* Camera.cpp */,
 				336A8CB41EED34AC001FFFEF /* Camera.h */,
 				3329C9751F041F610040641B /* CameraManager.cpp */,
@@ -375,6 +381,7 @@
 				336A8D451EED34AC001FFFEF /* Vector2.h in Headers */,
 				33055D051EEF03C300A9799A /* FeatureType.h in Headers */,
 				336A8D111EED34AC001FFFEF /* IGPUResource.h in Headers */,
+				335C24C11F9CFDC30024F891 /* Bound.h in Headers */,
 				336A8D011EED34AC001FFFEF /* GeometryBuffer.h in Headers */,
 				336A8D471EED34AC001FFFEF /* Vector3.h in Headers */,
 				336A8CFE1EED34AC001FFFEF /* Appearance.h in Headers */,
@@ -510,6 +517,7 @@
 				331C15C41EFEAE740010EBAC /* SceneIterator.h in Sources */,
 				331C15C51EFEAE740010EBAC /* SceneModelManipulator.h in Sources */,
 				331C15C61EFEAE740010EBAC /* SGNode.h in Sources */,
+				335C24C01F9CFDC30024F891 /* Bound.cpp in Sources */,
 				331C15C71EFEAE740010EBAC /* SGNodeIterator.h in Sources */,
 				331C15C81EFEAE740010EBAC /* Shader.h in Sources */,
 				3329C9771F041F610040641B /* CameraManager.cpp in Sources */,

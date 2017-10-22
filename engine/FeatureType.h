@@ -9,7 +9,10 @@
 
 namespace pipeline {
 
-    enum 
+    enum FeatureType
+    {
+        
+    };
     
 }
 
