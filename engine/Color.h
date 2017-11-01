@@ -229,6 +229,13 @@ namespace pipeline{
                         (int32_t)(255.0f*Mathf::Clamp(a, 0.0f, 1.0f));
         return hex;
     }
+    
+    class Color32
+    {
+    public:
+        int color;
+    };
+    
 
 }
 

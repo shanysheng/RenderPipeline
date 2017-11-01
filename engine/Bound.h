@@ -15,6 +15,8 @@ namespace pipeline{
     class Bound
     {
     public:
+        Bound();
+        
         Vector3f m_Min;
         Vector3f m_Max;
     };

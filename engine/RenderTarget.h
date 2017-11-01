@@ -7,7 +7,15 @@
 #ifndef PIPELINE_RENDERTARGET_H_GUARD
 #define PIPELINE_RENDERTARGET_H_GUARD
 
+#include "Common.h"
+
 namespace pipeline {
+    
+    class CWinInfo
+    {
+    public:
+        
+    };
     
     class RenderTarget
     {

@@ -7,6 +7,10 @@
 #ifndef PIPELINE_SKINSHAPE_H_GUARD
 #define PIPELINE_SKINSHAPE_H_GUARD
 
+#include "Transform.h"
+#include "Bound.h"
+#include "Geometry.h"
+
 namespace pipeline {
     class SkinShape{
     public:
@@ -15,19 +19,18 @@ namespace pipeline {
         //
         Transform actualRootBone ;
         
-        Transform[] bones ;
+        Transform* bones ;
         
-        Bounds localBounds ;
+        Bound localBounds ;
         
-        SkinQuality quality ;
+        //SkinQuality quality ;
         
         Transform rootBone ;
         
-        Mesh sharedMesh ;
+        Geometry* sharedMesh ;
         bool skinnedMotionVectors ;
         bool updateWhenOffscreen ;
 
-        void BakeMesh (Mesh mesh);
         
         float GetBlendShapeWeight (int index);
         void SetBlendShapeWeight (int index, float value);

@@ -6,7 +6,7 @@ namespace pipeline{
     CRenderQueue::CRenderQueue()
     {
         m_Tag = 0;
-        m_bMatrixAggregated = false;
+        //m_bMatrixAggregated = false;
         m_pExtension = NULL;
     }
     
