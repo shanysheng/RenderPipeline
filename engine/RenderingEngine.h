@@ -7,9 +7,13 @@
 #ifndef PIPELINE_RENDERINGENGINE_H_GUARD
 #define PIPELINE_RENDERINGENGINE_H_GUARD
 
+
+#include "Common.h"
+
 namespace pipeline {
     
     
+    class SGNode;
     class CCamera;
     class CCameraManager;
     class IPreRender;
@@ -18,6 +22,18 @@ namespace pipeline {
     class CLocalClock;
     class CSynClock;
     
+    class IRenderTarget;
+    class CRenderQueueManager;
+    class CCameraManager;
+    class CRenderTargetManager;
+    class CPreRenderManager;
+    class CGPUResourceManipulator;
+    class CRenderPipelineManager;
+    
+    class CWinInfo
+    {
+    public:
+    };
     
     
     class CRenderingEngine
@@ -36,7 +52,7 @@ namespace pipeline {
         int		OpenSceneModel( const std::string& SceneModelName, int ActiveSceneGraph =0 );
         void	CloseSceneModel();
         
-        void	SetRenderTraverseRoot( const TMF<SceneModel::IEntity*>& roots );
+        void	SetRenderTraverseRoot( const std::vector<SGNode*>& roots );
         void	SetCamera(CCamera& Camera );
         void	GetCamera( CCamera& Camera );
         
@@ -48,7 +64,7 @@ namespace pipeline {
         
         void SetSetupTimeBudget(double);
         void SetDrawingTimeBudget(double);
-        void SetGPUMemoryBudget(int32_t64);
+        void SetGPUMemoryBudget(int32_t);
         void SetExtraRenderingObjectBudget(int32_t);
         
         double GetSetupTimeBudget();
@@ -59,7 +75,7 @@ namespace pipeline {
         
     protected:
 
-        SceneModel::CSceneModelManipulator2*	GetSceneModelManipulator2()	{return m_pSceneModelMpr;}
+        //CSceneModelManipulator2*	GetSceneModelManipulator2()	{return m_pSceneModelMpr;}
         CRenderQueueManager*					GetRenderQueueManager()		{return m_pRenderQueueMgr;}
         CCameraManager*							GetCameraManager()			{return m_pCameraMgr;}
         CRenderTargetManager*					GetRenderTargetManager()	{return m_pRenderTargetMgr;}
@@ -87,7 +103,7 @@ namespace pipeline {
         
         CWinInfo								m_WinInfo;
         
-        SceneModel::CSceneModelManipulator2*   	m_pSceneModelMpr;
+        //CSceneModelManipulator2*   	m_pSceneModelMpr;
         
         CGPUResourceManipulator*				m_pGPUResourceMpr;
         
@@ -96,12 +112,12 @@ namespace pipeline {
         CRenderTargetManager*					m_pRenderTargetMgr;
         CPreRenderManager*						m_pPreRenderMgr;
         CRenderPipelineManager*					m_pRenderPipelineMgr;
-        TMF<SceneModel::IEntity*>	m_TraverseRoots;
+        std::vector<SGNode*>	m_TraverseRoots;
         CLocalClock*							m_pLocalClock;
 
         CSynClock*								m_pSynClock;
         
-        CFrameInfo								m_FrameInfo;
+        //CFrameInfo								m_FrameInfo;
         
         IPreRender*								 m_pStartPreRender;
         IRenderTarget*						 m_pPrimeTarget;

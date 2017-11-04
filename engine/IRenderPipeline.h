@@ -22,6 +22,7 @@ namespace pipeline{
     class CPreRenderManager;
     class CRenderPipelineManager;
     class SceneManager;
+    class CRenderingEngine;
     
     class IRenderPipeline: public IRenderControlUnit
     {
