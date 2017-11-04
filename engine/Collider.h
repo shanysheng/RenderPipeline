@@ -14,8 +14,11 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
+#include "Ray.h"
 
 namespace pipeline {
+    
+    class Mesh;
 
     class Collider : Component
     {
@@ -30,15 +33,14 @@ namespace pipeline {
         //PhysicMaterial sharedMaterial;
         
         Vector3f ClosestPoint (Vector3f position);
-        bool Raycast (Ray ray, out RaycastHit hitInfo, float maxDistance);
-    }
+    };
     
     class BoxCollider : Collider
     {
     public:
         Vector3f center ;
         Vector3f size;
-    }
+    };
     
     class CapsuleCollider : Collider
     {
@@ -47,23 +49,23 @@ namespace pipeline {
         int direction ;
         float height ;
         float radius;
-    }
+    };
     
     class SphereCollider : Collider
     {
     public:
         Vector3f center ;
         float radius ;
-    }
+    };
     
     class MeshCollider : Collider
     {
     public:
         bool convex;
         bool inflateMesh ;
-        Mesh sharedMesh;
+        Mesh* psharedMesh;
         float skinWidth ;
-    }
+    };
 }
 
 #endif

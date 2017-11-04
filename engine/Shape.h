@@ -7,7 +7,17 @@
 #ifndef PIPELINE_SHAPE_H_GUARD
 #define PIPELINE_SHAPE_H_GUARD
 
+#include "Common.h"
+#include "Color.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
+#include "Bound.h"
+
 namespace pipeline {
+    
+    class Material;
     
     class Shape
     {
@@ -19,35 +29,23 @@ namespace pipeline {
         int staticBatchIndex ;
 
         int lightmapIndex ;
-        Vector4 lightmapScaleOffset ;
+        Vector4f lightmapScaleOffset ;
        
-        Material material ;
-        Material[] materials ;
-        
+        Material* material ;
         bool receiveShadows ;
-        ReflectionProbeUsage reflectionProbeUsage ;
-        ShadowCastingMode shadowCastingMode ;
 
-        Material sharedMaterial;
-        Material[] sharedMaterials ;
 
         int sortingGroupID ;
-        int sortingGroupOrder;
         int sortingLayerID ;
-        string sortingLayerName;
-        int sortingOrder ;
+        std::string sortingLayerName;
         
-        Bounds bounds ;
-        Transform staticBatchRootTransform;
+        Bound bounds ;
         
         Matrix4x4f localToWorldMatrix ;
         Matrix4x4f worldToLocalMatrix;
         
-        void GetClosestReflectionProbes (std::vector<ReflectionProbeBlendInfo> result);
        
         void RenderNow (int material);
-        void SetPropertyBlock (MaterialPropertyBlock properties);
-        void SetStaticBatchInfo (int firstSubMesh, int subMeshCount);
     };
 }
 

@@ -25,8 +25,8 @@ namespace pipeline {
         
         CGcontext GetCGContext();
         virtual void ClearResources();
-        int32_t64	TotoalMemoryCost() const;
-        uint32_t	FreeUnusedResource( SceneModel::IFeature * );
+        int32_t	TotoalMemoryCost() const;
+        uint32_t FreeUnusedResource( SceneModel::IFeature * );
         
         
         IGPUResource*					GiveResource ( SceneModel::IFeature * );
