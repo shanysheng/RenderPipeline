@@ -1,3 +1,4 @@
+.vscode/
 ./Tools/Exporter/Library/
 build/xcode-ios/Pipeline/Pipeline.xcodeproj/xcuserdata/
 
