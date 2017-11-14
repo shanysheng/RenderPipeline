@@ -45,8 +45,8 @@ namespace pipeline {
         void GetMatrixArray (const std::string& name, std::vector<Matrix4x4f> values);
         void GetMatrixArray (int nameID, std::vector<Matrix4x4f> values);
         
-        Texture GetTexture (int nameID);
-        Texture GetTexture (const std::string& name);
+        Texture* GetTexture (int nameID);
+        Texture* GetTexture (const std::string& name);
         Vector2f GetTextureOffset (int nameID);
         Vector2f GetTextureOffset (const std::string& name);
         Vector2f GetTextureScale (const std::string& name);
@@ -78,8 +78,8 @@ namespace pipeline {
         void SetMatrixArray (const std::string& name, std::vector<Matrix4x4f> values);
         void SetMatrixArray (int nameID, std::vector<Matrix4x4f> values);
         
-        void SetTexture (const std::string& name, Texture value);
-        void SetTexture (int nameID, Texture value);
+        void SetTexture (const std::string& name, Texture* value);
+        void SetTexture (int nameID, Texture* value);
         void SetTextureOffset (int nameID, Vector2f value);
         void SetTextureOffset (const std::string& name, Vector2f value);
         void SetTextureScale (int nameID, Vector2f value);

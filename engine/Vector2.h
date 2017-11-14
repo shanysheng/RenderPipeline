@@ -23,6 +23,7 @@ namespace pipeline{
         static const Vector2f zero;
 
     public:
+        Vector2f();
         Vector2f(float inx, float iny);
         Vector2f(const Vector2f& v);
         
@@ -69,6 +70,12 @@ namespace pipeline{
     };
     
     //-----------------------------------------------------------------------------------
+    inline Vector2f::Vector2f()
+    {
+        this->x = 0.0f;
+        this->y = 0.0f;
+    }
+    
     inline Vector2f::Vector2f(float inx, float iny)
     {
         this->x = inx;
