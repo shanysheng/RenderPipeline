@@ -15,4 +15,12 @@
 #include <map>
 #include <unordered_map>
 
+#include <bx/bx.h>
+#include <bx/allocator.h>
+#include <bx/debug.h>
+
+#include "bgfx/bgfx.h"
+#include "bgfx/platform.h"
+
+
 #endif

@@ -599,11 +599,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				"COPY_HEADERS_UNIFDEF_FLAGS[sdk=*]" = "../../bgfx/include/bgfx/ ../../bimg/include/bimg/ ../../bx/include/bx/";
 				DEVELOPMENT_TEAM = 4448PV9VW8;
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
+				HEADER_SEARCH_PATHS = (
+					../bgfx/include/,
+					../bimg/include/,
+					../bx/include/,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos11.1;
 			};
 			name = Debug;
 		};
@@ -611,11 +618,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				"COPY_HEADERS_UNIFDEF_FLAGS[sdk=*]" = "../../bgfx/include/bgfx/ ../../bimg/include/bimg/ ../../bx/include/bx/";
 				DEVELOPMENT_TEAM = 4448PV9VW8;
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
+				HEADER_SEARCH_PATHS = (
+					../bgfx/include/,
+					../bimg/include/,
+					../bx/include/,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos11.1;
 			};
 			name = Release;
 		};
