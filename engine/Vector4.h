@@ -24,6 +24,7 @@ namespace pipeline{
         static const Vector4f zero;
         
     public:
+        Vector4f();
         Vector4f(float inx, float iny, float inz, float inw);
         Vector4f(const Vector4f& v);
         
@@ -66,6 +67,11 @@ namespace pipeline{
     };
     
     //-----------------------------------------------------------------------------------
+    inline Vector4f::Vector4f()
+    {
+        
+    }
+    
     inline Vector4f::Vector4f(float inx, float iny, float inz, float inw)
     {
         this->x = inx;

@@ -23,6 +23,7 @@ namespace pipeline{
         static const Vector3f zero;
         
     public:
+        Vector3f();
         Vector3f(float inx, float iny, float inz);
         Vector3f(const Vector3f& v);
         
@@ -69,6 +70,11 @@ namespace pipeline{
     };
     
     //-----------------------------------------------------------------------------------
+    inline Vector3f::Vector3f()
+    {
+        
+    }
+
     inline Vector3f::Vector3f(float inx, float iny, float inz)
     {
         this->x = inx;
