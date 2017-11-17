@@ -100,6 +100,8 @@
 		3314326E1FB0CF640071D653 /* CameraManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 331432111FB0CF640071D653 /* CameraManager.cpp */; };
 		3314326F1FB0CF640071D653 /* RenderQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 331432121FB0CF640071D653 /* RenderQueue.cpp */; };
 		331432701FB0CF640071D653 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 331432131FB0CF640071D653 /* Common.cpp */; };
+		331DE7A71FBF54BD0053A992 /* SceneParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 331DE7A51FBF54BC0053A992 /* SceneParser.h */; };
+		331DE7A81FBF54BD0053A992 /* SceneParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 331DE7A61FBF54BC0053A992 /* SceneParser.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -196,6 +198,8 @@
 		331432111FB0CF640071D653 /* CameraManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CameraManager.cpp; path = engine/CameraManager.cpp; sourceTree = "<group>"; };
 		331432121FB0CF640071D653 /* RenderQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderQueue.cpp; path = engine/RenderQueue.cpp; sourceTree = "<group>"; };
 		331432131FB0CF640071D653 /* Common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Common.cpp; path = engine/Common.cpp; sourceTree = "<group>"; };
+		331DE7A51FBF54BC0053A992 /* SceneParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneParser.h; path = engine/SceneParser.h; sourceTree = "<group>"; };
+		331DE7A61FBF54BC0053A992 /* SceneParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneParser.cpp; path = engine/SceneParser.cpp; sourceTree = "<group>"; };
 		3391154E1FB0CEFD005CA4DA /* libpipeline.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libpipeline.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -282,6 +286,8 @@
 				331431ED1FB0CF610071D653 /* SceneIterator.h */,
 				331432051FB0CF630071D653 /* SceneModelManipulator.cpp */,
 				3314320E1FB0CF640071D653 /* SceneModelManipulator.h */,
+				331DE7A61FBF54BC0053A992 /* SceneParser.cpp */,
+				331DE7A51FBF54BC0053A992 /* SceneParser.h */,
 				331431E91FB0CF600071D653 /* SGNode.cpp */,
 				331431F41FB0CF610071D653 /* SGNode.h */,
 				331431D11FB0CF5E0071D653 /* SGNodeIterator.cpp */,
@@ -347,6 +353,7 @@
 				331432171FB0CF640071D653 /* Light.h in Headers */,
 				3314325E1FB0CF640071D653 /* SGNodeIterator.h in Headers */,
 				331432231FB0CF640071D653 /* Camera.h in Headers */,
+				331DE7A71FBF54BD0053A992 /* SceneParser.h in Headers */,
 				3314321D1FB0CF640071D653 /* FeatureType.h in Headers */,
 				331432641FB0CF640071D653 /* SkinAnimClip.h in Headers */,
 				331432331FB0CF640071D653 /* Color.h in Headers */,
@@ -456,6 +463,7 @@
 				331432251FB0CF640071D653 /* Texture.cpp in Sources */,
 				3314326E1FB0CF640071D653 /* CameraManager.cpp in Sources */,
 				331432421FB0CF640071D653 /* Matrix4x4.cpp in Sources */,
+				331DE7A81FBF54BD0053A992 /* SceneParser.cpp in Sources */,
 				3314323B1FB0CF640071D653 /* Collider.cpp in Sources */,
 				3314323E1FB0CF640071D653 /* IGPUResource.cpp in Sources */,
 				3314323D1FB0CF640071D653 /* RenderModuleManager.cpp in Sources */,

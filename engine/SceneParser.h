@@ -4,18 +4,19 @@
 * License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
 */
 
-#ifndef PIPELINE_SCENE_H_GUARD
-#define PIPELINE_SCENE_H_GUARD
+#ifndef PIPELINE_SCENEPARSER_H_GUARD
+#define PIPELINE_SCENEPARSER_H_GUARD
+
 
 
 #include "Common.h"
 
 namespace pipeline{
     
-    class Scene
+    class SceneParser
     {
     public:
-        Scene();
+        SceneParser();
         
     };
 }
