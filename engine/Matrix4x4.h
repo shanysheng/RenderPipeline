@@ -69,6 +69,208 @@ namespace pipeline{
         Matrix4x4f& SetOrtho( float left, float right, float bottom, float top, float zNear, float zFar);
         Matrix4x4f& SetFrustum( float left, float right, float bottom, float top, float nearval, float farval);
     };
+    
+    inline Matrix4x4f::Matrix4x4f()
+    {
+        
+    }
+    
+    inline Matrix4x4f::Matrix4x4f(const Matrix4x4f& rhs)
+    {
+        
+    }
+    
+    
+    inline Matrix4x4f Matrix4x4f::operator* (const Matrix4x4f& rhs) const
+    {
+        
+    }
+    
+    inline void Matrix4x4f::operator*=(const Matrix4x4f& rhs)
+    {
+        
+    }
+    
+    inline Matrix4x4f Matrix4x4f::operator+ (const Matrix4x4f& rhs) const
+    {
+        
+    }
+    
+    inline void Matrix4x4f::operator+=(const Matrix4x4f& rhs)
+    {
+        
+    }
+    
+    inline Matrix4x4f Matrix4x4f::operator* (float scale) const
+    {
+        
+    }
+    
+    inline void Matrix4x4f::operator*=(float scale)
+    {
+        
+    }
+    
+    inline bool Matrix4x4f::operator==(const Matrix4x4f& rhs) const
+    {
+        
+    }
+    
+    inline bool Matrix4x4f::Equals(const Matrix4x4f& rhs, float tolerance) const
+    {
+        
+    }
+    
+    inline bool Matrix4x4f::operator!=(const Matrix4x4f& rhs) const
+    {
+        
+    }
+    
+    inline Vector4f Matrix4x4f::TransformVector4f(const Vector4f& vec4) const
+    {
+        
+    }
+    
+    inline Vector4f Matrix4x4f::TransformPosition(const Vector3f& vec3) const
+    {
+        
+    }
+    
+    inline Vector3f Matrix4x4f::InverseTransformPosition(const Vector3f& vec3) const
+    {
+        
+    }
+    
+    inline Vector4f Matrix4x4f::TransformVector(const Vector3f& vec3) const
+    {
+        
+    }
+    
+    inline Vector3f Matrix4x4f::InverseTransformVector(const Vector3f& vec3) const
+    {
+        
+    }
+    
+    inline Matrix4x4f Matrix4x4f::GetTransposed() const
+    {
+        
+    }
+    
+    inline float Matrix4x4f::Determinant() const
+    {
+        
+    }
+    
+    inline Matrix4x4f Matrix4x4f::Inverse() const
+    {
+        
+    }
+    
+    
+    inline void Matrix4x4f::SetAxisX( const Vector3f& vec3)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetAxisY( const Vector3f& vec3)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetAxisZ( const Vector3f& vec3)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetAxis( int axis, const Vector3f& vec3)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetPosition( const Vector3f& vec3)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetRow( int row, const Vector4f& vec3)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetColumn( int col, const Vector4f& vec3)
+    {
+        
+    }
+    
+    
+    inline void Matrix4x4f::SetTR (const Vector3f& pos, const Quaternionf& q)
+    {
+        
+    }
+    
+    inline void Matrix4x4f::SetTRS (const Vector3f& pos, const Quaternionf& q, const Vector3f& s)
+    {
+        
+    }
+    
+    
+    inline Vector3f Matrix4x4f::MultiplyVector3 (const Vector3f& inV) const
+    {
+        
+    }
+    
+    inline Vector4f Matrix4x4f::MultiplyVector4 (const Vector4f& inV) const
+    {
+        
+    }
+    
+    inline Vector3f Matrix4x4f::MultiplyPoint3 (const Vector3f& inV) const
+    {
+        
+    }
+    
+    
+    inline void Matrix4x4f::MultiplyVector3 (const Vector3f& inV, Vector3f& output) const
+    {
+        
+    }
+    
+    inline void Matrix4x4f::MultiplyVector4 (const Vector4f& inV, Vector4f& output) const
+    {
+        
+    }
+    
+    inline void Matrix4x4f::MultiplyPoint3 (const Vector3f& inV, Vector3f& output) const
+    {
+        
+    }
+    
+    
+    inline Matrix4x4f& Matrix4x4f::SetIdentity ()
+    {
+        
+    }
+    
+    inline Matrix4x4f& Matrix4x4f::SetPerspective( float fovy, float aspect, float zNear, float zFar)
+    {
+        
+    }
+    
+    inline Matrix4x4f& Matrix4x4f::SetPerspective( float left, float right, float top, float bottom, float zNear, float zFar)
+    {
+        
+    }
+    
+    inline Matrix4x4f& Matrix4x4f::SetOrtho( float left, float right, float bottom, float top, float zNear, float zFar)
+    {
+        
+    }
+    
+    inline Matrix4x4f& Matrix4x4f::SetFrustum( float left, float right, float bottom, float top, float nearval, float farval)
+    {
+        
+    }
+    
 }
 
 #endif
