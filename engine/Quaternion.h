@@ -55,6 +55,7 @@ namespace pipeline{
         static void MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q);
     };
     
+    
 
 }
 #endif

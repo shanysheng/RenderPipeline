@@ -25,32 +25,36 @@ namespace pipeline {
     {
     public:
         Camera();
+        ~Camera();
 
-        void CopyFrom (const Camera& other);
-        void CalculateFrustumCorners (Rect viewport, float z, Vector3f outCorners[]);
-  
-        void DoClear ();
-        void Render ();
-        bool RenderToCubemap (Texture* cubemap);
-
-        SGNode* RaycastTry (Ray ray, float distance, int layerMask);
-        SGNode* RaycastTry2D (Ray ray, float distance, int layerMask);
-        
-        Ray ScreenPointToRay (Vector3f position);
-        Vector3f ScreenToViewportPoint (Vector3f position);
-        Vector3f ScreenToWorldPoint (Vector3f position);
  
         bool ViewportToWorld( const Vector2f& pt, Vector3f& start, Vector3f& dir ) const;
         bool ViewportToWorld( const Vector2f& pt, Vector3f& worldpt ) const;
         bool ViewportToWorld( const Vector2f& pt, Vector3f& worldpt, const Vector3f& planept, const Vector3f& planenormal ) const;
         bool WorldToViewport(const Vector3f& point, Vector2f& viewport_pt ) const;
         
-        Ray ViewportPointToRay (Vector3f position);
-        Vector3f ViewportToScreenPoint (Vector3f position);
-        Vector3f ViewportToWorldPoint (Vector3f position);
-        Vector3f WorldToScreenPoint (Vector3f position);
-        Vector3f WorldToViewportPoint (Vector3f position);
+        Ray ViewportPointToRay (const Vector3f& position);
+        Vector3f ViewportToScreenPoint (const Vector3f& position);
+        Vector3f ViewportToWorldPoint (const Vector3f& position);
+        Vector3f WorldToScreenPoint (const Vector3f& position);
+        Vector3f WorldToViewportPoint (const Vector3f& position);
         
+        SGNode* RaycastTry (const Ray& ray, float distance, int layerMask);
+        SGNode* RaycastTry2D (const Ray& ray, float distance, int layerMask);
+        
+        Ray ScreenPointToRay (const Vector3f& position);
+        Vector3f ScreenToViewportPoint (const Vector3f& position);
+        Vector3f ScreenToWorldPoint (const Vector3f& position);
+        
+        
+        void CopyFrom (const Camera& other);
+        void CalculateFrustumCorners (Rect viewport, float z, Vector3f outCorners[]);
+        
+        void DoClear ();
+        void Render ();
+        bool RenderToCubemap (Texture* cubemap);
+        
+
     public:
         
         bool m_Orthographic;

@@ -69,7 +69,10 @@ namespace pipeline{
     //-----------------------------------------------------------------------------------
     inline Vector4f::Vector4f()
     {
-        
+        this->x = 0.0f;
+        this->y = 0.0f;
+        this->z = 0.0f;
+        this->w = 0.0f;
     }
     
     inline Vector4f::Vector4f(float inx, float iny, float inz, float inw)

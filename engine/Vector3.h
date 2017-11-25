@@ -72,7 +72,9 @@ namespace pipeline{
     //-----------------------------------------------------------------------------------
     inline Vector3f::Vector3f()
     {
-        
+        this->x = 0.0f;
+        this->y = 0.0f;
+        this->z = 0.0f;
     }
 
     inline Vector3f::Vector3f(float inx, float iny, float inz)

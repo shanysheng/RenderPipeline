@@ -23,6 +23,7 @@ namespace pipeline{
         static const Ray zero;
 
     public:
+        Ray();
         Ray(float inx, float iny);
         Ray(const Ray& v);
         
@@ -69,6 +70,12 @@ namespace pipeline{
     };
     
     //-----------------------------------------------------------------------------------
+    inline Ray::Ray()
+    {
+        this->x = 0.0f;
+        this->y = 0.0f;
+    }
+    
     inline Ray::Ray(float inx, float iny)
     {
         this->x = inx;

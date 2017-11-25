@@ -38,7 +38,6 @@ namespace pipeline {
     {
         m_TextureID = id;
     }
-    
 }
 
 #endif
