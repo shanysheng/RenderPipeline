@@ -11,6 +11,7 @@
 
 namespace pipeline
 {
+    const float C_PI = 3.1415926f;
     class Mathf
     {
     public:
@@ -19,6 +20,11 @@ namespace pipeline
         {
             T temp = value<minv ? minv : value;
             return temp<maxv ? temp : maxv;
+        }
+        
+        static inline float Deg2Rad (float deg)
+        {
+            return deg / 360.0f * 2.0f * C_PI;
         }
     };
 }
