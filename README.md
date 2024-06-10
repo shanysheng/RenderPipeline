@@ -1,10 +1,9 @@
-# RenderPipeline - a lightweight Unity3D Runtime
+# RenderPipeline 
 RenderPipeline is an opensource implementation of book "Real-Time Graphics Rendering Engine"(《实时图形绘制引擎技术》) framework and using bgfx as rendering API. RenderPipeline's goal is to run as a lightweight Unity3D Runtime. 
 
 
 # Overview
-* asset: unity to json
-* graphic: bgfx
+* graphic: vulkan
 * framework: render pipeline
 
 -----------------------------------------------------------------------
