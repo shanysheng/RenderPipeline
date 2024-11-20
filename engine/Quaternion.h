@@ -22,10 +22,10 @@ namespace pipeline{
     public:
         Quaternionf () ;
         Quaternionf (float inX, float inY, float inZ, float inW);
-        Quaternionf& operator=(const Quaternionf& Other);
+        //Quaternionf& operator=(const Quaternionf& Other);
         void Set (float inX, float inY, float inZ, float inW);
         void Set (const Quaternionf& aQuat);
-  
+  /*
         Quaternionf operator+(const Quaternionf& rhs) const;
         Quaternionf operator+=(const Quaternionf& rhs);
         Quaternionf operator-(const Quaternionf& rhs) const;
@@ -44,14 +44,14 @@ namespace pipeline{
         
         void Normalize();
         void Inverse ();
-        
-        static Quaternionf identity ();
-        static Quaternionf Normalize(const Quaternionf& q);
-        static Quaternionf Inverse (const Quaternionf& q);
-        static Vector3f QuaternionToEuler (const Quaternionf& quat);
-        static Quaternionf EulerToQuaternion (const Vector3f& euler);
-        static void QuaternionToMatrix (const Quaternionf& q, Matrix4x4f& m);
-        static void MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q);
+        */
+        //static Quaternionf identity ();
+        //static Quaternionf Normalize(const Quaternionf& q);
+        //static Quaternionf Inverse (const Quaternionf& q);
+        //static Vector3f QuaternionToEuler (const Quaternionf& quat);
+        //static Quaternionf EulerToQuaternion (const Vector3f& euler);
+        //static void QuaternionToMatrix (const Quaternionf& q, Matrix4x4f& m);
+        //static void MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q);
     };
     
     inline Quaternionf::Quaternionf ()
@@ -64,10 +64,10 @@ namespace pipeline{
         
     }
     
-    inline Quaternionf::Quaternionf& operator=(const Quaternionf& Other)
-    {
-        
-    }
+    //inline Quaternionf::Quaternionf& operator=(const Quaternionf& Other)
+    //{
+    //    
+    //}
     
     inline void Quaternionf::Set (float inX, float inY, float inZ, float inW)
     {
@@ -78,134 +78,134 @@ namespace pipeline{
     {
         
     }
-    
-    
-    inline Quaternionf Quaternionf::operator+(const Quaternionf& rhs) const
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator+=(const Quaternionf& rhs)
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator-(const Quaternionf& rhs) const
-    {
-        
-    }
-    
-    inline bool Quaternionf::Equals(const Quaternionf& rhs) const
-    {
-        
-    }
-    
-    inline bool Quaternionf::IsIdentity(float tolerance) const
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator-=(const Quaternionf& rhs)
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator*(const Quaternionf& rhs) const
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator*=(const Quaternionf& rhs)
-    {
-        
-    }
-    
-    inline Vector3f Quaternionf::operator*(const Vector3f& vec) const
-    {
-        
-    }
-    
-    inline Matrix4x4f Quaternionf::operator*(const Matrix4x4f& mat) const
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator*=(const float scale)
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator*(const float scale) const
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator/=(const float scale)
-    {
-        
-    }
-    
-    inline Quaternionf Quaternionf::operator/(const float scale) const
-    {
-        
-    }
-    
-    inline bool Quaternionf::operator==(const Quaternionf& rhs) const
-    {
-        
-    }
-    
-    inline bool Quaternionf::operator!=(const Quaternionf& rhs) const
-    {
-        
-    }
-    
-    
-    inline void Quaternionf::Normalize()
-    {
-        
-    }
-    
-    inline void Quaternionf::Inverse ()
-    {
-        
-    }
-    
-    
-    inline static Quaternionf Quaternionf::identity ()
-    {
-        
-    }
-    
-    inline static Quaternionf Quaternionf::Normalize(const Quaternionf& q)
-    {
-        
-    }
-    
-    inline static Quaternionf Quaternionf::Inverse (const Quaternionf& q)
-    {
-        
-    }
-    
-    inline static Vector3f Quaternionf::QuaternionToEuler (const Quaternionf& quat)
-    {
-        
-    }
-    
-    inline static Quaternionf Quaternionf::EulerToQuaternion (const Vector3f& euler)
-    {
-        
-    }
-    
-    inline static void Quaternionf::QuaternionToMatrix (const Quaternionf& q, Matrix4x4f& m)
-    {
-        
-    }
-    
-    inline static void Quaternionf::MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q)
-    {
-        
-    }
-    
+    //
+    //
+    //inline Quaternionf Quaternionf::operator+(const Quaternionf& rhs) const
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator+=(const Quaternionf& rhs)
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator-(const Quaternionf& rhs) const
+    //{
+    //    
+    //}
+    //
+    ////inline bool Quaternionf::Equals(const Quaternionf& rhs) const
+    ////{
+    ////    
+    ////}
+    //
+    //inline bool Quaternionf::IsIdentity(float tolerance) const
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator-=(const Quaternionf& rhs)
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator*(const Quaternionf& rhs) const
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator*=(const Quaternionf& rhs)
+    //{
+    //    
+    //}
+    //
+    //inline Vector3f Quaternionf::operator*(const Vector3f& vec) const
+    //{
+    //    
+    //}
+    //
+    //inline Matrix4x4f Quaternionf::operator*(const Matrix4x4f& mat) const
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator*=(const float scale)
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator*(const float scale) const
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator/=(const float scale)
+    //{
+    //    
+    //}
+    //
+    //inline Quaternionf Quaternionf::operator/(const float scale) const
+    //{
+    //    
+    //}
+    //
+    //inline bool Quaternionf::operator==(const Quaternionf& rhs) const
+    //{
+    //    
+    //}
+    //
+    //inline bool Quaternionf::operator!=(const Quaternionf& rhs) const
+    //{
+    //    
+    //}
+    //
+    //
+    //inline void Quaternionf::Normalize()
+    //{
+    //    
+    //}
+    //
+    //inline void Quaternionf::Inverse ()
+    //{
+    //    
+    //}
+    ///*
+    //
+    //inline static Quaternionf Quaternionf::identity ()
+    //{
+    //    
+    //}
+    //
+    //inline static Quaternionf Quaternionf::Normalize(const Quaternionf& q)
+    //{
+    //    
+    //}
+    //
+    //inline static Quaternionf Quaternionf::Inverse (const Quaternionf& q)
+    //{
+    //    
+    //}
+    //
+    //inline static Vector3f Quaternionf::QuaternionToEuler (const Quaternionf& quat)
+    //{
+    //    
+    //}
+    //
+    //inline static Quaternionf Quaternionf::EulerToQuaternion (const Vector3f& euler)
+    //{
+    //    
+    //}
+    //
+    //inline static void Quaternionf::QuaternionToMatrix (const Quaternionf& q, Matrix4x4f& m)
+    //{
+    //    
+    //}
+    //
+    //inline static void Quaternionf::MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q)
+    //{
+    //    
+    //}*/
+    //
 }
 #endif
