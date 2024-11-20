@@ -2,6 +2,7 @@
 bin/*
 .vs
 Debug/
+Release/
 *.user
 ./Tools/Exporter/Library/
 build/xcode-ios/Pipeline/Pipeline.xcodeproj/xcuserdata/

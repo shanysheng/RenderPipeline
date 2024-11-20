@@ -18,6 +18,8 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
+
+
 /// <summary>
 /// 
 /// </summary>
@@ -31,6 +33,9 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& create
 /// <returns></returns>
 bool checkValidationLayerSupport();
 
-
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pinst"></param>
 void setupDebugMessenger(VkInstance pinst);
 void cleanupDebugMessenger(VkInstance pinst);

@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tutorial02-layres", "exampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tutorial01-instance", "examples\tutorial01-instance\tutorial01-instance.vcxproj", "{1F85CB74-B105-4902-B0AD-2393BE6B8BC9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tutorial03-device", "examples\tutorial03-device\tutorial03-device.vcxproj", "{18FDB3F0-7026-4A0F-8684-59571CE21857}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{1F85CB74-B105-4902-B0AD-2393BE6B8BC9}.Debug|x64.Build.0 = Debug|x64
 		{1F85CB74-B105-4902-B0AD-2393BE6B8BC9}.Release|x64.ActiveCfg = Release|x64
 		{1F85CB74-B105-4902-B0AD-2393BE6B8BC9}.Release|x64.Build.0 = Release|x64
+		{18FDB3F0-7026-4A0F-8684-59571CE21857}.Debug|x64.ActiveCfg = Debug|x64
+		{18FDB3F0-7026-4A0F-8684-59571CE21857}.Debug|x64.Build.0 = Debug|x64
+		{18FDB3F0-7026-4A0F-8684-59571CE21857}.Release|x64.ActiveCfg = Release|x64
+		{18FDB3F0-7026-4A0F-8684-59571CE21857}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

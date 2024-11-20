@@ -46,7 +46,7 @@ void createInstance() {
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
     std::cout << "glfwExtensionCount:"<< glfwExtensionCount<<"\n";
-    for(int i=0; i<glfwExtensionCount; ++i)
+    for(size_t i=0; i<glfwExtensionCount; ++i)
         std::cout << (*(glfwExtensions+i)) << "\n";
 
     createInfo.enabledExtensionCount = glfwExtensionCount;

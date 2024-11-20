@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "APILayer.h"
+#include "Device.h"
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -102,7 +103,7 @@ void enumExtension() {
     std::vector<VkExtensionProperties> extensions(extensionCount);
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-    std::cout << "available extensions:"<<extensionCount<<"\n";
+    std::cout << "available extensions:" << extensionCount << "\n";
     for (const auto& extension : extensions) {
         std::cout << '\t' << extension.extensionName << '\n';
     }
@@ -114,6 +115,9 @@ void initVulkan() {
 
     createInstance();
     setupDebugMessenger(instance);
+
+    pickPhysicalDevice(instance);
+    createLogicalDevice();
 }
 
 void mainLoop() {
@@ -125,6 +129,7 @@ void mainLoop() {
 
 void cleanup() {
 
+    cleanupLogicalDevice();
     cleanupDebugMessenger(instance);
 
     vkDestroyInstance(instance, nullptr);
@@ -135,7 +140,7 @@ void cleanup() {
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::cout << "Hello vulkan world!\n";
 
     enumExtension();
 
