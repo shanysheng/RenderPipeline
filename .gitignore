@@ -1,5 +1,5 @@
 .vscode/*
-.vs/*
+.vs
 Debug/
 *.user
 ./Tools/Exporter/Library/
