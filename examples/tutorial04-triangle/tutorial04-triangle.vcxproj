@@ -89,13 +89,21 @@
   <ItemGroup>
     <ClCompile Include="APILayer.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Instance.cpp" />
+    <ClCompile Include="ShaderModule.cpp" />
+    <ClCompile Include="Swapchain.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
+    <ClCompile Include="VulkanCommon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="APILayer.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Instance.h" />
+    <ClInclude Include="ShaderModule.h" />
+    <ClInclude Include="Swapchain.h" />
+    <ClInclude Include="VulkanCommon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

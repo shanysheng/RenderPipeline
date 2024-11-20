@@ -11,6 +11,8 @@
 
 #include "APILayer.h"
 #include "Device.h"
+#include "Swapchain.h"
+
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -115,9 +117,11 @@ void initVulkan() {
 
     createInstance();
     setupDebugMessenger(instance);
+    createSurface(instance, window);
 
     pickPhysicalDevice(instance);
     createLogicalDevice();
+    createSwapChain(window, physicalDevice, logicaldevice);
 }
 
 void mainLoop() {
@@ -129,9 +133,13 @@ void mainLoop() {
 
 void cleanup() {
 
+    vkDestroySwapchainKHR(logicaldevice, swapChain, nullptr);
+
     cleanupLogicalDevice();
     cleanupDebugMessenger(instance);
+    //cleanupSurface(instance, logicaldevice);
 
+    vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
 
     glfwDestroyWindow(window);
