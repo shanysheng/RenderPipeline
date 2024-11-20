@@ -1,0 +1,49 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Dev\\misc\\RenderPipeline\\examples\\tutorial02-layres\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{BD090524-02DB-4F87-AAC9-969A889260C0}|tutorial02-layres.vcxproj|E:\\Dev\\misc\\RenderPipeline\\examples\\tutorial02-layres\\tutorial02-layres.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BD090524-02DB-4F87-AAC9-969A889260C0}|tutorial02-layres.vcxproj|solutionrelative:tutorial02-layres.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{c9c0ae26-aa77-11d2-b3f0-0000f87570ee}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "tutorial02-layres.cpp",
+              "DocumentMoniker": "E:\\Dev\\misc\\RenderPipeline\\examples\\tutorial02-layres\\tutorial02-layres.cpp",
+              "RelativeDocumentMoniker": "tutorial02-layres.cpp",
+              "ToolTip": "E:\\Dev\\misc\\RenderPipeline\\examples\\tutorial02-layres\\tutorial02-layres.cpp",
+              "RelativeToolTip": "tutorial02-layres.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-11-20T03:53:19.843Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
