@@ -17,4 +17,7 @@ void createRenderPass(VkDevice plogicaldevice, VkFormat swapimageformat);
 
 void createGraphicsPipeline(VkDevice plogicaldevice);
 
+void recordCommandBuffer(VkRenderPass prenderPass, VkPipeline pgraphicsPipeline, VkFramebuffer pFramebuffer, VkExtent2D renderExtent, VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+
 VkShaderModule createShaderModule(VkDevice plogicaldevice, const std::vector<char>& code);
