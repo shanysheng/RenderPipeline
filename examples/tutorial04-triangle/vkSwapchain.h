@@ -23,9 +23,12 @@ extern VkSwapchainKHR swapChain;
 extern std::vector<VkImage> swapChainImages;
 extern VkFormat swapChainImageFormat;
 extern VkExtent2D swapChainExtent;
+extern std::vector<VkImageView> swapChainImageViews;
+extern std::vector<VkFramebuffer> swapChainFramebuffers;
 
 
-void createSwapChain(GLFWwindow* pwindow, VkPhysicalDevice pphysicalDev, VkDevice logicaldevice);
+void createSwapChain(GLFWwindow* pwindow, VkPhysicalDevice pphysicalDev, VkDevice plogicaldevice);
+void createImageViews(VkDevice plogicaldevice);
 
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
@@ -35,5 +38,7 @@ VkExtent2D chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR&
 
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 
+void createFramebuffers(VkDevice plogicaldevice, VkRenderPass prenderPass);
+
 void createSurface(VkInstance pinst, GLFWwindow* pwindow);
-void cleanupSurface(VkInstance pinst, VkDevice logicaldevice);
+void cleanupSurface(VkInstance pinst, VkDevice plogicaldevice);

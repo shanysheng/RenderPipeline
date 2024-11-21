@@ -87,23 +87,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="APILayer.cpp" />
-    <ClCompile Include="Device.cpp" />
-    <ClCompile Include="GraphicsPipeline.cpp" />
-    <ClCompile Include="Instance.cpp" />
-    <ClCompile Include="ShaderModule.cpp" />
-    <ClCompile Include="Swapchain.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
-    <ClCompile Include="VulkanCommon.cpp" />
+    <ClCompile Include="vkCommand.cpp" />
+    <ClCompile Include="vkCommon.cpp" />
+    <ClCompile Include="vkDevice.cpp" />
+    <ClCompile Include="vkFixedFunctions.cpp" />
+    <ClCompile Include="vkGraphicsPipeline.cpp" />
+    <ClCompile Include="vkInstance.cpp" />
+    <ClCompile Include="vkLayer.cpp" />
+    <ClCompile Include="vkShaderModule.cpp" />
+    <ClCompile Include="vkSwapchain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="APILayer.h" />
-    <ClInclude Include="Device.h" />
-    <ClInclude Include="GraphicsPipeline.h" />
-    <ClInclude Include="Instance.h" />
-    <ClInclude Include="ShaderModule.h" />
-    <ClInclude Include="Swapchain.h" />
-    <ClInclude Include="VulkanCommon.h" />
+    <ClInclude Include="vkCommand.h" />
+    <ClInclude Include="vkCommon.h" />
+    <ClInclude Include="vkDevice.h" />
+    <ClInclude Include="vkFixedFunctions.h" />
+    <ClInclude Include="vkGraphicsPipeline.h" />
+    <ClInclude Include="vkInstance.h" />
+    <ClInclude Include="vkLayer.h" />
+    <ClInclude Include="vkShaderModule.h" />
+    <ClInclude Include="vkSwapchain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

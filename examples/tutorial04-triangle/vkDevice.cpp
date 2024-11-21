@@ -1,5 +1,5 @@
-#include "Device.h"
-#include "Swapchain.h"
+#include "vkDevice.h"
+#include "vkSwapchain.h"
 
 
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
@@ -156,6 +156,4 @@ void createLogicalDevice() {
 }
 
 void cleanupLogicalDevice() {
-
-    vkDestroyDevice(logicaldevice, nullptr);
 }

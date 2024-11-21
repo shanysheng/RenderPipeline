@@ -9,13 +9,17 @@
 #include <cstdlib>
 #include <vector>
 
-#include "APILayer.h"
-#include "Device.h"
-#include "Swapchain.h"
-
+#include "vkLayer.h"
+#include "vkDevice.h"
+#include "vkSwapchain.h"
+#include "vkGraphicsPipeline.h"
+#include "vkCommand.h"
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
+
+const int MAX_FRAMES_IN_FLIGHT = 2;
+
 
 GLFWwindow* window = nullptr;
 VkInstance instance = nullptr;
@@ -122,6 +126,14 @@ void initVulkan() {
     pickPhysicalDevice(instance);
     createLogicalDevice();
     createSwapChain(window, physicalDevice, logicaldevice);
+    createImageViews(logicaldevice);
+
+    createRenderPass(logicaldevice, swapChainImageFormat);
+    createGraphicsPipeline(logicaldevice);
+    createFramebuffers(logicaldevice, renderPass);
+
+    //createCommandPool();
+    //createCommandBuffer();
 }
 
 void mainLoop() {
@@ -132,10 +144,23 @@ void mainLoop() {
 }
 
 void cleanup() {
+    //vkDestroyCommandPool(logicaldevice, commandPool, nullptr);
+
+    for (auto framebuffer : swapChainFramebuffers) {
+        vkDestroyFramebuffer(logicaldevice, framebuffer, nullptr);
+    }
+
+    vkDestroyPipeline(logicaldevice, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(logicaldevice, pipelineLayout, nullptr);
+    vkDestroyRenderPass(logicaldevice, renderPass, nullptr);
+
+    for (auto imageView : swapChainImageViews) {
+        vkDestroyImageView(logicaldevice, imageView, nullptr);
+    }
 
     vkDestroySwapchainKHR(logicaldevice, swapChain, nullptr);
+    vkDestroyDevice(logicaldevice, nullptr);
 
-    cleanupLogicalDevice();
     cleanupDebugMessenger(instance);
     //cleanupSurface(instance, logicaldevice);
 
@@ -143,6 +168,7 @@ void cleanup() {
     vkDestroyInstance(instance, nullptr);
 
     glfwDestroyWindow(window);
+
     glfwTerminate();
 }
 

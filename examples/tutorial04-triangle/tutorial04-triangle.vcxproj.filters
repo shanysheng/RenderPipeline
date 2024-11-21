@@ -18,48 +18,60 @@
     <ClCompile Include="tutorial04-triangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="APILayer.cpp">
+    <ClCompile Include="vkCommon.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Device.cpp">
+    <ClCompile Include="vkDevice.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Instance.cpp">
+    <ClCompile Include="vkFixedFunctions.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Swapchain.cpp">
+    <ClCompile Include="vkGraphicsPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderModule.cpp">
+    <ClCompile Include="vkInstance.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPipeline.cpp">
+    <ClCompile Include="vkLayer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanCommon.cpp">
+    <ClCompile Include="vkShaderModule.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkSwapchain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="APILayer.h">
+    <ClInclude Include="vkCommon.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Device.h">
+    <ClInclude Include="vkDevice.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Instance.h">
+    <ClInclude Include="vkFixedFunctions.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Swapchain.h">
+    <ClInclude Include="vkGraphicsPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderModule.h">
+    <ClInclude Include="vkInstance.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPipeline.h">
+    <ClInclude Include="vkLayer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanCommon.h">
+    <ClInclude Include="vkShaderModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkSwapchain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkCommand.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
