@@ -97,7 +97,6 @@
     <ClCompile Include="vkLayer.cpp" />
     <ClCompile Include="vkShaderModule.cpp" />
     <ClCompile Include="vkSwapchain.cpp" />
-    <ClCompile Include="vkWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseApplicaiton.h" />
@@ -109,7 +108,6 @@
     <ClInclude Include="vkLayer.h" />
     <ClInclude Include="vkShaderModule.h" />
     <ClInclude Include="vkSwapchain.h" />
-    <ClInclude Include="vkWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

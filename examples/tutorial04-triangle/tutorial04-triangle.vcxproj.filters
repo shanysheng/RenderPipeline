@@ -42,9 +42,6 @@
     <ClCompile Include="vkContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkWindow.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="baseApplicaiton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -72,9 +69,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vkContext.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkWindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="baseApplicaiton.h">

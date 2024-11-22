@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "vkContext.h"
-#include "vkWindow.h"
 #include "vkInstance.h"
 #include "vkLayer.h"
 #include "vkDevice.h"
