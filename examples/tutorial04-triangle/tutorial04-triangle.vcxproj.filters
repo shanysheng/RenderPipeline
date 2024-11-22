@@ -18,13 +18,7 @@
     <ClCompile Include="tutorial04-triangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkCommon.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="vkDevice.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkFixedFunctions.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="vkGraphicsPipeline.cpp">
@@ -45,15 +39,12 @@
     <ClCompile Include="vkCommand.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="vkContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vkCommon.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="vkDevice.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkFixedFunctions.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vkGraphicsPipeline.h">
@@ -72,6 +63,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vkCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

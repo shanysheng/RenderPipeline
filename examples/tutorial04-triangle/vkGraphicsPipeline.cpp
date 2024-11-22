@@ -1,9 +1,6 @@
 #include "vkGraphicsPipeline.h"
 
 
-VkRenderPass renderPass;
-VkPipelineLayout pipelineLayout;
-VkPipeline graphicsPipeline;
 
 static std::vector<char> readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
@@ -24,9 +21,9 @@ static std::vector<char> readFile(const std::string& filename) {
 }
 
 
-void createRenderPass(VkDevice plogicaldevice, VkFormat swapimageformat) {
+void createRenderPass(vkContext& contextref) {
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = swapimageformat;
+    colorAttachment.format = contextref.swapChainImageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -61,18 +58,18 @@ void createRenderPass(VkDevice plogicaldevice, VkFormat swapimageformat) {
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies = &dependency;
 
-    if (vkCreateRenderPass(plogicaldevice, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+    if (vkCreateRenderPass(contextref.logicaldevice, &renderPassInfo, nullptr, &contextref.renderPass) != VK_SUCCESS) {
         throw std::runtime_error("failed to create render pass!");
     }
 }
 
 
-void createGraphicsPipeline(VkDevice plogicaldevice) {
+void createGraphicsPipeline(vkContext& contextref) {
     auto vertShaderCode = readFile("shaders/vert.spv");
     auto fragShaderCode = readFile("shaders/frag.spv");
 
-    VkShaderModule vertShaderModule = createShaderModule(plogicaldevice, vertShaderCode);
-    VkShaderModule fragShaderModule = createShaderModule(plogicaldevice, fragShaderCode);
+    VkShaderModule vertShaderModule = createShaderModule(contextref.logicaldevice, vertShaderCode);
+    VkShaderModule fragShaderModule = createShaderModule(contextref.logicaldevice, fragShaderCode);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -147,7 +144,7 @@ void createGraphicsPipeline(VkDevice plogicaldevice) {
     pipelineLayoutInfo.setLayoutCount = 0;
     pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-    if (vkCreatePipelineLayout(plogicaldevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &contextref.pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
     }
 
@@ -162,17 +159,17 @@ void createGraphicsPipeline(VkDevice plogicaldevice) {
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.layout = pipelineLayout;
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.layout = contextref.pipelineLayout;
+    pipelineInfo.renderPass = contextref.renderPass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(plogicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &contextref.graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
-    vkDestroyShaderModule(plogicaldevice, fragShaderModule, nullptr);
-    vkDestroyShaderModule(plogicaldevice, vertShaderModule, nullptr);
+    vkDestroyShaderModule(contextref.logicaldevice, fragShaderModule, nullptr);
+    vkDestroyShaderModule(contextref.logicaldevice, vertShaderModule, nullptr);
 }
 
 

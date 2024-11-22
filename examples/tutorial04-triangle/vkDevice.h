@@ -13,10 +13,7 @@
 #include <set>
 
 #include "vkLayer.h"
-
-extern VkPhysicalDevice physicalDevice;
-extern VkDevice logicaldevice;
-extern VkQueue graphicsQueue;
+#include "vkContext.h"
 
 
 struct QueueFamilyIndices {
@@ -33,19 +30,17 @@ struct QueueFamilyIndices {
 /// 
 /// </summary>
 /// <param name="pinst"></param>
-void pickPhysicalDevice(VkInstance pinst);
+void pickPhysicalDevice(vkContext& contextref);
 
 /// <summary>
 /// 
 /// </summary>
 /// <param name="device"></param>
 /// <returns></returns>
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev);
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 
 
 /// <summary>
 /// 
 /// </summary>
-void createLogicalDevice();
-void cleanupLogicalDevice();
-
+void createLogicalDevice(vkContext& contextref);

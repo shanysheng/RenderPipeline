@@ -6,28 +6,69 @@
 #include <algorithm>
 
 
-VkSurfaceKHR surface = nullptr;
-VkQueue presentQueue = nullptr;
-
-VkSwapchainKHR swapChain;
-std::vector<VkImage> swapChainImages;
-VkFormat swapChainImageFormat;
-VkExtent2D swapChainExtent;
-std::vector<VkImageView> swapChainImageViews;
-std::vector<VkFramebuffer> swapChainFramebuffers;
-
-void createSurface(VkInstance pinst, GLFWwindow* pwindow) {
-    if (glfwCreateWindowSurface(pinst, pwindow, nullptr, &surface) != VK_SUCCESS) {
+void createSurface(vkContext& contextref) {
+    if (glfwCreateWindowSurface(contextref.instance, contextref.window, nullptr, &contextref.surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface!");
     }
 }
 
-void createSwapChain(GLFWwindow* pwindow, VkPhysicalDevice pphysicalDev, VkDevice plogicaldevice) {
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(pphysicalDev, surface);
+void createImageViews(vkContext& contextref) {
+    contextref.swapChainImageViews.resize(contextref.swapChainImages.size());
+
+    for (size_t i = 0; i < contextref.swapChainImages.size(); i++) {
+        VkImageViewCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        createInfo.image = contextref.swapChainImages[i];
+        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        createInfo.format = contextref.swapChainImageFormat;
+        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        createInfo.subresourceRange.baseMipLevel = 0;
+        createInfo.subresourceRange.levelCount = 1;
+        createInfo.subresourceRange.baseArrayLayer = 0;
+        createInfo.subresourceRange.layerCount = 1;
+
+        if (vkCreateImageView(contextref.logicaldevice, &createInfo, nullptr, &contextref.swapChainImageViews[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create image views!");
+        }
+    }
+}
+
+
+void createFramebuffers(vkContext& contextref) {
+    contextref.swapChainFramebuffers.resize(contextref.swapChainImageViews.size());
+
+    for (size_t i = 0; i < contextref.swapChainImageViews.size(); i++) {
+        VkImageView attachments[] = {
+            contextref.swapChainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = contextref.renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = contextref.swapChainExtent.width;
+        framebufferInfo.height = contextref.swapChainExtent.height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(contextref.logicaldevice, &framebufferInfo, nullptr, &contextref.swapChainFramebuffers[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create framebuffer!");
+        }
+    }
+}
+
+
+
+void createSwapChain(vkContext& contextref) {
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(contextref.physicalDevice, contextref.surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = chooseSwapExtent(pwindow, swapChainSupport.capabilities);
+    VkExtent2D extent = chooseSwapExtent(contextref.window, swapChainSupport.capabilities);
 
     std::cout << "extent width:" << extent.width << ", height:" << extent.height << std::endl;
 
@@ -38,7 +79,7 @@ void createSwapChain(GLFWwindow* pwindow, VkPhysicalDevice pphysicalDev, VkDevic
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = surface;
+    createInfo.surface = contextref.surface;
 
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
@@ -47,7 +88,7 @@ void createSwapChain(GLFWwindow* pwindow, VkPhysicalDevice pphysicalDev, VkDevic
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = findQueueFamilies(pphysicalDev);
+    QueueFamilyIndices indices = findQueueFamilies(contextref.physicalDevice, contextref.surface);
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
     if (indices.graphicsFamily != indices.presentFamily) {
@@ -66,16 +107,17 @@ void createSwapChain(GLFWwindow* pwindow, VkPhysicalDevice pphysicalDev, VkDevic
 
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(plogicaldevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+    if (vkCreateSwapchainKHR(contextref.logicaldevice, &createInfo, nullptr, &contextref.swapChain) != VK_SUCCESS) {
         throw std::runtime_error("failed to create swap chain!");
     }
 
-    vkGetSwapchainImagesKHR(plogicaldevice, swapChain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(plogicaldevice, swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(contextref.logicaldevice, contextref.swapChain, &imageCount, nullptr);
 
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
+    contextref.swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(contextref.logicaldevice, contextref.swapChain, &imageCount, contextref.swapChainImages.data());
+
+    contextref.swapChainImageFormat = surfaceFormat.format;
+    contextref.swapChainExtent = extent;
 }
 
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
@@ -142,55 +184,3 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pphysicalDev, VkS
     return details;
 }
 
-
-void createImageViews(VkDevice plogicaldevice) {
-    swapChainImageViews.resize(swapChainImages.size());
-
-    for (size_t i = 0; i < swapChainImages.size(); i++) {
-        VkImageViewCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        createInfo.image = swapChainImages[i];
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.format = swapChainImageFormat;
-        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        createInfo.subresourceRange.baseMipLevel = 0;
-        createInfo.subresourceRange.levelCount = 1;
-        createInfo.subresourceRange.baseArrayLayer = 0;
-        createInfo.subresourceRange.layerCount = 1;
-
-        if (vkCreateImageView(plogicaldevice, &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create image views!");
-        }
-    }
-}
-
-
-void createFramebuffers(VkDevice plogicaldevice, VkRenderPass prenderPass) {
-    swapChainFramebuffers.resize(swapChainImageViews.size());
-
-    for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-        VkImageView attachments[] = {
-            swapChainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo{};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = prenderPass;
-        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = swapChainExtent.width;
-        framebufferInfo.height = swapChainExtent.height;
-        framebufferInfo.layers = 1;
-
-        if (vkCreateFramebuffer(plogicaldevice, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create framebuffer!");
-        }
-    }
-}
-
-void cleanupSurface(VkInstance pinst, VkDevice plogicaldevice) {
-}

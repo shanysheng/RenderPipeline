@@ -5,10 +5,8 @@
 
 #include <iostream>
 
-extern VkCommandPool commandPool;
-extern VkCommandBuffer commandBuffer;
+#include "vkContext.h"
 
 
-
-void createCommandPool(VkDevice plogicaldevice);
-void createCommandBuffer(VkDevice plogicaldevice);
+void createCommandPool(vkContext& contextref);
+void createCommandBuffer(vkContext& contextref);

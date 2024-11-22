@@ -2,13 +2,7 @@
 #include "vkSwapchain.h"
 
 
-VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-VkDevice logicaldevice;
-VkQueue graphicsQueue;
-
-
-
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev) {
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface) {
     QueueFamilyIndices indices;
 
     uint32_t queueFamilyCount = 0;
@@ -29,7 +23,7 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev) {
         }
 
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(pphysicalDev, i, surface, &presentSupport);
+        vkGetPhysicalDeviceSurfaceSupportKHR(pphysicalDev, i, psurface, &presentSupport);
 
         if (presentSupport) {
             indices.presentFamily = i;
@@ -62,14 +56,14 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice pphysicaldevice) {
     return requiredExtensions.empty();
 }
 
-bool isDeviceSuitable(VkPhysicalDevice pphysicaldevice) {
+bool isDeviceSuitable(VkPhysicalDevice pphysicaldevice, VkSurfaceKHR psurface) {
 
-    QueueFamilyIndices indices = findQueueFamilies(pphysicaldevice);
+    QueueFamilyIndices indices = findQueueFamilies(pphysicaldevice, psurface);
     bool extensionsSupported = checkDeviceExtensionSupport(pphysicaldevice);
 
     bool swapChainAdequate = false;
     if (extensionsSupported) {
-        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(pphysicaldevice, surface);
+        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(pphysicaldevice, psurface);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
 
@@ -77,33 +71,33 @@ bool isDeviceSuitable(VkPhysicalDevice pphysicaldevice) {
 }
 
 
-void pickPhysicalDevice(VkInstance pinst) {
+void pickPhysicalDevice(vkContext& contextref) {
     uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(pinst, &deviceCount, nullptr);
+    vkEnumeratePhysicalDevices(contextref.instance, &deviceCount, nullptr);
 
     if (deviceCount == 0) {
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(pinst, &deviceCount, devices.data());
+    vkEnumeratePhysicalDevices(contextref.instance, &deviceCount, devices.data());
 
     std::cout << "device count:" << deviceCount << std::endl;
     for (const auto& device : devices) {
-        if (isDeviceSuitable(device)) {
-            physicalDevice = device;
+        if (isDeviceSuitable(device, contextref.surface)) {
+            contextref.physicalDevice = device;
             break;
         }
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) {
+    if (contextref.physicalDevice == VK_NULL_HANDLE) {
         throw std::runtime_error("failed to find a suitable GPU!");
     }
 }
 
 
-void createLogicalDevice() {
-    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+void createLogicalDevice(vkContext& contextref) {
+    QueueFamilyIndices indices = findQueueFamilies(contextref.physicalDevice, contextref.surface);
 
     // queue creation infos for graphic queue and present queue 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -147,13 +141,11 @@ void createLogicalDevice() {
         createInfo.enabledLayerCount = 0;
     }
 
-    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicaldevice) != VK_SUCCESS) {
+    if (vkCreateDevice(contextref.physicalDevice, &createInfo, nullptr, &contextref.logicaldevice) != VK_SUCCESS) {
         throw std::runtime_error("failed to create logical device!");
     }
 
-    vkGetDeviceQueue(logicaldevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
-    vkGetDeviceQueue(logicaldevice, indices.presentFamily.value(), 0, &presentQueue);
+    vkGetDeviceQueue(contextref.logicaldevice, indices.graphicsFamily.value(), 0, &contextref.graphicsQueue);
+    vkGetDeviceQueue(contextref.logicaldevice, indices.presentFamily.value(), 0, &contextref.presentQueue);
 }
 
-void cleanupLogicalDevice() {
-}
