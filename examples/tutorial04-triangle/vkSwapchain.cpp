@@ -6,11 +6,7 @@
 #include <algorithm>
 
 
-void createSurface(vkContext& contextref) {
-    if (glfwCreateWindowSurface(contextref.instance, contextref.window, nullptr, &contextref.surface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create window surface!");
-    }
-}
+
 
 void createImageViews(vkContext& contextref) {
     contextref.swapChainImageViews.resize(contextref.swapChainImages.size());

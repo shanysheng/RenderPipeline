@@ -21,7 +21,6 @@ struct SwapChainSupportDetails {
 
 
 
-void createSurface(vkContext& contextref);
 void createImageViews(vkContext& contextref);
 void createFramebuffers(vkContext& contextref);
 void createSwapChain(vkContext& contextref);

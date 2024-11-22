@@ -19,15 +19,15 @@ public:
 
 	}
 
-	GLFWwindow*		window;
-	VkInstance		instance;
+	GLFWwindow*					window;
+	VkInstance					instance;
 
-	VkPhysicalDevice	physicalDevice;
-	VkDevice			logicaldevice;
-	VkQueue				graphicsQueue;
+	VkPhysicalDevice			physicalDevice;
+	VkDevice					logicaldevice;
+	VkQueue						graphicsQueue;
 
-	VkSurfaceKHR		surface;
-	VkQueue				presentQueue;
+	VkSurfaceKHR				surface;
+	VkQueue						presentQueue;
 
 	VkSwapchainKHR				swapChain;
 	std::vector<VkImage>		swapChainImages;

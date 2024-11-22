@@ -9,37 +9,20 @@
 #include <cstdlib>
 #include <vector>
 
+#include "vkContext.h"
+#include "vkWindow.h"
 #include "vkInstance.h"
 #include "vkLayer.h"
 #include "vkDevice.h"
 #include "vkSwapchain.h"
 #include "vkGraphicsPipeline.h"
 #include "vkCommand.h"
-#include "vkContext.h"
-
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
-
-
 
 VkSemaphore imageAvailableSemaphore;
 VkSemaphore renderFinishedSemaphore;
 VkFence inFlightFence;
-
-
-
-void initWindow(vkContext& contextref) {
-
-    glfwInit();
-
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-    contextref.window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-}
-
 
 
 void createSyncObjects(vkContext& contextref) {
@@ -77,7 +60,6 @@ void initVulkan(vkContext& contextref) {
     createCommandBuffer(contextref);
     createSyncObjects(contextref);
 }
-
 
 void drawFrame(vkContext& contextref) {
     vkWaitForFences(contextref.logicaldevice, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
@@ -174,13 +156,10 @@ int main()
 {
     std::cout << "Hello vulkan world!\n";
 
-
     vkContext global_context;
-
 
     initWindow(global_context);
     initVulkan(global_context);
     mainLoop(global_context);
     cleanup(global_context);
-
 }
