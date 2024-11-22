@@ -25,19 +25,19 @@ struct QueueFamilyIndices {
     }
 };
 
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="pinst"></param>
-void pickPhysicalDevice(vkContext& contextref);
-
 /// <summary>
 /// 
 /// </summary>
 /// <param name="device"></param>
 /// <returns></returns>
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
+
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pinst"></param>
+void pickPhysicalDevice(vkContext& contextref);
 
 
 /// <summary>

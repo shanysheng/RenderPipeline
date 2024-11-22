@@ -9,11 +9,10 @@
 
 #include "vkContext.h"
 
-void createRenderPass(vkContext& contextref);
 
 void createGraphicsPipeline(vkContext& contextref);
 
-void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex);
+void createRenderPass(vkContext& contextref);
 
 
-VkShaderModule createShaderModule(VkDevice plogicaldevice, const std::vector<char>& code);
+
