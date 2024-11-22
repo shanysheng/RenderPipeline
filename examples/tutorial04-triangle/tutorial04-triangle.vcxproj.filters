@@ -45,6 +45,9 @@
     <ClCompile Include="vkWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="baseApplicaiton.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vkDevice.h">
@@ -72,6 +75,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vkWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="baseApplicaiton.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

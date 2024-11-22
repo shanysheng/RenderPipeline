@@ -30,5 +30,5 @@
 // 构建VkPresentInfoKHR，指定renderFinishedSemaphore，vkQueuePresentKHR
 
 void createCommandPool(vkContext& contextref);
-void createCommandBuffer(vkContext& contextref);
+void createCommandBuffers(vkContext& contextref);
 void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex);

@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="baseApplicaiton.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
     <ClCompile Include="vkCommand.cpp" />
     <ClCompile Include="vkContext.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="vkWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="baseApplicaiton.h" />
     <ClInclude Include="vkCommand.h" />
     <ClInclude Include="vkContext.h" />
     <ClInclude Include="vkDevice.h" />

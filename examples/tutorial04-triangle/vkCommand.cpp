@@ -16,23 +16,27 @@ void createCommandPool(vkContext& contextref) {
     }
 }
 
-void createCommandBuffer(vkContext& contextref) {
+void createCommandBuffers(vkContext& contextref) {
+    contextref.commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = contextref.commandPool;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
+    allocInfo.commandBufferCount = (uint32_t)contextref.commandBuffers.size();
 
-    if (vkAllocateCommandBuffers(contextref.logicaldevice, &allocInfo, &contextref.commandBuffer) != VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(contextref.logicaldevice, &allocInfo, contextref.commandBuffers.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate command buffers!");
     }
 }
 
 void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex) {
+    VkCommandBuffer commandBuffer = contextref.commandBuffers[contextref.currentFrame];
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(contextref.commandBuffer, &beginInfo) != VK_SUCCESS) {
+    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
         throw std::runtime_error("failed to begin recording command buffer!");
     }
 
@@ -47,29 +51,29 @@ void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex) {
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
 
-    vkCmdBeginRenderPass(contextref.commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    vkCmdBindPipeline(contextref.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, contextref.graphicsPipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, contextref.graphicsPipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(contextref.swapChainExtent.width);
-    viewport.height = static_cast<float>(contextref.swapChainExtent.height);
+    viewport.width = (float)contextref.swapChainExtent.width;
+    viewport.height = (float)contextref.swapChainExtent.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(contextref.commandBuffer, 0, 1, &viewport);
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
     scissor.extent = contextref.swapChainExtent;
-    vkCmdSetScissor(contextref.commandBuffer, 0, 1, &scissor);
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    vkCmdDraw(contextref.commandBuffer, 3, 1, 0, 0);
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
-    vkCmdEndRenderPass(contextref.commandBuffer);
+    vkCmdEndRenderPass(commandBuffer);
 
-    if (vkEndCommandBuffer(contextref.commandBuffer) != VK_SUCCESS) {
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
         throw std::runtime_error("failed to record command buffer!");
     }
 }

@@ -21,6 +21,8 @@
 // graphic pipeline指定fixed pipeline中的状态和shader module
 //
 
+const int MAX_FRAMES_IN_FLIGHT = 2;
+
 
 class vkContext
 {
@@ -29,7 +31,7 @@ public:
 		window = nullptr;
 		instance = nullptr;
 		physicalDevice = VK_NULL_HANDLE;
-
+		currentFrame = 0;
 	}
 
 	virtual ~vkContext() {
@@ -58,7 +60,12 @@ public:
 	VkPipeline					graphicsPipeline;
 
 
-	VkCommandPool				commandPool;
-	VkCommandBuffer				commandBuffer;
+	VkCommandPool					commandPool;
+	std::vector<VkCommandBuffer>	commandBuffers;
+
+	std::vector<VkSemaphore>		imageAvailableSemaphores;
+	std::vector<VkSemaphore>		renderFinishedSemaphores;
+	std::vector<VkFence>			inFlightFences;
+	uint32_t						currentFrame = 0;
 };
 

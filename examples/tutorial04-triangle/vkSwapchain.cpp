@@ -118,8 +118,6 @@ void createSwapChain(vkContext& contextref) {
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
 
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
-
     if (vkCreateSwapchainKHR(contextref.logicaldevice, &createInfo, nullptr, &contextref.swapChain) != VK_SUCCESS) {
         throw std::runtime_error("failed to create swap chain!");
     }
