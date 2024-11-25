@@ -45,6 +45,12 @@
     <ClCompile Include="baseApplicaiton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="vkVertexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vkDevice.h">
@@ -72,6 +78,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="baseApplicaiton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkVertexBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,4 +1,5 @@
 #include "vkLayer.h"
+#include "vkContext.h"
 
 
 VkDebugUtilsMessengerEXT debugMessenger;

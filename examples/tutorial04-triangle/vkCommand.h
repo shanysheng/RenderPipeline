@@ -5,7 +5,8 @@
 
 #include <iostream>
 
-#include "vkContext.h"
+class vkContext;
+
 
 // 渲染过程是异步的，获取swap chain image，执行command buffer，并把结果写入swap chain image，写入完成后可以进行present
 // 这里存在几个问题：

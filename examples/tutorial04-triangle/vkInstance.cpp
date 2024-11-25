@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include "vkContext.h"
 #include "vkLayer.h"
 
 void enumExtension() {

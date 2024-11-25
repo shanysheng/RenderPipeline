@@ -7,8 +7,7 @@
 #include <vector>
 #include <cstring>
 
-#include "vkContext.h"
-
+class vkContext;
 
 void createGraphicsPipeline(vkContext& contextref);
 

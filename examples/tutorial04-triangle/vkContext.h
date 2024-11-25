@@ -4,6 +4,16 @@
 #include <GLFW/glfw3.h>
 
 #include <vector>
+#include <iostream>
+#include <chrono>
+
+#include "vkInstance.h"
+#include "vkLayer.h"
+#include "vkDevice.h"
+#include "vkSwapchain.h"
+#include "vkGraphicsPipeline.h"
+#include "vkCommand.h"
+#include "Model.h"
 
 // 创建vulkan应用所需要的windows
 // 创建vulkan instance实例，可以指定所需要的vulkan实例扩展
@@ -67,5 +77,171 @@ public:
 	std::vector<VkSemaphore>		renderFinishedSemaphores;
 	std::vector<VkFence>			inFlightFences;
 	uint32_t						currentFrame = 0;
+
+
+
+	VkDescriptorSetLayout			descriptorSetLayout;
+
+
+	VkBuffer						vertexBuffer;
+	VkDeviceMemory					vertexBufferMemory;
+	VkBuffer						indexBuffer;
+	VkDeviceMemory					indexBufferMemory;
+
+	std::vector<VkBuffer>			uniformBuffers;
+	std::vector<VkDeviceMemory>		uniformBuffersMemory;
+	std::vector<void*>				uniformBuffersMapped;
+
+	VkDescriptorPool				descriptorPool;
+	std::vector<VkDescriptorSet>	descriptorSets;
+
+
+	void initContext() {
+		createInstance(*this);
+		setupDebugMessenger(this->instance);
+		createSurface(*this);
+
+		pickPhysicalDevice(*this);
+		createLogicalDevice(*this);
+		createSwapChain(*this);
+		createImageViews(*this);
+
+		createRenderPass(*this);
+
+		createDescriptorSetLayout();
+
+		createGraphicsPipeline(*this);
+		createFramebuffers(*this);
+
+		createCommandPool(*this);
+
+		createVertexBuffer(*this, vertices.data(), vertices.size());
+		createIndexBuffer(*this, indices.data(), indices.size());
+		createUniformBuffers(*this, sizeof(UniformBufferObject));
+		createDescriptorPool(*this);
+		createDescriptorSets(*this, sizeof(UniformBufferObject));
+
+		createCommandBuffers(*this);
+		createSyncObjects(*this);
+	}
+
+	void createSurface(vkContext& contextref) {
+		if (glfwCreateWindowSurface(contextref.instance, contextref.window, nullptr, &contextref.surface) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create window surface!");
+		}
+	}
+
+
+
+	void createSyncObjects(vkContext& contextref) {
+		contextref.imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+		contextref.renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+		contextref.inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+
+		VkSemaphoreCreateInfo semaphoreInfo{};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			if (vkCreateSemaphore(contextref.logicaldevice, &semaphoreInfo, nullptr, &contextref.imageAvailableSemaphores[i]) != VK_SUCCESS ||
+				vkCreateSemaphore(contextref.logicaldevice, &semaphoreInfo, nullptr, &contextref.renderFinishedSemaphores[i]) != VK_SUCCESS ||
+				vkCreateFence(contextref.logicaldevice, &fenceInfo, nullptr, &contextref.inFlightFences[i]) != VK_SUCCESS) {
+				throw std::runtime_error("failed to create synchronization objects for a frame!");
+			}
+		}
+	}
+
+
+	void createDescriptorSetLayout() {
+		VkDescriptorSetLayoutBinding uboLayoutBinding{};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(logicaldevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+	}
+
+	void updateUniformBuffer(uint32_t currentImage) {
+		static auto startTime = std::chrono::high_resolution_clock::now();
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+		UniformBufferObject ubo{};
+		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+		ubo.proj[1][1] *= -1;
+
+		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+	}
+
+
+	void cleanContext() {
+		cleanupSwapChain();
+
+		vkDestroyPipeline(logicaldevice, graphicsPipeline, nullptr);
+		vkDestroyPipelineLayout(logicaldevice, pipelineLayout, nullptr);
+
+		vkDestroyRenderPass(logicaldevice, renderPass, nullptr);
+
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			vkDestroyBuffer(logicaldevice, uniformBuffers[i], nullptr);
+			vkFreeMemory(logicaldevice, uniformBuffersMemory[i], nullptr);
+		}
+
+		vkDestroyDescriptorPool(logicaldevice, descriptorPool, nullptr);
+
+		vkDestroyDescriptorSetLayout(logicaldevice, descriptorSetLayout, nullptr);
+
+		vkDestroyBuffer(logicaldevice, indexBuffer, nullptr);
+		vkFreeMemory(logicaldevice, indexBufferMemory, nullptr);
+
+		vkDestroyBuffer(logicaldevice, vertexBuffer, nullptr);
+		vkFreeMemory(logicaldevice, vertexBufferMemory, nullptr);
+
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			vkDestroySemaphore(logicaldevice, renderFinishedSemaphores[i], nullptr);
+			vkDestroySemaphore(logicaldevice, imageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(logicaldevice, inFlightFences[i], nullptr);
+		}
+
+		vkDestroyCommandPool(logicaldevice, commandPool, nullptr);
+
+		vkDestroyDevice(logicaldevice, nullptr);
+
+		cleanupDebugMessenger(instance);
+
+		vkDestroySurfaceKHR(instance, surface, nullptr);
+		vkDestroyInstance(instance, nullptr);
+
+		glfwDestroyWindow(window);
+
+	}
+
+	void cleanupSwapChain() {
+		for (auto framebuffer : swapChainFramebuffers) {
+			vkDestroyFramebuffer(logicaldevice, framebuffer, nullptr);
+		}
+
+		for (auto imageView : swapChainImageViews) {
+			vkDestroyImageView(logicaldevice, imageView, nullptr);
+		}
+
+		vkDestroySwapchainKHR(logicaldevice, swapChain, nullptr);
+	}
+
 };
 

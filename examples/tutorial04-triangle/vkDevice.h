@@ -13,7 +13,8 @@
 #include <set>
 
 #include "vkLayer.h"
-#include "vkContext.h"
+
+class vkContext;
 
 
 struct QueueFamilyIndices {

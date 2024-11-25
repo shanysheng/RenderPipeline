@@ -3,18 +3,17 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+
+
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
+#include <array>
+
 
 #include "vkContext.h"
-#include "vkInstance.h"
-#include "vkLayer.h"
-#include "vkDevice.h"
-#include "vkSwapchain.h"
-#include "vkGraphicsPipeline.h"
-#include "vkCommand.h"
+#include "Model.h"
 
 
 const uint32_t WIDTH = 800;
@@ -31,8 +30,9 @@ public:
     }
 
 private:
-    bool framebufferResized = false;
-    vkContext global_context;
+    bool        framebufferResized = false;
+    vkContext   global_context;
+    Model       m_Model;
 
 
     void initWindow(vkContext& contextref) {
@@ -51,52 +51,11 @@ private:
         app->framebufferResized = true;
     }
 
-    void createSurface(vkContext& contextref) {
-        if (glfwCreateWindowSurface(contextref.instance, contextref.window, nullptr, &contextref.surface) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create window surface!");
-        }
-    }
-
-    void createSyncObjects(vkContext& contextref) {
-        contextref.imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        contextref.renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        contextref.inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            if (vkCreateSemaphore(contextref.logicaldevice, &semaphoreInfo, nullptr, &contextref.imageAvailableSemaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(contextref.logicaldevice, &semaphoreInfo, nullptr, &contextref.renderFinishedSemaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(contextref.logicaldevice, &fenceInfo, nullptr, &contextref.inFlightFences[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create synchronization objects for a frame!");
-            }
-        }
-    }
 
 
     void initVulkan(vkContext& contextref) {
 
-        createInstance(contextref);
-        setupDebugMessenger(contextref.instance);
-        createSurface(contextref);
-
-        pickPhysicalDevice(contextref);
-        createLogicalDevice(contextref);
-        createSwapChain(contextref);
-        createImageViews(contextref);
-
-        createRenderPass(contextref);
-        createGraphicsPipeline(contextref);
-        createFramebuffers(contextref);
-
-        createCommandPool(contextref);
-        createCommandBuffers(contextref);
-        createSyncObjects(contextref);
+        contextref.initContext();
     }
 
     void drawFrame(vkContext& contextref) {
@@ -112,6 +71,9 @@ private:
         else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
+
+        contextref.updateUniformBuffer(contextref.currentFrame);
+
 
         vkResetFences(contextref.logicaldevice, 1, &contextref.inFlightFences[contextref.currentFrame]);
 
@@ -188,30 +150,7 @@ private:
     }
 
     void cleanup(vkContext& contextref) {
-        cleanupSwapChain(contextref);
-
-        vkDestroyPipeline(contextref.logicaldevice, contextref.graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(contextref.logicaldevice, contextref.pipelineLayout, nullptr);
-
-        vkDestroyRenderPass(contextref.logicaldevice, contextref.renderPass, nullptr);
-
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(contextref.logicaldevice, contextref.renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(contextref.logicaldevice, contextref.imageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(contextref.logicaldevice, contextref.inFlightFences[i], nullptr);
-        }
-
-        vkDestroyCommandPool(contextref.logicaldevice, contextref.commandPool, nullptr);
-
-        vkDestroyDevice(contextref.logicaldevice, nullptr);
-
-        cleanupDebugMessenger(contextref.instance);
-
-        vkDestroySurfaceKHR(contextref.instance, contextref.surface, nullptr);
-        vkDestroyInstance(contextref.instance, nullptr);
-
-        glfwDestroyWindow(contextref.window);
-
+        contextref.cleanContext();
         glfwTerminate();
     }
 

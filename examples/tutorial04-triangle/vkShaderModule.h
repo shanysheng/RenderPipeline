@@ -6,6 +6,8 @@
 #include <vector>
 #include <fstream>
 
+class vkContext;
+
 
 std::vector<char> readFile(const std::string& filename);
 

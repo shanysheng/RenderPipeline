@@ -18,6 +18,7 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
+class vkContext;
 
 
 /// <summary>
