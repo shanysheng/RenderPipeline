@@ -33,3 +33,10 @@ class vkContext;
 void createCommandPool(vkContext& contextref);
 void createCommandBuffers(vkContext& contextref);
 void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex);
+
+
+
+VkCommandBuffer beginSingleTimeCommands(vkContext& contextref);
+
+void endSingleTimeCommands(vkContext& contextref, VkCommandBuffer commandBuffer);
+void copyBuffer(vkContext& contextref, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

@@ -7,8 +7,10 @@
 
 
 void createGraphicsPipeline(vkContext& contextref) {
-    auto vertShaderCode = readFile("shaders/ubo_vert.spv");
-    auto fragShaderCode = readFile("shaders/ubo_frag.spv");
+    //auto vertShaderCode = readFile("shaders/ubo_vert.spv");
+    //auto fragShaderCode = readFile("shaders/ubo_frag.spv");
+    auto vertShaderCode = readFile("shaders/texture_vert.spv");
+    auto fragShaderCode = readFile("shaders/texture_frag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(contextref.logicaldevice, vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(contextref.logicaldevice, fragShaderCode);

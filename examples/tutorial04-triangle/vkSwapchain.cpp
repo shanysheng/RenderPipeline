@@ -1,6 +1,7 @@
 #include "vkSwapchain.h"
 #include "vkDevice.h"
 #include "vkContext.h"
+#include "vkTexture.h"
 
 #include <vector>
 #include <limits>
@@ -137,24 +138,7 @@ void createImageViews(vkContext& contextref) {
     contextref.swapChainImageViews.resize(contextref.swapChainImages.size());
 
     for (size_t i = 0; i < contextref.swapChainImages.size(); i++) {
-        VkImageViewCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        createInfo.image = contextref.swapChainImages[i];
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.format = contextref.swapChainImageFormat;
-        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        createInfo.subresourceRange.baseMipLevel = 0;
-        createInfo.subresourceRange.levelCount = 1;
-        createInfo.subresourceRange.baseArrayLayer = 0;
-        createInfo.subresourceRange.layerCount = 1;
-
-        if (vkCreateImageView(contextref.logicaldevice, &createInfo, nullptr, &contextref.swapChainImageViews[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create image views!");
-        }
+        contextref.swapChainImageViews[i] = createImageView(contextref, contextref.swapChainImages[i], contextref.swapChainImageFormat);
     }
 }
 

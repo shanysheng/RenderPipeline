@@ -13,6 +13,9 @@
 #include "vkSwapchain.h"
 #include "vkGraphicsPipeline.h"
 #include "vkCommand.h"
+#include "vkTexture.h"
+
+
 #include "Model.h"
 
 // 创建vulkan应用所需要的windows
@@ -30,6 +33,11 @@
 // frame buffer指定swap chain中的image view -》swap chain对应的image
 // graphic pipeline指定fixed pipeline中的状态和shader module
 //
+
+// VkPipelineLayout，VkPipeline的功能差异
+// VkDescriptorSetLayout， VkDescriptorPool和VkDescriptorSet功能差异
+
+
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -79,9 +87,10 @@ public:
 	uint32_t						currentFrame = 0;
 
 
-
-	VkDescriptorSetLayout			descriptorSetLayout;
-
+	VkImage							textureImage;
+	VkDeviceMemory					textureImageMemory;
+	VkImageView						textureImageView;
+	VkSampler						textureSampler;
 
 	VkBuffer						vertexBuffer;
 	VkDeviceMemory					vertexBufferMemory;
@@ -92,6 +101,7 @@ public:
 	std::vector<VkDeviceMemory>		uniformBuffersMemory;
 	std::vector<void*>				uniformBuffersMapped;
 
+	VkDescriptorSetLayout			descriptorSetLayout;
 	VkDescriptorPool				descriptorPool;
 	std::vector<VkDescriptorSet>	descriptorSets;
 
@@ -114,6 +124,10 @@ public:
 		createFramebuffers(*this);
 
 		createCommandPool(*this);
+
+		createTextureImage(*this);
+		createTextureImageView(*this);
+		createTextureSampler(*this);
 
 		createVertexBuffer(*this, vertices.data(), vertices.size());
 		createIndexBuffer(*this, indices.data(), indices.size());
@@ -163,10 +177,18 @@ public:
 		uboLayoutBinding.pImmutableSamplers = nullptr;
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+		VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
+		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		layoutInfo.pBindings = bindings.data();
 
 		if (vkCreateDescriptorSetLayout(logicaldevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create descriptor set layout!");
@@ -203,6 +225,12 @@ public:
 		}
 
 		vkDestroyDescriptorPool(logicaldevice, descriptorPool, nullptr);
+
+		vkDestroySampler(logicaldevice, textureSampler, nullptr);
+		vkDestroyImageView(logicaldevice, textureImageView, nullptr);
+
+		vkDestroyImage(logicaldevice, textureImage, nullptr);
+		vkFreeMemory(logicaldevice, textureImageMemory, nullptr);
 
 		vkDestroyDescriptorSetLayout(logicaldevice, descriptorSetLayout, nullptr);
 

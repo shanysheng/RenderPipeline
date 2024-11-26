@@ -98,6 +98,7 @@
     <ClCompile Include="vkLayer.cpp" />
     <ClCompile Include="vkShaderModule.cpp" />
     <ClCompile Include="vkSwapchain.cpp" />
+    <ClCompile Include="vkTexture.cpp" />
     <ClCompile Include="vkVertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +112,7 @@
     <ClInclude Include="vkLayer.h" />
     <ClInclude Include="vkShaderModule.h" />
     <ClInclude Include="vkSwapchain.h" />
+    <ClInclude Include="vkTexture.h" />
     <ClInclude Include="vkVertexBuffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
