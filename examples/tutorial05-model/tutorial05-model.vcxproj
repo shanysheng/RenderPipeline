@@ -13,8 +13,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0e357efa-a7ee-406c-8239-53e54cbf0656}</ProjectGuid>
-    <RootNamespace>tutorial04triangle</RootNamespace>
+    <ProjectGuid>{6b28d490-638b-4064-8787-9980df076980}</ProjectGuid>
+    <RootNamespace>tutorial05model</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -89,7 +89,7 @@
   <ItemGroup>
     <ClCompile Include="baseApplicaiton.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="tutorial04-triangle.cpp" />
+    <ClCompile Include="tutorial05-model.cpp" />
     <ClCompile Include="vkCommand.cpp" />
     <ClCompile Include="vkContext.cpp" />
     <ClCompile Include="vkDevice.cpp" />
