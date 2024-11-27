@@ -88,7 +88,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="baseApplicaiton.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="objModel.cpp" />
+    <ClCompile Include="tiny_obj_loader.cc" />
     <ClCompile Include="tutorial05-model.cpp" />
     <ClCompile Include="vkCommand.cpp" />
     <ClCompile Include="vkContext.cpp" />
@@ -103,7 +104,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseApplicaiton.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="objModel.h" />
+    <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="vkCommand.h" />
     <ClInclude Include="vkContext.h" />
     <ClInclude Include="vkDevice.h" />

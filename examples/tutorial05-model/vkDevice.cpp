@@ -85,6 +85,7 @@ bool isDeviceSuitable(VkPhysicalDevice pphysicaldevice, VkSurfaceKHR psurface) {
     vkGetPhysicalDeviceFeatures(pphysicaldevice, &supportedFeatures);
 
     return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+
 }
 
 

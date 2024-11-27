@@ -9,8 +9,6 @@
 
 
 
-
-
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
     for (const auto& availableFormat : availableFormats) {
         if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
@@ -138,7 +136,7 @@ void createImageViews(vkContext& contextref) {
     contextref.swapChainImageViews.resize(contextref.swapChainImages.size());
 
     for (size_t i = 0; i < contextref.swapChainImages.size(); i++) {
-        contextref.swapChainImageViews[i] = createImageView(contextref, contextref.swapChainImages[i], contextref.swapChainImageFormat);
+        contextref.swapChainImageViews[i] = createImageView(contextref, contextref.swapChainImages[i], contextref.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
     }
 }
 
@@ -147,15 +145,16 @@ void createFramebuffers(vkContext& contextref) {
     contextref.swapChainFramebuffers.resize(contextref.swapChainImageViews.size());
 
     for (size_t i = 0; i < contextref.swapChainImageViews.size(); i++) {
-        VkImageView attachments[] = {
-            contextref.swapChainImageViews[i]
+        std::array<VkImageView, 2> attachments = {
+            contextref.swapChainImageViews[i],
+            contextref.depthImageView
         };
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = contextref.renderPass;
-        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        framebufferInfo.pAttachments = attachments.data();
         framebufferInfo.width = contextref.swapChainExtent.width;
         framebufferInfo.height = contextref.swapChainExtent.height;
         framebufferInfo.layers = 1;
@@ -164,4 +163,46 @@ void createFramebuffers(vkContext& contextref) {
             throw std::runtime_error("failed to create framebuffer!");
         }
     }
+}
+
+
+
+VkFormat findSupportedFormat(vkContext& contextref, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    for (VkFormat format : candidates) {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(contextref.physicalDevice, format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+            return format;
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+
+    throw std::runtime_error("failed to find supported format!");
+}
+
+VkFormat findDepthFormat(vkContext& contextref) {
+    return findSupportedFormat(contextref,
+        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
+}
+
+
+
+bool hasStencilComponent(VkFormat format) {
+    return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+}
+
+void createDepthResources(vkContext& contextref) {
+    VkFormat depthFormat = findDepthFormat(contextref);
+
+    createImage(contextref, contextref.swapChainExtent.width, contextref.swapChainExtent.height, depthFormat, 
+                VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                contextref.depthImage, contextref.depthImageMemory);
+
+    contextref.depthImageView = createImageView(contextref, contextref.depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 }

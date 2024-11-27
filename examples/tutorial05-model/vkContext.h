@@ -16,7 +16,7 @@
 #include "vkTexture.h"
 
 
-#include "Model.h"
+#include "objModel.h"
 
 // 创建vulkan应用所需要的windows
 // 创建vulkan instance实例，可以指定所需要的vulkan实例扩展
@@ -86,6 +86,9 @@ public:
 	std::vector<VkFence>			inFlightFences;
 	uint32_t						currentFrame = 0;
 
+	VkImage							depthImage;
+	VkDeviceMemory					depthImageMemory;
+	VkImageView						depthImageView;
 
 	VkImage							textureImage;
 	VkDeviceMemory					textureImageMemory;
@@ -105,6 +108,7 @@ public:
 	VkDescriptorPool				descriptorPool;
 	std::vector<VkDescriptorSet>	descriptorSets;
 
+	objModel						modelData;
 
 	void initContext() {
 		createInstance(*this);
@@ -115,22 +119,22 @@ public:
 		createLogicalDevice(*this);
 		createSwapChain(*this);
 		createImageViews(*this);
-
 		createRenderPass(*this);
-
 		createDescriptorSetLayout();
-
 		createGraphicsPipeline(*this);
-		createFramebuffers(*this);
 
 		createCommandPool(*this);
+		createDepthResources(*this);
+		createFramebuffers(*this);
 
-		createTextureImage(*this);
+		createTextureImage(*this, TEXTURE_PATH);
 		createTextureImageView(*this);
 		createTextureSampler(*this);
 
-		createVertexBuffer(*this, vertices.data(), vertices.size());
-		createIndexBuffer(*this, indices.data(), indices.size());
+		loadModel(this->modelData);
+
+		createVertexBuffer(*this, this->modelData.vertices.data(), this->modelData.vertices.size());
+		createIndexBuffer(*this, this->modelData.indices.data(), this->modelData.indices.size());
 		createUniformBuffers(*this, sizeof(UniformBufferObject));
 		createDescriptorPool(*this);
 		createDescriptorSets(*this, sizeof(UniformBufferObject));
@@ -210,6 +214,21 @@ public:
 		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 	}
 
+	void cleanupSwapChain() {
+		vkDestroyImageView(logicaldevice, depthImageView, nullptr);
+		vkDestroyImage(logicaldevice, depthImage, nullptr);
+		vkFreeMemory(logicaldevice, depthImageMemory, nullptr);
+
+		for (auto framebuffer : swapChainFramebuffers) {
+			vkDestroyFramebuffer(logicaldevice, framebuffer, nullptr);
+		}
+
+		for (auto imageView : swapChainImageViews) {
+			vkDestroyImageView(logicaldevice, imageView, nullptr);
+		}
+
+		vkDestroySwapchainKHR(logicaldevice, swapChain, nullptr);
+	}
 
 	void cleanContext() {
 		cleanupSwapChain();
@@ -259,17 +278,7 @@ public:
 
 	}
 
-	void cleanupSwapChain() {
-		for (auto framebuffer : swapChainFramebuffers) {
-			vkDestroyFramebuffer(logicaldevice, framebuffer, nullptr);
-		}
 
-		for (auto imageView : swapChainImageViews) {
-			vkDestroyImageView(logicaldevice, imageView, nullptr);
-		}
-
-		vkDestroySwapchainKHR(logicaldevice, swapChain, nullptr);
-	}
 
 };
 

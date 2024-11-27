@@ -13,7 +13,7 @@
 
 
 #include "vkContext.h"
-#include "Model.h"
+#include "trangles.h"
 
 
 const uint32_t WIDTH = 800;

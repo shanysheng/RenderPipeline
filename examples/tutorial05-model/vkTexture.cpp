@@ -121,9 +121,9 @@ void transitionImageLayout(vkContext& contextref, VkImage image, VkFormat format
 }
 
 
-void createTextureImage(vkContext& contextref) {
+void createTextureImage(vkContext& contextref, const std::string& image_path) {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    stbi_uc* pixels = stbi_load(image_path.c_str() , &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels) {
@@ -154,13 +154,13 @@ void createTextureImage(vkContext& contextref) {
 }
 
 
-VkImageView createImageView(vkContext& contextref, VkImage image, VkFormat format) {
+VkImageView createImageView(vkContext& contextref, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags) {
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
     viewInfo.format = format;
-    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    viewInfo.subresourceRange.aspectMask = aspectFlags;
     viewInfo.subresourceRange.baseMipLevel = 0;
     viewInfo.subresourceRange.levelCount = 1;
     viewInfo.subresourceRange.baseArrayLayer = 0;
@@ -176,7 +176,7 @@ VkImageView createImageView(vkContext& contextref, VkImage image, VkFormat forma
 
 
 void createTextureImageView(vkContext& contextref) {
-    contextref.textureImageView = createImageView(contextref, contextref.textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+    contextref.textureImageView = createImageView(contextref, contextref.textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 void createTextureSampler(vkContext& contextref) {

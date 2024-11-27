@@ -22,9 +22,12 @@ struct SwapChainSupportDetails {
 
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 
+VkFormat findDepthFormat(vkContext& contextref);
+
 void createSwapChain(vkContext& contextref);
 void createImageViews(vkContext& contextref);
 void createFramebuffers(vkContext& contextref);
+void createDepthResources(vkContext& contextref);
 
 
 

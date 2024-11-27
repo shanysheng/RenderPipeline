@@ -18,6 +18,15 @@
     <ClCompile Include="tutorial04-triangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="baseApplicaiton.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="vkDevice.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -36,26 +45,26 @@
     <ClCompile Include="vkSwapchain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkCommand.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkContext.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="baseApplicaiton.cpp">
+    <ClCompile Include="vkTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="vkVertexBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkTexture.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="trangles.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="baseApplicaiton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="vkDevice.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -74,22 +83,10 @@
     <ClInclude Include="vkSwapchain.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkCommand.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkContext.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="baseApplicaiton.h">
+    <ClInclude Include="vkTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vkVertexBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

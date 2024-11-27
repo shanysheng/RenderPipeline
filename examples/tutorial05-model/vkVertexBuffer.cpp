@@ -50,7 +50,7 @@ void createVertexBuffer(vkContext& contextref, const Vertex* pvertex, size_t ver
     vkFreeMemory(contextref.logicaldevice, stagingBufferMemory, nullptr);
 }
 
-void createIndexBuffer(vkContext& contextref, const uint16_t* pindices, size_t indexCount) {
+void createIndexBuffer(vkContext& contextref, const uint32_t* pindices, size_t indexCount) {
     VkDeviceSize bufferSize = sizeof(pindices[0]) * indexCount;
 
     VkBuffer stagingBuffer;

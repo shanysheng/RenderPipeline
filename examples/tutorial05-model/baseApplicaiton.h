@@ -13,7 +13,7 @@
 
 
 #include "vkContext.h"
-#include "Model.h"
+#include "objModel.h"
 
 
 const uint32_t WIDTH = 800;
@@ -32,7 +32,7 @@ public:
 private:
     bool        framebufferResized = false;
     vkContext   global_context;
-    Model       m_Model;
+    //Model       m_Model;
 
 
     void initWindow(vkContext& contextref) {
@@ -169,6 +169,7 @@ private:
 
         createSwapChain(contextref);
         createImageViews(contextref);
+        createDepthResources(contextref);
         createFramebuffers(contextref);
     }
 
