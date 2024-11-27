@@ -18,5 +18,76 @@
     <ClCompile Include="tutorial06-computershader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="baseApplicaiton.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkCommand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkDevice.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkGraphicsPipeline.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkInstance.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkLayer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkShaderModule.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkSwapchain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vkVertexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="baseApplicaiton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="trangles.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkDevice.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkGraphicsPipeline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkInstance.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkLayer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkShaderModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkSwapchain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vkVertexBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
