@@ -30,45 +30,45 @@ void createBuffer(vkContext& contextref, VkDeviceSize size, VkBufferUsageFlags u
     vkBindBufferMemory(contextref.logicaldevice, buffer, bufferMemory, 0);
 }
 
-void createVertexBuffer(vkContext& contextref, const Vertex* pvertex, size_t vertexCount) {
-    VkDeviceSize bufferSize = sizeof(pvertex[0]) * vertexCount;
-
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-    void* data;
-    vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, pvertex, (size_t)bufferSize);
-    vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
-
-    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.vertexBuffer, contextref.vertexBufferMemory);
-
-    copyBuffer(contextref, stagingBuffer, contextref.vertexBuffer, bufferSize);
-
-    vkDestroyBuffer(contextref.logicaldevice, stagingBuffer, nullptr);
-    vkFreeMemory(contextref.logicaldevice, stagingBufferMemory, nullptr);
-}
-
-void createIndexBuffer(vkContext& contextref, const uint16_t* pindices, size_t indexCount) {
-    VkDeviceSize bufferSize = sizeof(pindices[0]) * indexCount;
-
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-    void* data;
-    vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, pindices, (size_t)bufferSize);
-    vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
-
-    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.indexBuffer, contextref.indexBufferMemory);
-
-    copyBuffer(contextref, stagingBuffer, contextref.indexBuffer, bufferSize);
-
-    vkDestroyBuffer(contextref.logicaldevice, stagingBuffer, nullptr);
-    vkFreeMemory(contextref.logicaldevice, stagingBufferMemory, nullptr);
-}
+//void createVertexBuffer(vkContext& contextref, const Vertex* pvertex, size_t vertexCount) {
+//    VkDeviceSize bufferSize = sizeof(pvertex[0]) * vertexCount;
+//
+//    VkBuffer stagingBuffer;
+//    VkDeviceMemory stagingBufferMemory;
+//    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+//
+//    void* data;
+//    vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+//    memcpy(data, pvertex, (size_t)bufferSize);
+//    vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
+//
+//    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.vertexBuffer, contextref.vertexBufferMemory);
+//
+//    copyBuffer(contextref, stagingBuffer, contextref.vertexBuffer, bufferSize);
+//
+//    vkDestroyBuffer(contextref.logicaldevice, stagingBuffer, nullptr);
+//    vkFreeMemory(contextref.logicaldevice, stagingBufferMemory, nullptr);
+//}
+//
+//void createIndexBuffer(vkContext& contextref, const uint16_t* pindices, size_t indexCount) {
+//    VkDeviceSize bufferSize = sizeof(pindices[0]) * indexCount;
+//
+//    VkBuffer stagingBuffer;
+//    VkDeviceMemory stagingBufferMemory;
+//    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+//
+//    void* data;
+//    vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+//    memcpy(data, pindices, (size_t)bufferSize);
+//    vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
+//
+//    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.indexBuffer, contextref.indexBufferMemory);
+//
+//    copyBuffer(contextref, stagingBuffer, contextref.indexBuffer, bufferSize);
+//
+//    vkDestroyBuffer(contextref.logicaldevice, stagingBuffer, nullptr);
+//    vkFreeMemory(contextref.logicaldevice, stagingBufferMemory, nullptr);
+//}
 
 void createUniformBuffers(vkContext& contextref, VkDeviceSize bufferSize) {
 

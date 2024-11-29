@@ -113,15 +113,15 @@ void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex) {
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 
-    VkBuffer vertexBuffers[] = { contextref.vertexBuffer };
+    VkBuffer vertexBuffers[] = { contextref.m_Model.getVertexBuffer()};
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, contextref.indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(commandBuffer, contextref.m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, contextref.pipelineLayout, 0, 1, &contextref.descriptorSets[contextref.currentFrame], 0, nullptr);
 
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(commandBuffer, contextref.m_Model.getIndiesCount(), 1, 0, 0, 0);
 
     vkCmdEndRenderPass(commandBuffer);
 

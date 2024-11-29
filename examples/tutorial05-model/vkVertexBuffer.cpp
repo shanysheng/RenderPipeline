@@ -32,6 +32,7 @@ void createBuffer(vkContext& contextref, VkDeviceSize size, VkBufferUsageFlags u
 
 void createVertexBuffer(vkContext& contextref, const Vertex* pvertex, size_t vertexCount) {
     VkDeviceSize bufferSize = sizeof(pvertex[0]) * vertexCount;
+    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.vertexBuffer, contextref.vertexBufferMemory);
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -42,8 +43,6 @@ void createVertexBuffer(vkContext& contextref, const Vertex* pvertex, size_t ver
     memcpy(data, pvertex, (size_t)bufferSize);
     vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
 
-    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.vertexBuffer, contextref.vertexBufferMemory);
-
     copyBuffer(contextref, stagingBuffer, contextref.vertexBuffer, bufferSize);
 
     vkDestroyBuffer(contextref.logicaldevice, stagingBuffer, nullptr);
@@ -52,6 +51,7 @@ void createVertexBuffer(vkContext& contextref, const Vertex* pvertex, size_t ver
 
 void createIndexBuffer(vkContext& contextref, const uint32_t* pindices, size_t indexCount) {
     VkDeviceSize bufferSize = sizeof(pindices[0]) * indexCount;
+    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.indexBuffer, contextref.indexBufferMemory);
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -61,8 +61,6 @@ void createIndexBuffer(vkContext& contextref, const uint32_t* pindices, size_t i
     vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
     memcpy(data, pindices, (size_t)bufferSize);
     vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
-
-    createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, contextref.indexBuffer, contextref.indexBufferMemory);
 
     copyBuffer(contextref, stagingBuffer, contextref.indexBuffer, bufferSize);
 

@@ -15,6 +15,8 @@
 #include "vkCommand.h"
 #include "vkTexture.h"
 
+#include "kBuffer.h"
+
 
 #include "trangles.h"
 
@@ -86,16 +88,12 @@ public:
 	std::vector<VkFence>			inFlightFences;
 	uint32_t						currentFrame = 0;
 
+	Model							m_Model;
 
 	VkImage							textureImage;
 	VkDeviceMemory					textureImageMemory;
 	VkImageView						textureImageView;
 	VkSampler						textureSampler;
-
-	VkBuffer						vertexBuffer;
-	VkDeviceMemory					vertexBufferMemory;
-	VkBuffer						indexBuffer;
-	VkDeviceMemory					indexBufferMemory;
 
 	std::vector<VkBuffer>			uniformBuffers;
 	std::vector<VkDeviceMemory>		uniformBuffersMemory;
@@ -129,8 +127,9 @@ public:
 		createTextureImageView(*this);
 		createTextureSampler(*this);
 
-		createVertexBuffer(*this, vertices.data(), vertices.size());
-		createIndexBuffer(*this, indices.data(), indices.size());
+		m_Model.Load(*this);
+		//createVertexBuffer(*this, vertices.data(), vertices.size());
+		//createIndexBuffer(*this, indices.data(), indices.size());
 		createUniformBuffers(*this, sizeof(UniformBufferObject));
 		createDescriptorPool(*this);
 		createDescriptorSets(*this, sizeof(UniformBufferObject));
@@ -233,12 +232,6 @@ public:
 		vkFreeMemory(logicaldevice, textureImageMemory, nullptr);
 
 		vkDestroyDescriptorSetLayout(logicaldevice, descriptorSetLayout, nullptr);
-
-		vkDestroyBuffer(logicaldevice, indexBuffer, nullptr);
-		vkFreeMemory(logicaldevice, indexBufferMemory, nullptr);
-
-		vkDestroyBuffer(logicaldevice, vertexBuffer, nullptr);
-		vkFreeMemory(logicaldevice, vertexBufferMemory, nullptr);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(logicaldevice, renderFinishedSemaphores[i], nullptr);

@@ -89,6 +89,7 @@
   <ItemGroup>
     <ClCompile Include="baseApplicaiton.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
+    <ClCompile Include="kBuffer.cpp" />
     <ClCompile Include="vkCommand.cpp" />
     <ClCompile Include="vkContext.cpp" />
     <ClCompile Include="vkDevice.cpp" />
@@ -103,6 +104,7 @@
   <ItemGroup>
     <ClInclude Include="baseApplicaiton.h" />
     <ClInclude Include="trangles.h" />
+    <ClInclude Include="kBuffer.h" />
     <ClInclude Include="vkCommand.h" />
     <ClInclude Include="vkContext.h" />
     <ClInclude Include="vkDevice.h" />
