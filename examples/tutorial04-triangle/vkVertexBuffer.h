@@ -21,7 +21,3 @@ void createBuffer(vkContext& contextref, VkDeviceSize size, VkBufferUsageFlags u
 //void createIndexBuffer(vkContext& contextref, const uint16_t* pindices, size_t indexCount);
 
 void createUniformBuffers(vkContext& contextref, VkDeviceSize bufferSize);
-
-void createDescriptorPool(vkContext& contextref);
-
-void createDescriptorSets(vkContext& contextref, VkDeviceSize bufferSize);

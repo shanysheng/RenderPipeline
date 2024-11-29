@@ -137,18 +137,6 @@ private:
     }
 
 
-    void cleanupSwapChain(vkContext& contextref) {
-        for (auto framebuffer : contextref.swapChainFramebuffers) {
-            vkDestroyFramebuffer(contextref.logicaldevice, framebuffer, nullptr);
-        }
-
-        for (auto imageView : contextref.swapChainImageViews) {
-            vkDestroyImageView(contextref.logicaldevice, imageView, nullptr);
-        }
-
-        vkDestroySwapchainKHR(contextref.logicaldevice, contextref.swapChain, nullptr);
-    }
-
     void cleanup(vkContext& contextref) {
         contextref.cleanContext();
         glfwTerminate();
@@ -165,7 +153,7 @@ private:
 
         vkDeviceWaitIdle(contextref.logicaldevice);
 
-        cleanupSwapChain(contextref);
+        contextref.cleanupSwapChain();
 
         createSwapChain(contextref);
         createImageViews(contextref);
