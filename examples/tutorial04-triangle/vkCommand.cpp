@@ -86,9 +86,9 @@ void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex) {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = contextref.renderPass;
-    renderPassInfo.framebuffer = contextref.swapChainFramebuffers[imageIndex];
+    renderPassInfo.framebuffer = contextref.m_Swapchain.getFramebuffer(imageIndex);
     renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = contextref.swapChainExtent;
+    renderPassInfo.renderArea.extent = contextref.m_Swapchain.getSwapExtent();
 
     VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
     renderPassInfo.clearValueCount = 1;
@@ -101,15 +101,15 @@ void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex) {
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)contextref.swapChainExtent.width;
-    viewport.height = (float)contextref.swapChainExtent.height;
+    viewport.width = (float)contextref.m_Swapchain.getSwapExtent().width;
+    viewport.height = (float)contextref.m_Swapchain.getSwapExtent().height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
-    scissor.extent = contextref.swapChainExtent;
+    scissor.extent = contextref.m_Swapchain.getSwapExtent();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 

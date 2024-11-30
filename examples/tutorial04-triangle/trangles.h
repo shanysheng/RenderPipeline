@@ -4,7 +4,8 @@
 #include <GLFW/glfw3.h>
 
 
-#include "vkVertexBuffer.h"
+#include "kBuffer.h"
+#include "kTexture.h"
 
 #include <vector>
 #include <array>
@@ -77,11 +78,25 @@ public:
     void Load(vkContext& contextref) {
         m_VertexBuffer.createVertexBuffer(contextref, (const char*)m_Vertex.data(), m_Vertex.size() * sizeof(Vertex));
         m_IndexBuffer.createIndexBuffer(contextref, (const char*)m_Indices.data(), m_Indices.size() * sizeof(uint16_t));
+
+        m_Texture.createTextureImage(contextref);
+        m_Texture.createTextureImageView(contextref);
+        m_Texture.createTextureSampler(contextref);
+    }
+
+    void Unload(vkContext& contextref) {
+
+        m_Texture.cleanupTexture(contextref);
+        m_IndexBuffer.cleanupBuffer(contextref);
+        m_VertexBuffer.cleanupBuffer(contextref);
     }
 
     VkBuffer getVertexBuffer() { return m_VertexBuffer.getBuffer(); }
     VkBuffer getIndexBuffer() { return m_IndexBuffer.getBuffer(); }
     size_t getIndiesCount() { return m_Indices.size(); }
+
+    kTexture& getTexture() { return m_Texture; }
+    const kTexture& getTexture()const { return m_Texture; }
 
 public:
     std::vector<Vertex>     m_Vertex;
@@ -90,5 +105,8 @@ public:
 
     kBuffer     m_VertexBuffer;
     kBuffer     m_IndexBuffer;
+
+    kTexture	m_Texture;
+
 };
 

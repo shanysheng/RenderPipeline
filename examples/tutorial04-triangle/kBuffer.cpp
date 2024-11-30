@@ -2,17 +2,19 @@
 #include "vkContext.h"
 
 kBuffer::kBuffer() {
-    m_pContext = nullptr;
     m_vkBuffer = nullptr;
     m_vkBufferMemory = nullptr;
 }
 
 kBuffer::~kBuffer()
 {
-	vkDestroyBuffer(m_pContext->logicaldevice, m_vkBuffer, nullptr);
-	vkFreeMemory(m_pContext->logicaldevice, m_vkBufferMemory, nullptr);
+
 }
 
+void  kBuffer::cleanupBuffer(vkContext& contextref) {
+    vkDestroyBuffer(contextref.logicaldevice, m_vkBuffer, nullptr);
+    vkFreeMemory(contextref.logicaldevice, m_vkBufferMemory, nullptr);
+}
 
 void kBuffer::createVertexBuffer(vkContext& contextref, const char* pbuffer, size_t buffersize) {
 

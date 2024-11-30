@@ -49,3 +49,18 @@ void pickPhysicalDevice(vkContext& contextref);
 /// 
 /// </summary>
 void createLogicalDevice(vkContext& contextref);
+
+
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
+
+SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
+
+
+void createBuffer(vkContext& contextref, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+VkImageView createImageView(vkContext& contextref, VkImage image, VkFormat format);

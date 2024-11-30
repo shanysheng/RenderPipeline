@@ -42,16 +42,13 @@
     <ClCompile Include="vkShaderModule.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkSwapchain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkTexture.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkVertexBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="kBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kSwapchain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,16 +80,13 @@
     <ClInclude Include="vkShaderModule.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkSwapchain.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkTexture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkVertexBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="kBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kSwapchain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

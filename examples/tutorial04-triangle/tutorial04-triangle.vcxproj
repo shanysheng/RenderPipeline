@@ -88,6 +88,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="baseApplicaiton.cpp" />
+    <ClCompile Include="kSwapchain.cpp" />
+    <ClCompile Include="kTexture.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
     <ClCompile Include="kBuffer.cpp" />
     <ClCompile Include="vkCommand.cpp" />
@@ -97,12 +99,11 @@
     <ClCompile Include="vkInstance.cpp" />
     <ClCompile Include="vkLayer.cpp" />
     <ClCompile Include="vkShaderModule.cpp" />
-    <ClCompile Include="vkSwapchain.cpp" />
-    <ClCompile Include="vkTexture.cpp" />
-    <ClCompile Include="vkVertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseApplicaiton.h" />
+    <ClInclude Include="kSwapchain.h" />
+    <ClInclude Include="kTexture.h" />
     <ClInclude Include="trangles.h" />
     <ClInclude Include="kBuffer.h" />
     <ClInclude Include="vkCommand.h" />
@@ -112,9 +113,6 @@
     <ClInclude Include="vkInstance.h" />
     <ClInclude Include="vkLayer.h" />
     <ClInclude Include="vkShaderModule.h" />
-    <ClInclude Include="vkSwapchain.h" />
-    <ClInclude Include="vkTexture.h" />
-    <ClInclude Include="vkVertexBuffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

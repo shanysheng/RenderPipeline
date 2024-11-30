@@ -10,13 +10,11 @@
 #include "vkInstance.h"
 #include "vkLayer.h"
 #include "vkDevice.h"
-#include "vkSwapchain.h"
 #include "vkGraphicsPipeline.h"
 #include "vkCommand.h"
-#include "vkTexture.h"
 
 #include "kBuffer.h"
-
+#include "kSwapchain.h"
 
 #include "trangles.h"
 
@@ -67,16 +65,17 @@ public:
 	VkQueue						graphicsQueue;
 	VkQueue						presentQueue;
 
-	VkSwapchainKHR				swapChain;
-	std::vector<VkImage>		swapChainImages;
-	VkFormat					swapChainImageFormat;
-	VkExtent2D					swapChainExtent;
-	std::vector<VkImageView>	swapChainImageViews;
-	std::vector<VkFramebuffer>	swapChainFramebuffers;
+	kSwapchain					m_Swapchain;
 
-	VkRenderPass				renderPass;
-	VkPipelineLayout			pipelineLayout;
-	VkPipeline					graphicsPipeline;
+
+
+	VkRenderPass					renderPass;
+	VkPipelineLayout				pipelineLayout;
+	VkPipeline						graphicsPipeline;
+	VkDescriptorSetLayout			descriptorSetLayout;
+	VkDescriptorPool				descriptorPool;
+
+	std::vector<VkDescriptorSet>	descriptorSets;
 
 
 	VkCommandPool					commandPool;
@@ -89,18 +88,11 @@ public:
 
 	Model							m_Model;
 
-	VkImage							textureImage;
-	VkDeviceMemory					textureImageMemory;
-	VkImageView						textureImageView;
-	VkSampler						textureSampler;
-
 	std::vector<VkBuffer>			uniformBuffers;
 	std::vector<VkDeviceMemory>		uniformBuffersMemory;
 	std::vector<void*>				uniformBuffersMapped;
 
-	VkDescriptorSetLayout			descriptorSetLayout;
-	VkDescriptorPool				descriptorPool;
-	std::vector<VkDescriptorSet>	descriptorSets;
+
 
 
 	void initContext() {
@@ -110,23 +102,22 @@ public:
 
 		pickPhysicalDevice(*this);
 		createLogicalDevice(*this);
-		createSwapChain(*this);
-		createImageViews(*this);
+		m_Swapchain.createSwapChain(*this);
+		m_Swapchain.createImageViews(*this);
 
 		createRenderPass(*this);
 
 		createDescriptorSetLayout();
 
 		createGraphicsPipeline(*this);
-		createFramebuffers(*this);
+		m_Swapchain.createFramebuffers(*this);
 
 		createCommandPool(*this);
 
-		createTextureImage(*this);
-		createTextureImageView(*this);
-		createTextureSampler(*this);
+
 
 		m_Model.Load(*this);
+
 		//createVertexBuffer(*this, vertices.data(), vertices.size());
 		//createIndexBuffer(*this, indices.data(), indices.size());
 		createUniformBuffers(*this, sizeof(UniformBufferObject));
@@ -214,6 +205,7 @@ public:
 
 
 	void createDescriptorSets(vkContext& contextref, VkDeviceSize bufferSize) {
+
 		std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, contextref.descriptorSetLayout);
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -234,8 +226,8 @@ public:
 
 			VkDescriptorImageInfo imageInfo{};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = contextref.textureImageView;
-			imageInfo.sampler = contextref.textureSampler;
+			imageInfo.imageView = m_Model.getTexture().getImageView();
+			imageInfo.sampler = m_Model.getTexture().getImageSampler();
 
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -260,6 +252,22 @@ public:
 	}
 
 
+
+
+	void createUniformBuffers(vkContext& contextref, VkDeviceSize bufferSize) {
+
+		contextref.uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+		contextref.uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+		contextref.uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+			createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, contextref.uniformBuffers[i], contextref.uniformBuffersMemory[i]);
+
+			vkMapMemory(contextref.logicaldevice, contextref.uniformBuffersMemory[i], 0, bufferSize, 0, &contextref.uniformBuffersMapped[i]);
+		}
+	}
+
+
 	void updateUniformBuffer(uint32_t currentImage) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -269,7 +277,7 @@ public:
 		UniformBufferObject ubo{};
 		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+		ubo.proj = glm::perspective(glm::radians(45.0f), m_Swapchain.getSwapExtent().width / (float)m_Swapchain.getSwapExtent().height, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
 		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
@@ -277,7 +285,7 @@ public:
 
 
 	void cleanContext() {
-		cleanupSwapChain();
+		m_Swapchain.cleanupSwapChain(*this);
 
 		vkDestroyPipeline(logicaldevice, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(logicaldevice, pipelineLayout, nullptr);
@@ -291,11 +299,7 @@ public:
 
 		vkDestroyDescriptorPool(logicaldevice, descriptorPool, nullptr);
 
-		vkDestroySampler(logicaldevice, textureSampler, nullptr);
-		vkDestroyImageView(logicaldevice, textureImageView, nullptr);
-
-		vkDestroyImage(logicaldevice, textureImage, nullptr);
-		vkFreeMemory(logicaldevice, textureImageMemory, nullptr);
+		m_Model.Unload(*this);
 
 		vkDestroyDescriptorSetLayout(logicaldevice, descriptorSetLayout, nullptr);
 
@@ -318,17 +322,6 @@ public:
 
 	}
 
-	void cleanupSwapChain() {
-		for (auto framebuffer : swapChainFramebuffers) {
-			vkDestroyFramebuffer(logicaldevice, framebuffer, nullptr);
-		}
-
-		for (auto imageView : swapChainImageViews) {
-			vkDestroyImageView(logicaldevice, imageView, nullptr);
-		}
-
-		vkDestroySwapchainKHR(logicaldevice, swapChain, nullptr);
-	}
 
 };
 

@@ -62,7 +62,7 @@ private:
         vkWaitForFences(contextref.logicaldevice, 1, &contextref.inFlightFences[contextref.currentFrame], VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
-        VkResult result = vkAcquireNextImageKHR(contextref.logicaldevice, contextref.swapChain, UINT64_MAX, contextref.imageAvailableSemaphores[contextref.currentFrame], VK_NULL_HANDLE, &imageIndex);
+        VkResult result = vkAcquireNextImageKHR(contextref.logicaldevice, contextref.m_Swapchain.getSwapchain(), UINT64_MAX, contextref.imageAvailableSemaphores[contextref.currentFrame], VK_NULL_HANDLE, &imageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             recreateSwapChain(contextref);
@@ -106,7 +106,7 @@ private:
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = signalSemaphores;
 
-        VkSwapchainKHR swapChains[] = { contextref.swapChain };
+        VkSwapchainKHR swapChains[] = { contextref.m_Swapchain.getSwapchain()};
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = swapChains;
 
@@ -153,11 +153,7 @@ private:
 
         vkDeviceWaitIdle(contextref.logicaldevice);
 
-        contextref.cleanupSwapChain();
-
-        createSwapChain(contextref);
-        createImageViews(contextref);
-        createFramebuffers(contextref);
+        contextref.m_Swapchain.recreateSwapChain(contextref);
     }
 
 

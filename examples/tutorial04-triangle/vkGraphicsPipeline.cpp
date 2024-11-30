@@ -2,7 +2,7 @@
 
 #include "vkShaderModule.h"
 #include "vkContext.h"
-#include "vkVertexBuffer.h"
+#include "kBuffer.h"
 
 
 
@@ -125,7 +125,7 @@ void createGraphicsPipeline(vkContext& contextref) {
 
 void createRenderPass(vkContext& contextref) {
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = contextref.swapChainImageFormat;
+    colorAttachment.format = contextref.m_Swapchain.getSwapchainImageFormat();
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
