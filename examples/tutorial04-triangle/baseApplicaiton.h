@@ -51,11 +51,24 @@ private:
         app->framebufferResized = true;
     }
 
-
-
     void initVulkan(vkContext& contextref) {
 
         contextref.initContext();
+    }
+
+    void mainLoop(vkContext& contextref) {
+
+        while (!glfwWindowShouldClose(contextref.window)) {
+            glfwPollEvents();
+            drawFrame(contextref);
+        }
+
+        vkDeviceWaitIdle(contextref.logicaldevice);
+    }
+
+    void cleanup(vkContext& contextref) {
+        contextref.cleanContext();
+        glfwTerminate();
     }
 
     void drawFrame(vkContext& contextref) {
@@ -78,7 +91,7 @@ private:
         vkResetFences(contextref.logicaldevice, 1, &contextref.inFlightFences[contextref.currentFrame]);
 
         vkResetCommandBuffer(contextref.commandBuffers[contextref.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-        recordCommandBuffer(contextref, imageIndex);
+        contextref.recordCommandBuffer(contextref, imageIndex);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -126,23 +139,6 @@ private:
     }
 
 
-    void mainLoop(vkContext& contextref) {
-
-        while (!glfwWindowShouldClose(contextref.window)) {
-            glfwPollEvents();
-            drawFrame(contextref);
-        }
-
-        vkDeviceWaitIdle(contextref.logicaldevice);
-    }
-
-
-    void cleanup(vkContext& contextref) {
-        contextref.cleanContext();
-        glfwTerminate();
-    }
-
-
     void recreateSwapChain(vkContext& contextref) {
         int width = 0, height = 0;
         glfwGetFramebufferSize(contextref.window, &width, &height);
@@ -155,6 +151,5 @@ private:
 
         contextref.m_Swapchain.recreateSwapChain(contextref);
     }
-
 
 };

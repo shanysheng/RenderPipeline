@@ -5,6 +5,23 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 * graphic: vulkan
 * framework: render pipeline
 
+
+# Architecture
+
+## RenderEngine
+<img src=./doc/images/renderengine.jpg  /><br>
+
+## Render Unit
+<img src=./doc/images/renderunit.jpg  /><br>
+
+## Pre-render
+<img src=./doc/images/prerender.jpg  /><br>
+
+## RenderPipeline
+<img src=./doc/images/renderpipeline.jpg  /><br>
+
+
+
 -----------------------------------------------------------------------
 
 <a href="http://opensource.org/licenses/BSD-2-Clause" target="_blank">

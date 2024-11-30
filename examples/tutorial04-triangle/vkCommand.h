@@ -32,7 +32,6 @@ class vkContext;
 
 void createCommandPool(vkContext& contextref);
 void createCommandBuffers(vkContext& contextref);
-void recordCommandBuffer(vkContext& contextref, uint32_t imageIndex);
 
 
 
