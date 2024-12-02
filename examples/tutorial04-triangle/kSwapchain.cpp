@@ -129,7 +129,7 @@ void kSwapchain::createFramebuffers(vkContext& contextref) {
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = contextref.renderPass;
+        framebufferInfo.renderPass = contextref.m_Renderpass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;

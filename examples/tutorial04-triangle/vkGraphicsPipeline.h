@@ -11,7 +11,6 @@ class vkContext;
 
 void createGraphicsPipeline(vkContext& contextref);
 
-void createRenderPass(vkContext& contextref);
 
 
 

@@ -16,6 +16,7 @@
 #include "kBuffer.h"
 #include "kSwapchain.h"
 #include "kUniformBuffer.h"
+#include "kRenderpaas.h"
 
 #include "trangles.h"
 
@@ -61,25 +62,21 @@ public:
 	VkInstance					instance;
 	VkSurfaceKHR				surface;
 
-	VkPhysicalDevice			physicalDevice;
-	VkDevice					logicaldevice;
-	VkQueue						graphicsQueue;
-	VkQueue						presentQueue;
+	VkPhysicalDevice				physicalDevice;
+	VkDevice						logicaldevice;
+	VkQueue							graphicsQueue;
+	VkQueue							presentQueue;
+	VkDescriptorPool				descriptorPool;
+	VkCommandPool					commandPool;
 
-	kSwapchain					m_Swapchain;
-
-
-
-	VkRenderPass					renderPass;
 	VkPipelineLayout				pipelineLayout;
 	VkPipeline						graphicsPipeline;
 	VkDescriptorSetLayout			descriptorSetLayout;
-	VkDescriptorPool				descriptorPool;
+
+	kSwapchain						m_Swapchain;
+	kRenderpaas						m_Renderpass;
 
 	std::vector<VkDescriptorSet>	descriptorSets;
-
-
-	VkCommandPool					commandPool;
 	std::vector<VkCommandBuffer>	commandBuffers;
 
 	std::vector<VkSemaphore>		imageAvailableSemaphores;
@@ -105,7 +102,7 @@ public:
 		m_Swapchain.createSwapChain(*this);
 		m_Swapchain.createImageViews(*this);
 
-		createRenderPass(*this);
+		m_Renderpass.createRenderpass(*this);
 
 		createDescriptorSetLayout();
 
@@ -264,7 +261,7 @@ public:
 
 		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = contextref.renderPass;
+		renderPassInfo.renderPass = contextref.m_Renderpass;
 		renderPassInfo.framebuffer = contextref.m_Swapchain.getFramebuffer(imageIndex);
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = contextref.m_Swapchain.getSwapExtent();
@@ -340,7 +337,7 @@ public:
 		vkDestroyPipeline(logicaldevice, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(logicaldevice, pipelineLayout, nullptr);
 
-		vkDestroyRenderPass(logicaldevice, renderPass, nullptr);
+		m_Renderpass.cleanupRenderpass(*this);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			m_UniformBuffers[i]->cleanupGPUResource(*this);

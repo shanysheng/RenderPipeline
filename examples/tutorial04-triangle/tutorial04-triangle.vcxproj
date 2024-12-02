@@ -88,6 +88,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="baseApplicaiton.cpp" />
+    <ClCompile Include="kEngine.cpp" />
+    <ClCompile Include="kRenderpaas.cpp" />
     <ClCompile Include="kSwapchain.cpp" />
     <ClCompile Include="kTexture.cpp" />
     <ClCompile Include="kUniformBuffer.cpp" />
@@ -103,6 +105,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseApplicaiton.h" />
+    <ClInclude Include="kEngine.h" />
+    <ClInclude Include="kRenderpaas.h" />
     <ClInclude Include="kSwapchain.h" />
     <ClInclude Include="kTexture.h" />
     <ClInclude Include="kUniformBuffer.h" />

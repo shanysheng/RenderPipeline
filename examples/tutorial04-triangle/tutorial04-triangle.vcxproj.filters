@@ -54,6 +54,12 @@
     <ClCompile Include="kUniformBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="kRenderpaas.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kEngine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="trangles.h">
@@ -93,6 +99,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="kUniformBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kRenderpaas.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kEngine.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
