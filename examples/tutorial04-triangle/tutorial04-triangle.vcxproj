@@ -90,6 +90,7 @@
     <ClCompile Include="baseApplicaiton.cpp" />
     <ClCompile Include="kSwapchain.cpp" />
     <ClCompile Include="kTexture.cpp" />
+    <ClCompile Include="kUniformBuffer.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
     <ClCompile Include="kBuffer.cpp" />
     <ClCompile Include="vkCommand.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="baseApplicaiton.h" />
     <ClInclude Include="kSwapchain.h" />
     <ClInclude Include="kTexture.h" />
+    <ClInclude Include="kUniformBuffer.h" />
     <ClInclude Include="trangles.h" />
     <ClInclude Include="kBuffer.h" />
     <ClInclude Include="vkCommand.h" />

@@ -15,6 +15,7 @@
 
 #include "kBuffer.h"
 #include "kSwapchain.h"
+#include "kUniformBuffer.h"
 
 #include "trangles.h"
 
@@ -88,9 +89,8 @@ public:
 
 	Model							m_Model;
 
-	std::vector<VkBuffer>			uniformBuffers;
-	std::vector<VkDeviceMemory>		uniformBuffersMemory;
-	std::vector<void*>				uniformBuffersMapped;
+	std::vector<kUniformBuffer*>	m_UniformBuffers;
+
 
 
 
@@ -220,7 +220,7 @@ public:
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			VkDescriptorBufferInfo bufferInfo{};
-			bufferInfo.buffer = contextref.uniformBuffers[i];
+			bufferInfo.buffer = contextref.m_UniformBuffers[i]->getBuffer();
 			bufferInfo.offset = 0;
 			bufferInfo.range = sizeof(UniformBufferObject);
 
@@ -308,14 +308,12 @@ public:
 
 	void createUniformBuffers(vkContext& contextref, VkDeviceSize bufferSize) {
 
-		contextref.uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-		contextref.uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-		contextref.uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+		contextref.m_UniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			createBuffer(contextref, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, contextref.uniformBuffers[i], contextref.uniformBuffersMemory[i]);
-
-			vkMapMemory(contextref.logicaldevice, contextref.uniformBuffersMemory[i], 0, bufferSize, 0, &contextref.uniformBuffersMapped[i]);
+			kUniformBuffer* puniform = new kUniformBuffer();
+			puniform->createUniformBuffers(contextref, bufferSize);
+			contextref.m_UniformBuffers[i] = puniform;
 		}
 	}
 
@@ -332,7 +330,7 @@ public:
 		ubo.proj = glm::perspective(glm::radians(45.0f), m_Swapchain.getSwapExtent().width / (float)m_Swapchain.getSwapExtent().height, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
-		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+		memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
 	}
 
 
@@ -345,8 +343,7 @@ public:
 		vkDestroyRenderPass(logicaldevice, renderPass, nullptr);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			vkDestroyBuffer(logicaldevice, uniformBuffers[i], nullptr);
-			vkFreeMemory(logicaldevice, uniformBuffersMemory[i], nullptr);
+			m_UniformBuffers[i]->cleanupGPUResource(*this);
 		}
 
 		vkDestroyDescriptorPool(logicaldevice, descriptorPool, nullptr);

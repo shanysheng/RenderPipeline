@@ -93,7 +93,7 @@ public:
 
     VkBuffer getVertexBuffer() { return m_VertexBuffer.getBuffer(); }
     VkBuffer getIndexBuffer() { return m_IndexBuffer.getBuffer(); }
-    size_t getIndiesCount() { return m_Indices.size(); }
+    uint32_t getIndiesCount() { return (uint32_t)m_Indices.size(); }
 
     kTexture& getTexture() { return m_Texture; }
     const kTexture& getTexture()const { return m_Texture; }
