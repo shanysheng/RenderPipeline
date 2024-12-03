@@ -16,7 +16,7 @@
 #include "kGraphicPipeline.h"
 
 
-#include "trangles.h"
+#include "objModel.h"
 
 // 创建vulkan应用所需要的windows
 // 创建vulkan instance实例，可以指定所需要的vulkan实例扩展

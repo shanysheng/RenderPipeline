@@ -78,4 +78,8 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\bin\x64\shaders\26_shader_textures.frag" />
+    <None Include="..\..\bin\x64\shaders\26_shader_textures.vert" />
+  </ItemGroup>
 </Project>

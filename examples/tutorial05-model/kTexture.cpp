@@ -5,15 +5,6 @@
 #include "stb_image.h"
 
 
-void kTexture::cleanupTexture(kContext& contextref) {
-    vkDestroySampler(contextref.logicaldevice, textureSampler, nullptr);
-    vkDestroyImageView(contextref.logicaldevice, textureImageView, nullptr);
-
-    vkDestroyImage(contextref.logicaldevice, textureImage, nullptr);
-    vkFreeMemory(contextref.logicaldevice, textureImageMemory, nullptr);
-}
-
-
 void copyBufferToImage(kContext& contextref, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 
     VkCommandBuffer commandBuffer = contextref.beginSingleTimeCommands();
@@ -33,46 +24,6 @@ void copyBufferToImage(kContext& contextref, VkBuffer buffer, VkImage image, uin
 
     contextref.endSingleTimeCommands(commandBuffer);
 }
-
-
-void createImage(kContext& contextref, uint32_t width, uint32_t height, VkFormat format,
-    VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
-    VkImage& image, VkDeviceMemory& imageMemory) {
-
-    VkImageCreateInfo imageInfo{};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = width;
-    imageInfo.extent.height = height;
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = 1;
-    imageInfo.arrayLayers = 1;
-    imageInfo.format = format;
-    imageInfo.tiling = tiling;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = usage;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-    if (vkCreateImage(contextref.logicaldevice, &imageInfo, nullptr, &image) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create image!");
-    }
-
-    VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(contextref.logicaldevice, image, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = contextref.findMemoryType(contextref, memRequirements.memoryTypeBits, properties);
-
-    if (vkAllocateMemory(contextref.logicaldevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate image memory!");
-    }
-
-    vkBindImageMemory(contextref.logicaldevice, image, imageMemory, 0);
-}
-
 
 void transitionImageLayout(kContext& contextref, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
 
@@ -125,9 +76,9 @@ void transitionImageLayout(kContext& contextref, VkImage image, VkFormat format,
 }
 
 
-void kTexture::createTextureImage(kContext& contextref) {
+void kTexture::createTextureImage(kContext& contextref, const std::string& filename) {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels) {
@@ -145,9 +96,9 @@ void kTexture::createTextureImage(kContext& contextref) {
 
     stbi_image_free(pixels);
 
-    createImage(contextref, texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
-        VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        textureImage, textureImageMemory);
+    contextref.createImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
+                            VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                            textureImage, textureImageMemory);
 
     transitionImageLayout(contextref, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyBufferToImage(contextref, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
@@ -187,4 +138,21 @@ void kTexture::createTextureSampler(kContext& contextref) {
     }
 }
 
+void kTexture::createTexture(kContext& contextref, const std::string& filename) {
+
+    createTextureImage(contextref, filename);
+    createTextureImageView(contextref);
+    createTextureSampler(contextref);
+}
+
+
+void kTexture::cleanupTexture(kContext& contextref) {
+    vkDestroySampler(contextref.logicaldevice, textureSampler, nullptr);
+    vkDestroyImageView(contextref.logicaldevice, textureImageView, nullptr);
+
+    vkDestroyImage(contextref.logicaldevice, textureImage, nullptr);
+    vkFreeMemory(contextref.logicaldevice, textureImageMemory, nullptr);
+
+    std::cout << "cleanup cleanupTexture" << std::endl;
+}
 

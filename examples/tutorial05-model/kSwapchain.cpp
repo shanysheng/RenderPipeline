@@ -5,7 +5,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
-
+#include <array>
 
 kSwapchain::kSwapchain() {
 }
@@ -90,6 +90,7 @@ void kSwapchain::createSwapchain(kContext& contextref, VkExtent2D extent) {
     swapChainExtent = extent;
 
     createSwapchainImageViews(contextref);
+    createDepthResources(contextref);
 }
 
 
@@ -102,19 +103,33 @@ void kSwapchain::createSwapchainImageViews(kContext& contextref) {
 }
 
 
+void kSwapchain::createDepthResources(kContext& contextref) {
+    
+    depthFormat = contextref.findDepthFormat();
+
+    contextref.createImage(swapChainExtent.width, swapChainExtent.height, depthFormat, 
+                            VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                            depthImage, depthImageMemory);
+
+    depthImageView = contextref.createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+}
+
+
+
 void kSwapchain::createFramebuffers(kContext& contextref, VkRenderPass renderpass) {
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-        VkImageView attachments[] = {
-            swapChainImageViews[i]
+        std::array<VkImageView, 2> attachments = {
+            swapChainImageViews[i],
+            depthImageView
         };
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderpass;
-        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        framebufferInfo.pAttachments = attachments.data();
         framebufferInfo.width = swapChainExtent.width;
         framebufferInfo.height = swapChainExtent.height;
         framebufferInfo.layers = 1;
@@ -127,6 +142,11 @@ void kSwapchain::createFramebuffers(kContext& contextref, VkRenderPass renderpas
 
 
 void kSwapchain::cleanupSwapChain(kContext& contextref) {
+
+    vkDestroyImageView(contextref.logicaldevice, depthImageView, nullptr);
+    vkDestroyImage(contextref.logicaldevice, depthImage, nullptr);
+    vkFreeMemory(contextref.logicaldevice, depthImageMemory, nullptr);
+
     for (auto framebuffer : swapChainFramebuffers) {
         vkDestroyFramebuffer(contextref.logicaldevice, framebuffer, nullptr);
     }
@@ -136,6 +156,8 @@ void kSwapchain::cleanupSwapChain(kContext& contextref) {
     }
 
     vkDestroySwapchainKHR(contextref.logicaldevice, swapChain, nullptr);
+
+    std::cout << "cleanup kSwapchain" << std::endl;
 }
 
 void kSwapchain::recreateSwapChain(kContext& contextref, VkExtent2D extent, VkRenderPass renderpass) {
@@ -146,3 +168,4 @@ void kSwapchain::recreateSwapChain(kContext& contextref, VkExtent2D extent, VkRe
     createSwapchainImageViews(contextref);
     createFramebuffers(contextref, renderpass);
 }
+

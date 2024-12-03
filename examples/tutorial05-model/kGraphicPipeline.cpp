@@ -15,8 +15,8 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     //auto vertShaderCode = readFile("shaders/texture_vert.spv");
     //auto fragShaderCode = readFile("shaders/texture_frag.spv");
 
-    VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/texture_vert.spv");
-    VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/texture_frag.spv");
+    VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/model_depth_vert.spv");
+    VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/model_depth_frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -68,6 +68,14 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     multisampling.sampleShadingEnable = VK_FALSE;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
+    VkPipelineDepthStencilStateCreateInfo depthStencil{};
+    depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    depthStencil.depthTestEnable = VK_TRUE;
+    depthStencil.depthWriteEnable = VK_TRUE;
+    depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+    depthStencil.depthBoundsTestEnable = VK_FALSE;
+    depthStencil.stencilTestEnable = VK_FALSE;
+
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
@@ -110,6 +118,7 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayout;
@@ -157,4 +166,6 @@ void kGraphicPipeline::cleanupGraphicsPipeline(kContext& contextref) {
     vkDestroyPipeline(contextref.logicaldevice, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(contextref.logicaldevice, pipelineLayout, nullptr);
     vkDestroyDescriptorSetLayout(contextref.logicaldevice, descriptorSetLayout, nullptr);
+
+    std::cout << "cleanup cleanupGraphicsPipeline" << std::endl;
 }

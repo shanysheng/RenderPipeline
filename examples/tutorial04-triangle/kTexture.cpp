@@ -125,9 +125,9 @@ void transitionImageLayout(kContext& contextref, VkImage image, VkFormat format,
 }
 
 
-void kTexture::createTextureImage(kContext& contextref) {
+void kTexture::createTextureImage(kContext& contextref, const std::string& filename) {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels) {
@@ -187,4 +187,9 @@ void kTexture::createTextureSampler(kContext& contextref) {
     }
 }
 
+void kTexture::createTexture(kContext& contextref, const std::string& filename) {
 
+    createTextureImage(contextref, filename);
+    createTextureImageView(contextref);
+    createTextureSampler(contextref);
+}

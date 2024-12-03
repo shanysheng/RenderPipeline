@@ -13,10 +13,12 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 
 	m_Context.createContext(m_pWindow);
-
 	m_Swapchain.createSwapchain(m_Context, actualExtent);
 
-	m_Renderpass.createRenderpass(m_Context, m_Swapchain.getSwapchainImageFormat());
+	VkFormat colorformat = m_Swapchain.getSwapchainImageFormat();
+	VkFormat depthformat = m_Swapchain.getDepthFormat();
+	m_Renderpass.createRenderpass(m_Context, colorformat, depthformat);
+
 	m_Swapchain.createFramebuffers(m_Context, m_Renderpass);
 
 	GraphicsPipelineCreateInfo createinfo;
@@ -27,8 +29,6 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	m_Model.Load(m_Context);
 
-	//createVertexBuffer(*this, vertices.data(), vertices.size());
-	//createIndexBuffer(*this, indices.data(), indices.size());
 	createUniformBuffers(sizeof(UniformBufferObject));
 	createDescriptorSets(sizeof(UniformBufferObject));
 
@@ -181,9 +181,12 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = m_Swapchain.getSwapExtent();
 
-	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+	clearValues[1].depthStencil = { 1.0f, 0 };
+
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -206,7 +209,7 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	VkBuffer vertexBuffers[] = { m_Model.getVertexBuffer() };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-	vkCmdBindIndexBuffer(commandBuffer, m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
+	vkCmdBindIndexBuffer(commandBuffer, m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 	vkCmdDrawIndexed(commandBuffer, m_Model.getIndiesCount(), 1, 0, 0, 0);
 

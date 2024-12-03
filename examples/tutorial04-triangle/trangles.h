@@ -12,6 +12,8 @@
 
 
 
+const std::string TEXTURE_PATH = "textures/texture.jpg";
+
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
@@ -79,9 +81,7 @@ public:
         m_VertexBuffer.createVertexBuffer(contextref, (const char*)m_Vertex.data(), m_Vertex.size() * sizeof(Vertex));
         m_IndexBuffer.createIndexBuffer(contextref, (const char*)m_Indices.data(), m_Indices.size() * sizeof(uint16_t));
 
-        m_Texture.createTextureImage(contextref);
-        m_Texture.createTextureImageView(contextref);
-        m_Texture.createTextureSampler(contextref);
+        m_Texture.createTexture(contextref, TEXTURE_PATH);
     }
 
     void Unload(kContext& contextref) {

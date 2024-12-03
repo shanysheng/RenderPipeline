@@ -110,6 +110,10 @@
     <ClInclude Include="kBuffer.h" />
     <ClInclude Include="kEngine.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\bin\x64\shaders\26_shader_textures.frag" />
+    <None Include="..\..\bin\x64\shaders\26_shader_textures.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -18,36 +18,6 @@
     <ClCompile Include="tutorial05-model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkCommand.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkContext.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkDevice.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkGraphicsPipeline.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkInstance.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkLayer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkShaderModule.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkSwapchain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkTexture.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vkVertexBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="baseApplicaiton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -57,38 +27,32 @@
     <ClCompile Include="tiny_obj_loader.cc">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="kBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kEngine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kGraphicPipeline.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kRenderpaas.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kSwapchain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kTexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kUniformBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vkCommand.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkContext.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkDevice.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkGraphicsPipeline.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkInstance.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkLayer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkShaderModule.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkSwapchain.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkTexture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="vkVertexBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="baseApplicaiton.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -98,5 +62,33 @@
     <ClInclude Include="tiny_obj_loader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="kBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kEngine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kGraphicPipeline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kRenderpaas.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kSwapchain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kTexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kUniformBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\bin\x64\shaders\27_shader_depth.frag" />
+    <None Include="..\..\bin\x64\shaders\27_shader_depth.vert" />
   </ItemGroup>
 </Project>

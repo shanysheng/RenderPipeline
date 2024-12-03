@@ -1,9 +1,10 @@
 #include "objModel.h"
-#include "vkContext.h"
+#include "kContext.h"
+
+#include "tiny_obj_loader.h"
 
 
-
-void loadModel(objModel& modelref) {
+void Model::loadModelFromfile() {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -33,11 +34,11 @@ void loadModel(objModel& modelref) {
             vertex.color = { 1.0f, 1.0f, 1.0f };
 
             if (uniqueVertices.count(vertex) == 0) {
-                uniqueVertices[vertex] = static_cast<uint32_t>(modelref.vertices.size());
-                modelref.vertices.push_back(vertex);
+                uniqueVertices[vertex] = static_cast<uint32_t>(m_Vertex.size());
+                m_Vertex.push_back(vertex);
             }
 
-            modelref.indices.push_back(uniqueVertices[vertex]);
+            m_Indices.push_back(uniqueVertices[vertex]);
         }
     }
 }
