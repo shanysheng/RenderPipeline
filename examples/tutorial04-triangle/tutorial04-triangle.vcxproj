@@ -88,37 +88,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="baseApplicaiton.cpp" />
-    <ClCompile Include="kEngine.cpp" />
+    <ClCompile Include="kContext.cpp" />
+    <ClCompile Include="kGraphicPipeline.cpp" />
     <ClCompile Include="kRenderpaas.cpp" />
     <ClCompile Include="kSwapchain.cpp" />
     <ClCompile Include="kTexture.cpp" />
     <ClCompile Include="kUniformBuffer.cpp" />
     <ClCompile Include="tutorial04-triangle.cpp" />
     <ClCompile Include="kBuffer.cpp" />
-    <ClCompile Include="vkCommand.cpp" />
-    <ClCompile Include="vkContext.cpp" />
-    <ClCompile Include="vkDevice.cpp" />
-    <ClCompile Include="vkGraphicsPipeline.cpp" />
-    <ClCompile Include="vkInstance.cpp" />
-    <ClCompile Include="vkLayer.cpp" />
-    <ClCompile Include="vkShaderModule.cpp" />
+    <ClCompile Include="kEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseApplicaiton.h" />
-    <ClInclude Include="kEngine.h" />
+    <ClInclude Include="kContext.h" />
+    <ClInclude Include="kGraphicPipeline.h" />
     <ClInclude Include="kRenderpaas.h" />
     <ClInclude Include="kSwapchain.h" />
     <ClInclude Include="kTexture.h" />
     <ClInclude Include="kUniformBuffer.h" />
     <ClInclude Include="trangles.h" />
     <ClInclude Include="kBuffer.h" />
-    <ClInclude Include="vkCommand.h" />
-    <ClInclude Include="vkContext.h" />
-    <ClInclude Include="vkDevice.h" />
-    <ClInclude Include="vkGraphicsPipeline.h" />
-    <ClInclude Include="vkInstance.h" />
-    <ClInclude Include="vkLayer.h" />
-    <ClInclude Include="vkShaderModule.h" />
+    <ClInclude Include="kEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -12,7 +12,7 @@
 #include <array>
 
 
-#include "vkContext.h"
+#include "kEngine.h"
 #include "trangles.h"
 
 
@@ -23,133 +23,48 @@ const uint32_t HEIGHT = 600;
 class HelloTriangleApplication {
 public:
     void run() {
-        initWindow(global_context);
-        initVulkan(global_context);
-        mainLoop(global_context);
-        cleanup(global_context);
+        initWindow();
+        mainLoop();
+        cleanup();
     }
 
 private:
-    bool        framebufferResized = false;
-    vkContext   global_context;
-    Model       m_Model;
+    GLFWwindow* window;
+    kEngine     m_Engine;
 
 
-    void initWindow(vkContext& contextref) {
+    void initWindow() {
 
         glfwInit();
-
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 
-        contextref.window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-        glfwSetWindowUserPointer(contextref.window, this);
-        glfwSetFramebufferSizeCallback(contextref.window, framebufferResizeCallback);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
+        m_Engine.createEngine(window);
     }
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
         auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
-        app->framebufferResized = true;
+        app->m_Engine.frameChanged();
     }
 
-    void initVulkan(vkContext& contextref) {
+    void mainLoop() {
 
-        contextref.initContext();
-    }
-
-    void mainLoop(vkContext& contextref) {
-
-        while (!glfwWindowShouldClose(contextref.window)) {
+        while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
-            drawFrame(contextref);
+            m_Engine.drawFrame();
         }
 
-        vkDeviceWaitIdle(contextref.logicaldevice);
+        //vkDeviceWaitIdle(kEngine.logicaldevice);
     }
 
-    void cleanup(vkContext& contextref) {
-        contextref.cleanContext();
+    void cleanup() {
+        m_Engine.cleanEngine();
+
+        glfwDestroyWindow(window);
         glfwTerminate();
-    }
-
-    void drawFrame(vkContext& contextref) {
-        vkWaitForFences(contextref.logicaldevice, 1, &contextref.inFlightFences[contextref.currentFrame], VK_TRUE, UINT64_MAX);
-
-        uint32_t imageIndex;
-        VkResult result = vkAcquireNextImageKHR(contextref.logicaldevice, contextref.m_Swapchain.getSwapchain(), UINT64_MAX, contextref.imageAvailableSemaphores[contextref.currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            recreateSwapChain(contextref);
-            return;
-        }
-        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("failed to acquire swap chain image!");
-        }
-
-        contextref.updateUniformBuffer(contextref.currentFrame);
-
-
-        vkResetFences(contextref.logicaldevice, 1, &contextref.inFlightFences[contextref.currentFrame]);
-
-        vkResetCommandBuffer(contextref.commandBuffers[contextref.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-        contextref.recordCommandBuffer(contextref, imageIndex);
-
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-        VkSemaphore waitSemaphores[] = { contextref.imageAvailableSemaphores[contextref.currentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &contextref.commandBuffers[contextref.currentFrame];
-
-        VkSemaphore signalSemaphores[] = { contextref.renderFinishedSemaphores[contextref.currentFrame] };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        if (vkQueueSubmit(contextref.graphicsQueue, 1, &submitInfo, contextref.inFlightFences[contextref.currentFrame]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to submit draw command buffer!");
-        }
-
-        VkPresentInfoKHR presentInfo{};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
-
-        VkSwapchainKHR swapChains[] = { contextref.m_Swapchain.getSwapchain()};
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
-
-        presentInfo.pImageIndices = &imageIndex;
-
-        result = vkQueuePresentKHR(contextref.presentQueue, &presentInfo);
-
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-            framebufferResized = false;
-            recreateSwapChain(contextref);
-        }
-        else if (result != VK_SUCCESS) {
-            throw std::runtime_error("failed to present swap chain image!");
-        }
-
-        contextref.currentFrame = (contextref.currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-    }
-
-
-    void recreateSwapChain(vkContext& contextref) {
-        int width = 0, height = 0;
-        glfwGetFramebufferSize(contextref.window, &width, &height);
-        while (width == 0 || height == 0) {
-            glfwGetFramebufferSize(contextref.window, &width, &height);
-            glfwWaitEvents();
-        }
-
-        vkDeviceWaitIdle(contextref.logicaldevice);
-
-        contextref.m_Swapchain.recreateSwapChain(contextref);
     }
 
 };

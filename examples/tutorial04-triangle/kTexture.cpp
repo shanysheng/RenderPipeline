@@ -1,12 +1,11 @@
 #include "kTexture.h"
-#include "vkContext.h"
-
+#include "kContext.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 
-void kTexture::cleanupTexture(vkContext& contextref) {
+void kTexture::cleanupTexture(kContext& contextref) {
     vkDestroySampler(contextref.logicaldevice, textureSampler, nullptr);
     vkDestroyImageView(contextref.logicaldevice, textureImageView, nullptr);
 
@@ -15,9 +14,9 @@ void kTexture::cleanupTexture(vkContext& contextref) {
 }
 
 
-void copyBufferToImage(vkContext& contextref, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+void copyBufferToImage(kContext& contextref, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands(contextref);
+    VkCommandBuffer commandBuffer = contextref.beginSingleTimeCommands();
 
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -32,11 +31,11 @@ void copyBufferToImage(vkContext& contextref, VkBuffer buffer, VkImage image, ui
 
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    endSingleTimeCommands(contextref, commandBuffer);
+    contextref.endSingleTimeCommands(commandBuffer);
 }
 
 
-void createImage(vkContext& contextref, uint32_t width, uint32_t height, VkFormat format,
+void createImage(kContext& contextref, uint32_t width, uint32_t height, VkFormat format,
     VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
     VkImage& image, VkDeviceMemory& imageMemory) {
 
@@ -65,7 +64,7 @@ void createImage(vkContext& contextref, uint32_t width, uint32_t height, VkForma
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(contextref, memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = contextref.findMemoryType(contextref, memRequirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(contextref.logicaldevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate image memory!");
@@ -75,9 +74,9 @@ void createImage(vkContext& contextref, uint32_t width, uint32_t height, VkForma
 }
 
 
-void transitionImageLayout(vkContext& contextref, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+void transitionImageLayout(kContext& contextref, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
 
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands(contextref);
+    VkCommandBuffer commandBuffer = contextref.beginSingleTimeCommands();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -122,11 +121,11 @@ void transitionImageLayout(vkContext& contextref, VkImage image, VkFormat format
         1, &barrier
     );
 
-    endSingleTimeCommands(contextref, commandBuffer);
+    contextref.endSingleTimeCommands(commandBuffer);
 }
 
 
-void kTexture::createTextureImage(vkContext& contextref) {
+void kTexture::createTextureImage(kContext& contextref) {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -137,7 +136,7 @@ void kTexture::createTextureImage(vkContext& contextref) {
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    createBuffer(contextref, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    contextref.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
     void* data;
     vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, imageSize, 0, &data);
@@ -160,11 +159,11 @@ void kTexture::createTextureImage(vkContext& contextref) {
 
 
 
-void kTexture::createTextureImageView(vkContext& contextref) {
-    textureImageView = createImageView(contextref, textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+void kTexture::createTextureImageView(kContext& contextref) {
+    textureImageView = contextref.createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB);
 }
 
-void kTexture::createTextureSampler(vkContext& contextref) {
+void kTexture::createTextureSampler(kContext& contextref) {
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(contextref.physicalDevice, &properties);
 

@@ -75,7 +75,7 @@ public:
         m_Indices.assign(indices.begin(), indices.end());
     };
 
-    void Load(vkContext& contextref) {
+    void Load(kContext& contextref) {
         m_VertexBuffer.createVertexBuffer(contextref, (const char*)m_Vertex.data(), m_Vertex.size() * sizeof(Vertex));
         m_IndexBuffer.createIndexBuffer(contextref, (const char*)m_Indices.data(), m_Indices.size() * sizeof(uint16_t));
 
@@ -84,7 +84,7 @@ public:
         m_Texture.createTextureSampler(contextref);
     }
 
-    void Unload(vkContext& contextref) {
+    void Unload(kContext& contextref) {
 
         m_Texture.cleanupTexture(contextref);
         m_IndexBuffer.cleanupBuffer(contextref);

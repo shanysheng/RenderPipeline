@@ -1,6 +1,6 @@
 #include "kSwapchain.h"
 
-#include "vkContext.h"
+#include "kContext.h"
 
 #include <vector>
 #include <limits>
@@ -33,33 +33,14 @@ VkPresentModeKHR kSwapchain::chooseSwapPresentMode(const std::vector<VkPresentMo
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D kSwapchain::chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities) {
-    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-        return capabilities.currentExtent;
-    }
-    else {
-        int width, height;
-        glfwGetFramebufferSize(pwindow, &width, &height);
 
-        VkExtent2D actualExtent = {
-            static_cast<uint32_t>(width),
-            static_cast<uint32_t>(height)
-        };
 
-        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+void kSwapchain::createSwapChain(kContext& contextref, VkExtent2D extent) {
 
-        return actualExtent;
-    }
-}
-
-void kSwapchain::createSwapChain(vkContext& contextref) {
-
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(contextref.physicalDevice, contextref.surface);
+    SwapChainSupportDetails swapChainSupport = contextref.querySwapChainSupport(contextref.physicalDevice, contextref.surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = chooseSwapExtent(contextref.window, swapChainSupport.capabilities);
 
     std::cout << "extent width:" << extent.width << ", height:" << extent.height << std::endl;
 
@@ -79,7 +60,7 @@ void kSwapchain::createSwapChain(vkContext& contextref) {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = findQueueFamilies(contextref.physicalDevice, contextref.surface);
+    QueueFamilyIndices indices = contextref.findQueueFamilies(contextref.physicalDevice, contextref.surface);
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
     if (indices.graphicsFamily != indices.presentFamily) {
@@ -110,16 +91,16 @@ void kSwapchain::createSwapChain(vkContext& contextref) {
 }
 
 
-void kSwapchain::createImageViews(vkContext& contextref) {
+void kSwapchain::createImageViews(kContext& contextref) {
     swapChainImageViews.resize(swapChainImages.size());
 
     for (size_t i = 0; i < swapChainImages.size(); i++) {
-        swapChainImageViews[i] = createImageView(contextref, swapChainImages[i], swapChainImageFormat);
+        swapChainImageViews[i] = contextref.createImageView(swapChainImages[i], swapChainImageFormat);
     }
 }
 
 
-void kSwapchain::createFramebuffers(vkContext& contextref) {
+void kSwapchain::createFramebuffers(kContext& contextref, VkRenderPass renderpass) {
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++) {
@@ -129,7 +110,7 @@ void kSwapchain::createFramebuffers(vkContext& contextref) {
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = contextref.m_Renderpass;
+        framebufferInfo.renderPass = renderpass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;
@@ -143,7 +124,7 @@ void kSwapchain::createFramebuffers(vkContext& contextref) {
 }
 
 
-void kSwapchain::cleanupSwapChain(vkContext& contextref) {
+void kSwapchain::cleanupSwapChain(kContext& contextref) {
     for (auto framebuffer : swapChainFramebuffers) {
         vkDestroyFramebuffer(contextref.logicaldevice, framebuffer, nullptr);
     }
@@ -155,11 +136,11 @@ void kSwapchain::cleanupSwapChain(vkContext& contextref) {
     vkDestroySwapchainKHR(contextref.logicaldevice, swapChain, nullptr);
 }
 
-void kSwapchain::recreateSwapChain(vkContext& contextref) {
+void kSwapchain::recreateSwapChain(kContext& contextref, VkExtent2D extent, VkRenderPass renderpass) {
 
-    contextref.m_Swapchain.cleanupSwapChain(contextref);
+    cleanupSwapChain(contextref);
 
-    contextref.m_Swapchain.createSwapChain(contextref);
-    contextref.m_Swapchain.createImageViews(contextref);
-    contextref.m_Swapchain.createFramebuffers(contextref);
+    createSwapChain(contextref, extent);
+    createImageViews(contextref);
+    createFramebuffers(contextref, renderpass);
 }

@@ -7,12 +7,8 @@
 #include <iostream>
 #include <vector>
 
-class vkContext;
+class kContext;
 
-
-const std::vector<const char*> deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
 
 
 
@@ -22,12 +18,12 @@ public:
 	kSwapchain();
 	virtual ~kSwapchain();
 
-	void cleanupSwapChain(vkContext& contextref);
-	void recreateSwapChain(vkContext& contextref);
+	void createSwapChain(kContext& contextref, VkExtent2D extent);
+	void createImageViews(kContext& contextref);
+	void createFramebuffers(kContext& contextref, VkRenderPass renderpass);
 
-	void createSwapChain(vkContext& contextref);
-	void createImageViews(vkContext& contextref);
-	void createFramebuffers(vkContext& contextref);
+	void cleanupSwapChain(kContext& contextref);
+	void recreateSwapChain(kContext& contextref, VkExtent2D extent, VkRenderPass renderpass);
 
 	VkSwapchainKHR getSwapchain() { return swapChain; }
 	VkFramebuffer getFramebuffer(int index) { return swapChainFramebuffers[index]; }

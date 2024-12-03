@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class vkContext;
+class kContext;
 
 class kBuffer
 {
@@ -17,20 +17,14 @@ public:
 	kBuffer();
 	virtual ~kBuffer();
 
-	void createVertexBuffer(vkContext& contextref, const char* pbuffer, size_t buffersize);
-	void createIndexBuffer(vkContext& contextref, const char* pbuffer, size_t buffersize);
+	void createVertexBuffer(kContext& contextref, const char* pbuffer, size_t buffersize);
+	void createIndexBuffer(kContext& contextref, const char* pbuffer, size_t buffersize);
 
-	void cleanupBuffer(vkContext& contextref);
+	void cleanupBuffer(kContext& contextref);
 
 	VkBuffer getBuffer() { return m_vkBuffer; }
 
 protected:
-
-	bool createBuffer(vkContext& contextref,  size_t buffersize, 
-					VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, 
-					VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-	uint32_t findMemoryType(vkContext& contextref, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 
 protected:

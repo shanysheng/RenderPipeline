@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 
-class vkContext;
+class kContext;
 
 class kTexture
 {
@@ -14,16 +14,15 @@ public:
 	kTexture() {};
 	virtual ~kTexture() {};
 
-
-	void createTextureImage(vkContext& contextref);
-	void createTextureImageView(vkContext& contextref);
-	void createTextureSampler(vkContext& contextref);
+	void createTextureImage(kContext& contextref);
+	void createTextureImageView(kContext& contextref);
+	void createTextureSampler(kContext& contextref);
 
 	VkImage getImage() {return textureImage;};
 	VkImageView getImageView() { return textureImageView; };
 	VkSampler getImageSampler() { return textureSampler; };
 
-	void cleanupTexture(vkContext& contextref);
+	void cleanupTexture(kContext& contextref);
 
 protected:
 

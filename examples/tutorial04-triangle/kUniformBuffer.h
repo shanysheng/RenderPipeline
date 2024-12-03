@@ -3,7 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-class vkContext;
+class kContext;
 
 
 class kUniformBuffer
@@ -12,8 +12,8 @@ public:
 	kUniformBuffer() {};
 	virtual ~kUniformBuffer() {};
 
-	void createUniformBuffers(vkContext& contextref, VkDeviceSize bufferSize);
-	void cleanupGPUResource(vkContext& contextref);
+	void createUniformBuffers(kContext& contextref, VkDeviceSize bufferSize);
+	void cleanupGPUResource(kContext& contextref);
 
 
 	VkBuffer getBuffer() { return m_UniformBuffer; }
