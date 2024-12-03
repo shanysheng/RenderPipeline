@@ -35,7 +35,7 @@ VkPresentModeKHR kSwapchain::chooseSwapPresentMode(const std::vector<VkPresentMo
 
 
 
-void kSwapchain::createSwapChain(kContext& contextref, VkExtent2D extent) {
+void kSwapchain::createSwapchain(kContext& contextref, VkExtent2D extent) {
 
     SwapChainSupportDetails swapChainSupport = contextref.querySwapChainSupport(contextref.physicalDevice, contextref.surface);
 
@@ -88,10 +88,12 @@ void kSwapchain::createSwapChain(kContext& contextref, VkExtent2D extent) {
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
+
+    createSwapchainImageViews(contextref);
 }
 
 
-void kSwapchain::createImageViews(kContext& contextref) {
+void kSwapchain::createSwapchainImageViews(kContext& contextref) {
     swapChainImageViews.resize(swapChainImages.size());
 
     for (size_t i = 0; i < swapChainImages.size(); i++) {
@@ -140,7 +142,6 @@ void kSwapchain::recreateSwapChain(kContext& contextref, VkExtent2D extent, VkRe
 
     cleanupSwapChain(contextref);
 
-    createSwapChain(contextref, extent);
-    createImageViews(contextref);
+    createSwapchain(contextref, extent);
     createFramebuffers(contextref, renderpass);
 }

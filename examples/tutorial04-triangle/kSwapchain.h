@@ -18,8 +18,7 @@ public:
 	kSwapchain();
 	virtual ~kSwapchain();
 
-	void createSwapChain(kContext& contextref, VkExtent2D extent);
-	void createImageViews(kContext& contextref);
+	void createSwapchain(kContext& contextref, VkExtent2D extent);
 	void createFramebuffers(kContext& contextref, VkRenderPass renderpass);
 
 	void cleanupSwapChain(kContext& contextref);
@@ -32,6 +31,7 @@ public:
 
 
 protected:
+	void createSwapchainImageViews(kContext& contextref);
 
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

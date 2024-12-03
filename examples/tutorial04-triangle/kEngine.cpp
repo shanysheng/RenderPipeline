@@ -14,8 +14,7 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	m_Context.createContext(m_pWindow);
 
-	m_Swapchain.createSwapChain(m_Context, actualExtent);
-	m_Swapchain.createImageViews(m_Context);
+	m_Swapchain.createSwapchain(m_Context, actualExtent);
 
 	m_Renderpass.createRenderpass(m_Context, m_Swapchain.getSwapchainImageFormat());
 	m_Swapchain.createFramebuffers(m_Context, m_Renderpass);
