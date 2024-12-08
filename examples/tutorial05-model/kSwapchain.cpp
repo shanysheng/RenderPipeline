@@ -13,41 +13,17 @@ kSwapchain::kSwapchain() {
 kSwapchain::~kSwapchain() {
 }
 
-VkSurfaceFormatKHR kSwapchain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
-    for (const auto& availableFormat : availableFormats) {
-        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-            return availableFormat;
-        }
-    }
 
-    return availableFormats[0];
-}
-
-VkPresentModeKHR kSwapchain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
-    for (const auto& availablePresentMode : availablePresentModes) {
-        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-            return availablePresentMode;
-        }
-    }
-
-    return VK_PRESENT_MODE_FIFO_KHR;
-}
-
-
-
-void kSwapchain::createSwapchain(kContext& contextref, VkExtent2D extent) {
+void kSwapchain::createSwapchain(kContext& contextref, VkExtent2D extent, VkRenderPass renderpass) {
 
     SwapChainSupportDetails swapChainSupport = contextref.querySwapChainSupport(contextref.physicalDevice, contextref.surface);
 
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+    VkSurfaceFormatKHR surfaceFormat = contextref.getSwapchainSurfaceFormat();
+    VkPresentModeKHR presentMode = contextref.getPresentMode();
 
     std::cout << "extent width:" << extent.width << ", height:" << extent.height << std::endl;
 
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-        imageCount = swapChainSupport.capabilities.maxImageCount;
-    }
+    uint32_t imageCount = contextref.getSwapchainImageCount();
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -91,6 +67,7 @@ void kSwapchain::createSwapchain(kContext& contextref, VkExtent2D extent) {
 
     createSwapchainImageViews(contextref);
     createDepthResources(contextref);
+    createFramebuffers(contextref, renderpass);
 }
 
 
@@ -105,7 +82,7 @@ void kSwapchain::createSwapchainImageViews(kContext& contextref) {
 
 void kSwapchain::createDepthResources(kContext& contextref) {
     
-    depthFormat = contextref.findDepthFormat();
+    depthFormat = contextref.getDepthFormat();
 
     contextref.createImage(swapChainExtent.width, swapChainExtent.height, depthFormat, 
                             VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
@@ -163,9 +140,6 @@ void kSwapchain::cleanupSwapChain(kContext& contextref) {
 void kSwapchain::recreateSwapChain(kContext& contextref, VkExtent2D extent, VkRenderPass renderpass) {
 
     cleanupSwapChain(contextref);
-
-    createSwapchain(contextref, extent);
-    createSwapchainImageViews(contextref);
-    createFramebuffers(contextref, renderpass);
+    createSwapchain(contextref, extent, renderpass);
 }
 

@@ -12,7 +12,7 @@ public:
 	kRenderpaas() {};
 	virtual ~kRenderpaas() {}
 
-	void createRenderpass(kContext& contextref, VkFormat colorformat, VkFormat depthformat);
+	void createRenderpass(kContext& contextref);
 	void cleanupRenderpass(kContext& contextref);
 
 	operator VkRenderPass() const;

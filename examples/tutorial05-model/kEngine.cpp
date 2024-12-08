@@ -6,20 +6,15 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	int width, height;
 	glfwGetFramebufferSize(m_pWindow, &width, &height);
-	VkExtent2D actualExtent = {
+	m_Extent = {
 		static_cast<uint32_t>(width),
 		static_cast<uint32_t>(height)
 	};
 
 
 	m_Context.createContext(m_pWindow);
-	m_Swapchain.createSwapchain(m_Context, actualExtent);
-
-	VkFormat colorformat = m_Swapchain.getSwapchainImageFormat();
-	VkFormat depthformat = m_Swapchain.getDepthFormat();
-	m_Renderpass.createRenderpass(m_Context, colorformat, depthformat);
-
-	m_Swapchain.createFramebuffers(m_Context, m_Renderpass);
+	m_Renderpass.createRenderpass(m_Context);
+	m_Swapchain.createSwapchain(m_Context, m_Extent, m_Renderpass);
 
 	GraphicsPipelineCreateInfo createinfo;
 	createinfo.vertex_shader_file = "shaders/model_depth_vert.spv";
@@ -160,7 +155,7 @@ void kEngine::updateUniformBuffer(uint32_t currentImage) {
 	UniformBufferObject ubo{};
 	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.proj = glm::perspective(glm::radians(45.0f), m_Swapchain.getSwapExtent().width / (float)m_Swapchain.getSwapExtent().height, 0.1f, 10.0f);
+	ubo.proj = glm::perspective(glm::radians(45.0f), m_Extent.width / (float)m_Extent.height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
 	memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
@@ -181,7 +176,7 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	renderPassInfo.renderPass = m_Renderpass;
 	renderPassInfo.framebuffer = m_Swapchain.getFramebuffer(imageIndex);
 	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = m_Swapchain.getSwapExtent();
+	renderPassInfo.renderArea.extent = m_Extent;
 
 	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
@@ -197,15 +192,15 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)m_Swapchain.getSwapExtent().width;
-	viewport.height = (float)m_Swapchain.getSwapExtent().height;
+	viewport.width = (float)m_Extent.width;
+	viewport.height = (float)m_Extent.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = m_Swapchain.getSwapExtent();
+	scissor.extent = m_Extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 	VkBuffer vertexBuffers[] = { m_Model.getVertexBuffer() };

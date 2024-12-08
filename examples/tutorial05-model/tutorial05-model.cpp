@@ -8,6 +8,6 @@ int main()
 {
     std::cout << "Hello vulkan world!\n";
 
-    HelloModelApplication app;
+    baseApplication app;
     app.run();
 }

@@ -20,7 +20,7 @@ const uint32_t WIDTH = 1280;
 const uint32_t HEIGHT = 720;
 
 
-class HelloTriangleApplication {
+class baseApplication {
 public:
     void run() {
         initWindow();
@@ -46,7 +46,7 @@ private:
     }
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-        auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+        auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
         app->m_Engine.frameChanged();
     }
 

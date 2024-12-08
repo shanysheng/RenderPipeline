@@ -137,6 +137,8 @@ void kContext::createContext(GLFWwindow* pwindow) {
 
     createCommandPool();
     createDescriptorPool();
+
+    chooseSwapchainFormat();
 }
 
 void kContext::cleanupContext() {
@@ -606,7 +608,7 @@ VkFormat kContext::findSupportedFormat(const std::vector<VkFormat>& candidates, 
     throw std::runtime_error("failed to find supported format!");
 }
 
-VkFormat kContext::findDepthFormat() {
+VkFormat kContext::chooseDepthFormat() {
     return findSupportedFormat(
         { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
         VK_IMAGE_TILING_OPTIMAL,
@@ -657,3 +659,39 @@ void kContext::createImage(uint32_t width, uint32_t height, VkFormat format,
 
     vkBindImageMemory(logicaldevice, image, imageMemory, 0);
 }
+
+void kContext::chooseSwapchainFormat() {
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
+
+    swapchainSurfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+
+    swapchainImageCount = swapChainSupport.capabilities.minImageCount + 1;
+    if (swapChainSupport.capabilities.maxImageCount > 0 && swapchainImageCount > swapChainSupport.capabilities.maxImageCount) {
+        swapchainImageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    swapchainDepthFormat = chooseDepthFormat();
+}
+
+
+VkSurfaceFormatKHR kContext::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+    for (const auto& availableFormat : availableFormats) {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            return availableFormat;
+        }
+    }
+
+    return availableFormats[0];
+}
+
+VkPresentModeKHR kContext::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+    for (const auto& availablePresentMode : availablePresentModes) {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            return availablePresentMode;
+        }
+    }
+
+    return VK_PRESENT_MODE_FIFO_KHR;
+}
+

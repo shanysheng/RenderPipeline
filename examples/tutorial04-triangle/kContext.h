@@ -26,7 +26,6 @@ struct SwapChainSupportDetails {
 };
 
 
-
 class kContext
 {
 public:
@@ -57,8 +56,10 @@ public:
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 
-	VkFormat findDepthFormat();
-
+	uint32_t getSwapchainImageCount() { return swapchainImageCount; }
+	VkPresentModeKHR getPresentMode() { return presentMode; }
+	VkSurfaceFormatKHR getSwapchainSurfaceFormat() { return swapchainSurfaceFormat; }
+	VkFormat getDepthFormat() { return swapchainDepthFormat; }
 
 protected:
 	void createInstance();
@@ -69,6 +70,11 @@ protected:
 
 	void createCommandPool();
 	void createDescriptorPool();
+
+	void chooseSwapchainFormat();
+	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+	VkFormat chooseDepthFormat();
 
 	void cleanupDebugMessenger(VkInstance pinst);
 
@@ -84,9 +90,17 @@ public:
 
 	VkPhysicalDevice			physicalDevice;
 	VkDevice					logicaldevice;
+
 	VkQueue						graphicsQueue;
 	VkQueue						presentQueue;
+
 	VkDescriptorPool			descriptorPool;
 	VkCommandPool				commandPool;
+
+protected:
+	VkPresentModeKHR			presentMode;
+	VkFormat					swapchainDepthFormat;
+	VkSurfaceFormatKHR			swapchainSurfaceFormat;
+	uint32_t					swapchainImageCount;
 };
 
