@@ -1,17 +1,23 @@
 #pragma once
 
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
+#include "kBuffer.h"
+#include "kTexture.h"
 
 #include <vector>
 #include <array>
+#include <random>
 
-class vkContext;
+const uint32_t PARTICLE_COUNT = 8192;
+
+
+struct particleUniformBufferObject {
+    float deltaTime = 1.0f;
+};
 
 struct Particle {
     glm::vec2 position;
@@ -44,12 +50,3 @@ struct Particle {
     }
 };
 
-void createShaderStorageBuffers(vkContext& contextref);
-
-void createBuffer(vkContext& contextref, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-void createUniformBuffers(vkContext& contextref, VkDeviceSize bufferSize);
-
-void createDescriptorPool(vkContext& contextref);
-
-void createComputeDescriptorSets(vkContext& contextref, VkDeviceSize bufferSize);

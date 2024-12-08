@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{bda11cdf-b81d-4cc3-93d5-6452e39346e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tutorial06-computershader.cpp">
@@ -21,34 +24,34 @@
     <ClCompile Include="baseApplicaiton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkCommand.cpp">
+    <ClCompile Include="kBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkContext.cpp">
+    <ClCompile Include="kContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkDevice.cpp">
+    <ClCompile Include="kEngine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkGraphicsPipeline.cpp">
+    <ClCompile Include="kGraphicPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkInstance.cpp">
+    <ClCompile Include="kRenderpaas.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkLayer.cpp">
+    <ClCompile Include="kSwapchain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkShaderModule.cpp">
+    <ClCompile Include="kTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkSwapchain.cpp">
+    <ClCompile Include="kUniformBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkTexture.cpp">
+    <ClCompile Include="kComputerPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="vkVertexBuffer.cpp">
+    <ClCompile Include="particle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,35 +62,46 @@
     <ClInclude Include="trangles.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkCommand.h">
+    <ClInclude Include="kBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkContext.h">
+    <ClInclude Include="kContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkDevice.h">
+    <ClInclude Include="kEngine.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkGraphicsPipeline.h">
+    <ClInclude Include="kGraphicPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkInstance.h">
+    <ClInclude Include="kRenderpaas.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkLayer.h">
+    <ClInclude Include="kSwapchain.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkShaderModule.h">
+    <ClInclude Include="kTexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkSwapchain.h">
+    <ClInclude Include="kUniformBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkTexture.h">
+    <ClInclude Include="kComputerPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="vkVertexBuffer.h">
+    <ClInclude Include="particle.h">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\bin\x64\shaders\31_shader_compute.comp">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\bin\x64\shaders\31_shader_compute.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\bin\x64\shaders\31_shader_compute.vert">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

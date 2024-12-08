@@ -1,21 +1,28 @@
-#include "vkGraphicsPipeline.h"
+#include "kGraphicPipeline.h"
 
-#include "vkShaderModule.h"
-#include "vkContext.h"
-#include "vkVertexBuffer.h"
+#include "kContext.h"
+#include "kBuffer.h"
 
+#include <iostream>
+#include <array>
 
+void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipelineCreateInfo& createinfo) {
 
-void createGraphicsPipeline(vkContext& contextref) {
+    //createDescriptorSetLayout(contextref);
+
     //auto vertShaderCode = readFile("shaders/ubo_vert.spv");
     //auto fragShaderCode = readFile("shaders/ubo_frag.spv");
     //auto vertShaderCode = readFile("shaders/texture_vert.spv");
     //auto fragShaderCode = readFile("shaders/texture_frag.spv");
-    auto vertShaderCode = readFile("shaders/computer_shader_vert.spv");
-    auto fragShaderCode = readFile("shaders/computer_shader_frag.spv");
 
-    VkShaderModule vertShaderModule = createShaderModule(contextref.logicaldevice, vertShaderCode);
-    VkShaderModule fragShaderModule = createShaderModule(contextref.logicaldevice, fragShaderCode);
+    //VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/texture_vert.spv");
+    //VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/texture_frag.spv");
+
+    //auto vertShaderCode = readFile("shaders/computer_shader_vert.spv");
+    //auto fragShaderCode = readFile("shaders/computer_shader_frag.spv");
+
+    VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/computer_shader_vert.spv");
+    VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/computer_shader_frag.spv");
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -34,16 +41,17 @@ void createGraphicsPipeline(vkContext& contextref) {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-    auto bindingDescription = Particle::getBindingDescription();
-    auto attributeDescriptions = Particle::getAttributeDescriptions();
+    //auto bindingDescription = Vertex::getBindingDescription();
+    //auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
     vertexInputInfo.vertexBindingDescriptionCount = 1;
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(createinfo.input_attributes.size());
+    vertexInputInfo.pVertexBindingDescriptions = &createinfo.input_binding;
+    vertexInputInfo.pVertexAttributeDescriptions = createinfo.input_attributes.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    //inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
@@ -102,7 +110,7 @@ void createGraphicsPipeline(vkContext& contextref) {
     pipelineLayoutInfo.setLayoutCount = 0;
     pipelineLayoutInfo.pSetLayouts = nullptr;
 
-    if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &contextref.pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
     }
 
@@ -117,12 +125,12 @@ void createGraphicsPipeline(vkContext& contextref) {
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.layout = contextref.pipelineLayout;
-    pipelineInfo.renderPass = contextref.renderPass;
+    pipelineInfo.layout = pipelineLayout;
+    pipelineInfo.renderPass = createinfo.render_pass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &contextref.graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
@@ -130,78 +138,36 @@ void createGraphicsPipeline(vkContext& contextref) {
     vkDestroyShaderModule(contextref.logicaldevice, vertShaderModule, nullptr);
 }
 
+//
+//void kGraphicPipeline::createDescriptorSetLayout(kContext& contextref) {
+//	VkDescriptorSetLayoutBinding uboLayoutBinding{};
+//	uboLayoutBinding.binding = 0;
+//	uboLayoutBinding.descriptorCount = 1;
+//	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+//	uboLayoutBinding.pImmutableSamplers = nullptr;
+//	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+//
+//	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+//	samplerLayoutBinding.binding = 1;
+//	samplerLayoutBinding.descriptorCount = 1;
+//	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//	samplerLayoutBinding.pImmutableSamplers = nullptr;
+//	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+//
+//	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+//	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+//	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+//	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+//	layoutInfo.pBindings = bindings.data();
+//
+//	if (vkCreateDescriptorSetLayout(contextref.logicaldevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+//		throw std::runtime_error("failed to create descriptor set layout!");
+//	}
+//}
 
-void createComputePipeline(vkContext& contextref) {
-    auto computeShaderCode = readFile("shaders/computer_shader_comp.spv");
+void kGraphicPipeline::cleanupGraphicsPipeline(kContext& contextref) {
 
-    VkShaderModule computeShaderModule = createShaderModule(contextref.logicaldevice, computeShaderCode);
-
-    VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
-    computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-    computeShaderStageInfo.module = computeShaderModule;
-    computeShaderStageInfo.pName = "main";
-
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &contextref.computeDescriptorSetLayout;
-
-    if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &contextref.computePipelineLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create compute pipeline layout!");
-    }
-
-    VkComputePipelineCreateInfo pipelineInfo{};
-    pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
-    pipelineInfo.layout = contextref.computePipelineLayout;
-    pipelineInfo.stage = computeShaderStageInfo;
-
-    if (vkCreateComputePipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &contextref.computePipeline) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create compute pipeline!");
-    }
-
-    vkDestroyShaderModule(contextref.logicaldevice, computeShaderModule, nullptr);
-}
-
-
-void createRenderPass(vkContext& contextref) {
-    VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = contextref.swapChainImageFormat;
-    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-    VkAttachmentReference colorAttachmentRef{};
-    colorAttachmentRef.attachment = 0;
-    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    VkSubpassDescription subpass{};
-    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments = &colorAttachmentRef;
-
-    VkSubpassDependency dependency{};
-    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-    dependency.dstSubpass = 0;
-    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.srcAccessMask = 0;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-    VkRenderPassCreateInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = 1;
-    renderPassInfo.pAttachments = &colorAttachment;
-    renderPassInfo.subpassCount = 1;
-    renderPassInfo.pSubpasses = &subpass;
-    renderPassInfo.dependencyCount = 1;
-    renderPassInfo.pDependencies = &dependency;
-
-    if (vkCreateRenderPass(contextref.logicaldevice, &renderPassInfo, nullptr, &contextref.renderPass) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create render pass!");
-    }
+    vkDestroyPipeline(contextref.logicaldevice, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(contextref.logicaldevice, pipelineLayout, nullptr);
+    //vkDestroyDescriptorSetLayout(contextref.logicaldevice, descriptorSetLayout, nullptr);
 }
