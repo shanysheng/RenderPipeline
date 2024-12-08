@@ -5,12 +5,14 @@
 #include <GLFW/glfw3.h>
 
 #include <array>
-
+#include <string>
 
 class kContext;
 
 struct GraphicsPipelineCreateInfo {
 	VkRenderPass render_pass = VK_NULL_HANDLE;
+	std::string vertex_shader_file;
+	std::string frag_shader_file;
 	VkVertexInputBindingDescription  input_binding;
 	std::array<VkVertexInputAttributeDescription, 2> input_attributes;
 };
@@ -26,15 +28,15 @@ public:
 
 	VkPipeline getPipeline() { return graphicsPipeline; }
 	VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
-	//VkDescriptorSetLayout getDescriptorSetLayout() { return descriptorSetLayout; }
+	VkDescriptorSetLayout getDescriptorSetLayout() { return descriptorSetLayout; }
 
 protected:
-	//void createDescriptorSetLayout(kContext& contextref);
+	void createDescriptorSetLayout(kContext& contextref);
 
 
 protected:
 	VkPipelineLayout				pipelineLayout;
-	//VkDescriptorSetLayout			descriptorSetLayout;
+	VkDescriptorSetLayout			descriptorSetLayout;
 	VkPipeline						graphicsPipeline;
 };
 

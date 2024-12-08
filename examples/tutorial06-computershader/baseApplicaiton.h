@@ -16,11 +16,11 @@
 #include "trangles.h"
 
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+const uint32_t WIDTH = 1280;
+const uint32_t HEIGHT = 720;
 
 
-class ComputeShaderApplication {
+class baseApplication {
 public:
     void run() {
         initWindow();
@@ -33,7 +33,6 @@ private:
     kEngine     m_Engine;
 
 
-
     void initWindow() {
 
         glfwInit();
@@ -43,12 +42,11 @@ private:
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
-
         m_Engine.createEngine(window);
     }
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-        auto app = reinterpret_cast<ComputeShaderApplication*>(glfwGetWindowUserPointer(window));
+        auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
         app->m_Engine.frameChanged();
     }
 
@@ -57,8 +55,6 @@ private:
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
             m_Engine.drawFrame();
-
-
         }
 
         //vkDeviceWaitIdle(kEngine.logicaldevice);

@@ -111,6 +111,7 @@ protected:
 	kSwapchain						m_Swapchain;
 	kRenderpaas						m_Renderpass;
 
+	VkExtent2D						m_Extent;
 	//Model							m_Model;
 
 	std::vector<kUniformBuffer*>	m_UniformBuffers;

@@ -8,20 +8,19 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	int width, height;
 	glfwGetFramebufferSize(m_pWindow, &width, &height);
-	VkExtent2D actualExtent = {
+	m_Extent = {
 		static_cast<uint32_t>(width),
 		static_cast<uint32_t>(height)
 	};
 
 
 	m_Context.createContext(m_pWindow);
-
-	m_Swapchain.createSwapchain(m_Context, actualExtent);
-
-	m_Renderpass.createRenderpass(m_Context, m_Swapchain.getSwapchainImageFormat());
-	m_Swapchain.createFramebuffers(m_Context, m_Renderpass);
+	m_Renderpass.createRenderpass(m_Context);
+	m_Swapchain.createSwapchain(m_Context, m_Extent, m_Renderpass);
 
 	GraphicsPipelineCreateInfo createinfo;
+	createinfo.vertex_shader_file = "shaders/computer_shader_vert.spv";
+	createinfo.frag_shader_file = "shaders/computer_shader_frag.spv";
 	createinfo.input_binding = Particle::getBindingDescription();
 	createinfo.input_attributes = Particle::getAttributeDescriptions();
 	m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);
@@ -193,7 +192,7 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	renderPassInfo.renderPass = m_Renderpass;
 	renderPassInfo.framebuffer = m_Swapchain.getFramebuffer(imageIndex);
 	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = m_Swapchain.getSwapExtent();
+	renderPassInfo.renderArea.extent = m_Extent;
 
 	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
 	renderPassInfo.clearValueCount = 1;
@@ -206,15 +205,15 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)m_Swapchain.getSwapExtent().width;
-	viewport.height = (float)m_Swapchain.getSwapExtent().height;
+	viewport.width = (float)m_Extent.width;
+	viewport.height = (float)m_Extent.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = m_Swapchain.getSwapExtent();
+	scissor.extent = m_Extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 	//VkBuffer vertexBuffers[] = { m_Model.getVertexBuffer() };

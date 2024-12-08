@@ -82,18 +82,22 @@ public:
 	void frameChanged() { framebufferResized = true; }
 
 protected:
-
-	void recreateSwapChain();
-
-	void recordCommandBuffer(uint32_t imageIndex);
-
 	void createSyncObjects();
-	void createCommandBuffers();
-	void createDescriptorSets(VkDeviceSize bufferSize);
+	void recreateSwapChain();
+	VkExtent2D chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities);
+
 	void createUniformBuffers(VkDeviceSize bufferSize);
 	void updateUniformBuffer(uint32_t currentImage);
 
-	VkExtent2D chooseSwapExtent(GLFWwindow * pwindow, const VkSurfaceCapabilitiesKHR & capabilities);
+	void createCommandBuffers();
+	void createDescriptorSets(VkDeviceSize bufferSize);
+	void recordCommandBuffer(uint32_t imageIndex);
+
+
+
+
+
+
 
 protected:
 

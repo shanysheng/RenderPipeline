@@ -8,21 +8,15 @@
 
 void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipelineCreateInfo& createinfo) {
 
-    //createDescriptorSetLayout(contextref);
+    createDescriptorSetLayout(contextref);
 
     //auto vertShaderCode = readFile("shaders/ubo_vert.spv");
     //auto fragShaderCode = readFile("shaders/ubo_frag.spv");
     //auto vertShaderCode = readFile("shaders/texture_vert.spv");
     //auto fragShaderCode = readFile("shaders/texture_frag.spv");
 
-    //VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/texture_vert.spv");
-    //VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/texture_frag.spv");
-
-    //auto vertShaderCode = readFile("shaders/computer_shader_vert.spv");
-    //auto fragShaderCode = readFile("shaders/computer_shader_frag.spv");
-
-    VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/computer_shader_vert.spv");
-    VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/computer_shader_frag.spv");
+    VkShaderModule vertShaderModule = contextref.createShaderModule(createinfo.vertex_shader_file);
+    VkShaderModule fragShaderModule = contextref.createShaderModule(createinfo.frag_shader_file);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -138,36 +132,38 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     vkDestroyShaderModule(contextref.logicaldevice, vertShaderModule, nullptr);
 }
 
-//
-//void kGraphicPipeline::createDescriptorSetLayout(kContext& contextref) {
-//	VkDescriptorSetLayoutBinding uboLayoutBinding{};
-//	uboLayoutBinding.binding = 0;
-//	uboLayoutBinding.descriptorCount = 1;
-//	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-//	uboLayoutBinding.pImmutableSamplers = nullptr;
-//	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-//
-//	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-//	samplerLayoutBinding.binding = 1;
-//	samplerLayoutBinding.descriptorCount = 1;
-//	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-//	samplerLayoutBinding.pImmutableSamplers = nullptr;
-//	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-//
-//	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
-//	VkDescriptorSetLayoutCreateInfo layoutInfo{};
-//	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-//	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-//	layoutInfo.pBindings = bindings.data();
-//
-//	if (vkCreateDescriptorSetLayout(contextref.logicaldevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-//		throw std::runtime_error("failed to create descriptor set layout!");
-//	}
-//}
+
+void kGraphicPipeline::createDescriptorSetLayout(kContext& contextref) {
+	VkDescriptorSetLayoutBinding uboLayoutBinding{};
+	uboLayoutBinding.binding = 0;
+	uboLayoutBinding.descriptorCount = 1;
+	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	uboLayoutBinding.pImmutableSamplers = nullptr;
+	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+	samplerLayoutBinding.binding = 1;
+	samplerLayoutBinding.descriptorCount = 1;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerLayoutBinding.pImmutableSamplers = nullptr;
+	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+	layoutInfo.pBindings = bindings.data();
+
+	if (vkCreateDescriptorSetLayout(contextref.logicaldevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create descriptor set layout!");
+	}
+}
 
 void kGraphicPipeline::cleanupGraphicsPipeline(kContext& contextref) {
 
     vkDestroyPipeline(contextref.logicaldevice, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(contextref.logicaldevice, pipelineLayout, nullptr);
-    //vkDestroyDescriptorSetLayout(contextref.logicaldevice, descriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(contextref.logicaldevice, descriptorSetLayout, nullptr);
+
+    std::cout << "cleanup cleanupGraphicsPipeline" << std::endl;
 }

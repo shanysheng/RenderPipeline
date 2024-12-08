@@ -14,6 +14,8 @@ kBuffer::~kBuffer()
 void  kBuffer::cleanupBuffer(kContext& contextref) {
     vkDestroyBuffer(contextref.logicaldevice, m_vkBuffer, nullptr);
     vkFreeMemory(contextref.logicaldevice, m_vkBufferMemory, nullptr);
+
+    std::cout << "cleanup kBuffer" << std::endl;
 }
 
 void kBuffer::createVertexBuffer(kContext& contextref, const char* pbuffer, size_t buffersize) {
