@@ -16,10 +16,15 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	m_Swapchain.createSwapchain(m_Context, actualExtent);
 
-	m_Renderpass.createRenderpass(m_Context, m_Swapchain.getSwapchainImageFormat());
+	VkFormat colorformat = m_Swapchain.getSwapchainImageFormat();
+	VkFormat depthformat = m_Swapchain.getDepthFormat();
+	m_Renderpass.createRenderpass(m_Context, colorformat, depthformat);
+
 	m_Swapchain.createFramebuffers(m_Context, m_Renderpass);
 
 	GraphicsPipelineCreateInfo createinfo;
+	createinfo.vertex_shader_file = "shaders/texture_vert.spv";
+	createinfo.frag_shader_file = "shaders/texture_frag.spv";
 	createinfo.input_binding = Vertex::getBindingDescription();
 	createinfo.input_attributes = Vertex::getAttributeDescriptions();
 	m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);
@@ -27,8 +32,6 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	m_Model.Load(m_Context);
 
-	//createVertexBuffer(*this, vertices.data(), vertices.size());
-	//createIndexBuffer(*this, indices.data(), indices.size());
 	createUniformBuffers(sizeof(UniformBufferObject));
 	createDescriptorSets(sizeof(UniformBufferObject));
 
@@ -109,7 +112,7 @@ void kEngine::createDescriptorSets(VkDeviceSize bufferSize) {
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = m_UniformBuffers[i]->getBuffer();
 		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBufferObject);
+		bufferInfo.range = bufferSize;
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -181,9 +184,12 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = m_Swapchain.getSwapExtent();
 
-	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+	clearValues[1].depthStencil = { 1.0f, 0 };
+
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 

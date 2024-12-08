@@ -40,9 +40,14 @@ public:
 	void createContext(GLFWwindow* pwindow);
 	void cleanupContext();
 
-	VkImageView createImageView(VkImage image, VkFormat format);
+	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	VkShaderModule createShaderModule(const std::string& filename);
+
+	void createImage(uint32_t width, uint32_t height, VkFormat format, 
+					VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
+					VkImage& image, VkDeviceMemory& imageMemory);
+
 
 	VkCommandBuffer beginSingleTimeCommands();
 	void endSingleTimeCommands( VkCommandBuffer commandBuffer);
@@ -51,6 +56,9 @@ public:
 	uint32_t findMemoryType(kContext& contextref, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
+
+	VkFormat findDepthFormat();
+
 
 protected:
 	void createInstance();
@@ -62,9 +70,10 @@ protected:
 	void createCommandPool();
 	void createDescriptorPool();
 
-
 	void cleanupDebugMessenger(VkInstance pinst);
 
+	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	bool hasStencilComponent(VkFormat format);
 
 	bool checkDeviceExtensionSupport(VkPhysicalDevice pphysicaldevice);
 	bool isDeviceSuitable(VkPhysicalDevice pphysicaldevice, VkSurfaceKHR psurface);

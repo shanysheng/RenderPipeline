@@ -16,8 +16,8 @@
 #include "trangles.h"
 
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+const uint32_t WIDTH = 1280;
+const uint32_t HEIGHT = 720;
 
 
 class HelloTriangleApplication {

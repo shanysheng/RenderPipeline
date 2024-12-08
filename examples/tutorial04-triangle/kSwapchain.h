@@ -28,10 +28,11 @@ public:
 	VkFramebuffer getFramebuffer(int index) { return swapChainFramebuffers[index]; }
 	VkExtent2D getSwapExtent() { return swapChainExtent; }
 	VkFormat getSwapchainImageFormat() { return swapChainImageFormat; }
-
+	VkFormat getDepthFormat() { return depthFormat; }
 
 protected:
 	void createSwapchainImageViews(kContext& contextref);
+	void createDepthResources(kContext& contextref);
 
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -44,5 +45,11 @@ protected:
 	VkExtent2D					swapChainExtent;
 	std::vector<VkImageView>	swapChainImageViews;
 	std::vector<VkFramebuffer>	swapChainFramebuffers;
+
+
+	VkImage						depthImage;
+	VkFormat					depthFormat;
+	VkDeviceMemory				depthImageMemory;
+	VkImageView					depthImageView;
 };
 

@@ -15,8 +15,8 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     //auto vertShaderCode = readFile("shaders/texture_vert.spv");
     //auto fragShaderCode = readFile("shaders/texture_frag.spv");
 
-    VkShaderModule vertShaderModule = contextref.createShaderModule("shaders/model_depth_vert.spv");
-    VkShaderModule fragShaderModule = contextref.createShaderModule("shaders/model_depth_frag.spv");
+    VkShaderModule vertShaderModule = contextref.createShaderModule(createinfo.vertex_shader_file);
+    VkShaderModule fragShaderModule = contextref.createShaderModule(createinfo.frag_shader_file);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

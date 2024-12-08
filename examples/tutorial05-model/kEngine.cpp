@@ -22,6 +22,8 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 	m_Swapchain.createFramebuffers(m_Context, m_Renderpass);
 
 	GraphicsPipelineCreateInfo createinfo;
+	createinfo.vertex_shader_file = "shaders/model_depth_vert.spv";
+	createinfo.frag_shader_file = "shaders/model_depth_frag.spv";
 	createinfo.input_binding = Vertex::getBindingDescription();
 	createinfo.input_attributes = Vertex::getAttributeDescriptions();
 	m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);
@@ -109,7 +111,7 @@ void kEngine::createDescriptorSets(VkDeviceSize bufferSize) {
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = m_UniformBuffers[i]->getBuffer();
 		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBufferObject);
+		bufferInfo.range = bufferSize;
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
