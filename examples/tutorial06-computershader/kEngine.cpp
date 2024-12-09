@@ -31,21 +31,13 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 	//m_Model.Load(m_Context);
 	createShaderStorageBuffers();
 
-
-	//createVertexBuffer(*this, vertices.data(), vertices.size());
-	//createIndexBuffer(*this, indices.data(), indices.size());
 	createUniformBuffers(sizeof(particleUniformBufferObject));
-
 	//createDescriptorSets(sizeof(particleUniformBufferObject));
 	createComputeDescriptorSets(sizeof(particleUniformBufferObject));
 
 	createCommandBuffers();
 	createComputeCommandBuffers();
-
 	createSyncObjects();
-
-
-
 }
 
 VkExtent2D kEngine::chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities) {
@@ -248,27 +240,28 @@ void kEngine::drawFrame() {
 	// Compute submission        
 	vkWaitForFences(m_Context.logicaldevice, 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-	updateUniformBuffer(currentFrame);
+	{
+		vkResetFences(m_Context.logicaldevice, 1, &computeInFlightFences[currentFrame]);
+		vkResetCommandBuffer(computeCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
-	vkResetFences(m_Context.logicaldevice, 1, &computeInFlightFences[currentFrame]);
+		updateUniformBuffer(currentFrame);
+		recordComputeCommandBuffer(computeCommandBuffers[currentFrame]);
 
-	vkResetCommandBuffer(computeCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-	recordComputeCommandBuffer(computeCommandBuffers[currentFrame]);
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &computeCommandBuffers[currentFrame];
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = &computeFinishedSemaphores[currentFrame];
 
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &computeCommandBuffers[currentFrame];
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = &computeFinishedSemaphores[currentFrame];
+		if (vkQueueSubmit(m_Context.computeQueue, 1, &submitInfo, computeInFlightFences[currentFrame]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to submit compute command buffer!");
+		};
+	}
 
-	if (vkQueueSubmit(m_Context.computeQueue, 1, &submitInfo, computeInFlightFences[currentFrame]) != VK_SUCCESS) {
-		throw std::runtime_error("failed to submit compute command buffer!");
-	};
 
 	vkWaitForFences(m_Context.logicaldevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(m_Context.logicaldevice, m_Swapchain.getSwapchain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-
 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 		recreateSwapChain();
 		return;
@@ -277,51 +270,55 @@ void kEngine::drawFrame() {
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	updateUniformBuffer(currentFrame);
 
-
-	vkResetFences(m_Context.logicaldevice, 1, &inFlightFences[currentFrame]);
-
-	vkResetCommandBuffer(graphicCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-	recordCommandBuffer(imageIndex);
-
+	// submit command wait image available semaphore and signal render finished semaphore
+	VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
 	VkSemaphore waitSemaphores[] = { computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
-	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	submitInfo = {};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	submitInfo.waitSemaphoreCount = 2;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = waitStages;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &graphicCommandBuffers[currentFrame];
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
+	{
+		vkResetFences(m_Context.logicaldevice, 1, &inFlightFences[currentFrame]);
+		vkResetCommandBuffer(graphicCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
-	if (vkQueueSubmit(m_Context.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-		throw std::runtime_error("failed to submit draw command buffer!");
+		updateUniformBuffer(currentFrame);
+		recordCommandBuffer(imageIndex);
+
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+		submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.waitSemaphoreCount = 2;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &graphicCommandBuffers[currentFrame];
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		if (vkQueueSubmit(m_Context.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to submit draw command buffer!");
+		}
 	}
 
-	VkPresentInfoKHR presentInfo{};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	{
+		// present command wait render finished semaphore 
+		VkSwapchainKHR swapChains[] = { m_Swapchain.getSwapchain() };
 
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = &renderFinishedSemaphores[currentFrame];
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = signalSemaphores;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = swapChains;
+		presentInfo.pImageIndices = &imageIndex;
 
-	VkSwapchainKHR swapChains[] = { m_Swapchain.getSwapchain() };
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = swapChains;
-
-	presentInfo.pImageIndices = &imageIndex;
-
-	result = vkQueuePresentKHR(m_Context.presentQueue, &presentInfo);
-
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-		framebufferResized = false;
-		recreateSwapChain();
-	}
-	else if (result != VK_SUCCESS) {
-		throw std::runtime_error("failed to present swap chain image!");
+		result = vkQueuePresentKHR(m_Context.presentQueue, &presentInfo);
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
+			framebufferResized = false;
+			recreateSwapChain();
+		}
+		else if (result != VK_SUCCESS) {
+			throw std::runtime_error("failed to present swap chain image!");
+		}
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -329,21 +326,7 @@ void kEngine::drawFrame() {
 
 void kEngine::cleanEngine() {
 
-	m_Swapchain.cleanupSwapChain(m_Context);
-	m_GraphicPipeline.cleanupGraphicsPipeline(m_Context);
-	m_ComputePipeline.cleanupComputePipeline(m_Context);
-	m_Renderpass.cleanupRenderpass(m_Context);
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		m_UniformBuffers[i]->cleanupGPUResource(m_Context);
-	}
-
 	//m_Model.Unload(m_Context);
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		vkDestroyBuffer(m_Context.logicaldevice, shaderStorageBuffers[i], nullptr);
-		vkFreeMemory(m_Context.logicaldevice, shaderStorageBuffersMemory[i], nullptr);
-	}
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		vkDestroySemaphore(m_Context.logicaldevice, renderFinishedSemaphores[i], nullptr);
@@ -354,6 +337,19 @@ void kEngine::cleanEngine() {
 		vkDestroyFence(m_Context.logicaldevice, computeInFlightFences[i], nullptr);
 	}
 
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		vkDestroyBuffer(m_Context.logicaldevice, shaderStorageBuffers[i], nullptr);
+		vkFreeMemory(m_Context.logicaldevice, shaderStorageBuffersMemory[i], nullptr);
+	}
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		m_UniformBuffers[i]->cleanupGPUResource(m_Context);
+	}
+
+	m_Swapchain.cleanupSwapChain(m_Context);
+	m_GraphicPipeline.cleanupGraphicsPipeline(m_Context);
+	m_ComputePipeline.cleanupComputePipeline(m_Context);
+	m_Renderpass.cleanupRenderpass(m_Context);
 	m_Context.cleanupContext();
 
 }
