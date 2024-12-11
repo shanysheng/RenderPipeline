@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{dea630ec-fe87-48a4-bfe3-37ada87a732f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tutorial04-triangle.cpp">
@@ -79,7 +82,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\26_shader_textures.frag" />
-    <None Include="..\..\bin\x64\shaders\26_shader_textures.vert" />
+    <None Include="..\..\bin\x64\shaders\26_shader_textures.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\bin\x64\shaders\26_shader_textures.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

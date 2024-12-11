@@ -35,7 +35,14 @@
 //
 
 // VkPipelineLayout，VkPipeline的功能差异
-// VkDescriptorSetLayout， VkDescriptorPool和VkDescriptorSet功能差异
+// VkPipelineLayout包括VkDescriptorSetLayout和push const 
+// VkDescriptorSetLayout描述了通过VkDescriptorSetLayoutBinding描述VkPipelineLayout的Descriptor的布局；
+// 一般VkPipeline对应一个VkPipelineLayout，一个VkPipelineLayout对应一个或者多个VkDescriptorSetLayout；
+// 
+// VkDescriptorSet则是具体绘制过程（一个drawcall）对应的uniform buffer、textrue sampe等信息，通过VkDescriptorSetLayout布局进行穿件；
+// 每个drawcall，绑定VkPipeline和对应的VkPipelineLayout，以及具体VkDescriptorSet
+// 比如10个不同的模型采用同意个pipeline绘制，则会采用相同的VkPipeline和VkPipelineLayout，
+// 已经每个模型各自的VkDescriptorSet，其中包含了各自的sample、uniform buffer、shader storage buffer等特有参数
 
 
 // 渲染过程是异步的，获取swap chain image，执行command buffer，并把结果写入swap chain image，写入完成后可以进行present
