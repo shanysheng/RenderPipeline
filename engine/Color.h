@@ -52,6 +52,14 @@ namespace pipeline{
         void SetHex (uint32_t hex);
         uint32_t GetHex () const;
     };
+
+    inline Color::Color()
+    {
+        r = White.r;
+        g = White.g;
+        b = White.b;
+        a = White.a;
+    }
     
     inline Color::Color(float inr, float ing, float inb, float ina)
     {
@@ -213,7 +221,7 @@ namespace pipeline{
         a = inA;
     }
     
-    void Color::SetHex (uint32_t hex)
+    inline void Color::SetHex (uint32_t hex)
     {
         Set(float (hex >> 24) / 255.0f,
             float ((hex >> 16) & 255) / 255.0f,
@@ -221,7 +229,7 @@ namespace pipeline{
             float (hex & 255) / 255.0f);
     }
     
-    uint32_t Color::GetHex () const
+    inline uint32_t Color::GetHex () const
     {
         uint32_t hex = ((int32_t)(255.0f*Mathf::Clamp(r, 0.0f, 1.0f)) << 24) |
                        ((int32_t)(255.0f*Mathf::Clamp(g, 0.0f, 1.0f)) << 16) |

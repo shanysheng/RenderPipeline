@@ -52,6 +52,11 @@ namespace pipeline{
         if( QueueIndex < 0 || ((size_t)QueueIndex) >= m_InRenderQueues.size() || m_InRenderQueues[QueueIndex] == NULL )
             return;
     }
+
+    void IRenderPipeline::DrawElement(CFrameInfo*, SGNode*)
+    {
+
+    }
     
     void IRenderPipeline::SetInCamera( CCamera* pCamera )
     {
