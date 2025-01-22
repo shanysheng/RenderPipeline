@@ -15,7 +15,7 @@ namespace pipeline {
         return 1;
     }
 
-    int kRenderingEngine::Initialize(const CWinInfo& WinInfo) {
+    int kRenderingEngine::Initialize(const kWinInfo& WinInfo) {
         return 1;
     }
 

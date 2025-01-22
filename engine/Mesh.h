@@ -31,6 +31,9 @@ namespace pipeline {
     class kMesh
     {
     public:
+        kMesh();
+        virtual ~kMesh();
+
         kGPUChunkInfo& GetColorGPUChunkInfo();
         kGPUChunkInfo& GetNormalGPUChunkInfo();
         kGPUChunkInfo& GetCoordGPUChunkInfo();

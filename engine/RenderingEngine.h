@@ -16,21 +16,19 @@ namespace pipeline {
     class kSGNode;
     class kScene;
     class CCamera;
-    class CCameraManager;
     class IPreRender;
-    class CCameraManager;
     class CLocalClock;
     class CSynClock;
     
     class IRenderTarget;
     class kRenderQueueManager;
-    class CCameraManager;
-    class CRenderTargetManager;
+    class kCameraManager;
+    class kRenderTargetManager;
     class kPreRenderManager;
     class kGPUResourceManipulator;
     class kRenderPipelineManager;
     
-    class CWinInfo
+    class kWinInfo
     {
     public:
     };
@@ -43,7 +41,7 @@ namespace pipeline {
         virtual ~kRenderingEngine(void);
         
         virtual int Configure( const std::string& ConfigFileName );
-        virtual int Initialize( const CWinInfo& WinInfo );
+        virtual int Initialize( const kWinInfo& WinInfo );
         virtual void Finalize();
         
         int OpenSceneModel( const std::string& SceneModelName, int ActiveSceneGraph =0 );
@@ -70,8 +68,8 @@ namespace pipeline {
     protected:
 
         kRenderQueueManager*					GetRenderQueueManager()		{return m_pRenderQueueMgr;}
-        CCameraManager*							GetCameraManager()			{return m_pCameraMgr;}
-        CRenderTargetManager*					GetRenderTargetManager()	{return m_pRenderTargetMgr;}
+        kCameraManager*							GetCameraManager()			{return m_pCameraMgr;}
+        kRenderTargetManager*					GetRenderTargetManager()	{return m_pRenderTargetMgr;}
         kPreRenderManager*						GetPreRenderManager()		{return m_pPreRenderMgr;}
         kGPUResourceManipulator*				GetGPUResourceManipulator()	{return m_pGPUResourceMpr;}
         kRenderPipelineManager*					GetRenderPipelineManager()	{return m_pRenderPipelineMgr;}
@@ -93,14 +91,14 @@ namespace pipeline {
         
     protected:
         
-        CWinInfo								m_WinInfo;
+        kWinInfo								m_WinInfo;
         
         kGPUResourceManipulator*				m_pGPUResourceMpr;
         
         kRenderQueueManager*   					m_pRenderQueueMgr;
-        CCameraManager*							m_pCameraMgr;
+        kCameraManager*							m_pCameraMgr;
 
-        CRenderTargetManager*					m_pRenderTargetMgr;
+        kRenderTargetManager*					m_pRenderTargetMgr;
         kPreRenderManager*						m_pPreRenderMgr;
         kRenderPipelineManager*					m_pRenderPipelineMgr;
 

@@ -16,6 +16,13 @@
 #include <unordered_map>
 
 
+enum kGPU_BUFFER_TYPE {
+	kGPU_BUFFER_UNKNOW = -1,
+	kGPU_BUFFER_INDEXBUFFER,
+	kGPU_BUFFER_VERTEXBUFFER,
+};
+
+
 
 
 #endif

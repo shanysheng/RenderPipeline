@@ -16,3 +16,7 @@ void kUniformBuffer::cleanupGPUResource(kContext& contextref) {
 	vkFreeMemory(contextref.logicaldevice, m_UniformBuffersMemory, nullptr);
 }
 
+void kUniformBuffer::updateBuffer(const void* pbuffer, uint32_t bufferSize) {
+	memcpy(m_UniformBuffersMapped, pbuffer, bufferSize);
+}
+

@@ -158,7 +158,7 @@ void kEngine::updateUniformBuffer(uint32_t currentImage) {
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_Extent.width / (float)m_Extent.height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
-	memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
+	m_UniformBuffers[currentImage]->updateBuffer(&ubo, sizeof(ubo));
 }
 
 void kEngine::recordCommandBuffer(uint32_t imageIndex) {

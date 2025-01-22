@@ -17,7 +17,7 @@ namespace pipeline{
         friend class kGPUResourceManipulator;
         IGPUResource();
         
-        uint32_t	GetRefenceCount()const{return m_ReferenceCount;}
+        uint32_t GetRefenceCount()const{return m_ReferenceCount;}
         int32_t	GetGPUMemoryCost() const{return m_GPUMemoryCost;}
         
         virtual void Bind()const{};

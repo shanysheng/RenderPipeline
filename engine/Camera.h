@@ -26,7 +26,6 @@ namespace pipeline {
     public:
         kCamera();
         ~kCamera();
-
  
         bool ViewportToWorld( const kVector2f& pt, kVector3f& start, kVector3f& dir ) const;
         bool ViewportToWorld( const kVector2f& pt, kVector3f& worldpt ) const;

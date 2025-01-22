@@ -3,11 +3,11 @@
 
 namespace pipeline {
 
-	CImageTextureGPUResource::CImageTextureGPUResource() {
+	kImageTextureGPUResource::kImageTextureGPUResource() {
 
 	}
 
-	CImageTextureGPUResource::~CImageTextureGPUResource() {
+	kImageTextureGPUResource::~kImageTextureGPUResource() {
 
 	}
 }

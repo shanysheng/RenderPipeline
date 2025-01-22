@@ -31,7 +31,7 @@ namespace pipeline{
         virtual void AfterFreeGPUResources(CFrameInfo*pFI, kSGNode * pFeature, IRenderingAttribute * pAttrib ){};
         
         
-        virtual void	ApplyForGPUResources(const CFrameInfo*, const CCamera *, const CRenderQueueElement *,
+        virtual void ApplyForGPUResources(const CFrameInfo*, const CCamera *, const CRenderQueueElement *,
                                              IRenderingAttribute * pAttrib, std::vector<kSGNode*>& GPUResourceApplicants) = 0;
         
         virtual	bool  PrepareResources(const CFrameInfo*, const CCamera *, const CRenderQueueElement *,

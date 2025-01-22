@@ -2,5 +2,11 @@
 
 namespace pipeline {
     
-    
+    kMesh::kMesh() {
+
+    }
+
+    kMesh::~kMesh() {
+
+    }
 }

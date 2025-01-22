@@ -11,18 +11,21 @@
 
 namespace pipeline {
     
-    
-    class GeometryBuffer;
-    class kShader;
-    class kTexture;
+    class kBufferInfo;
+    class kImageInfo;
 
-    
+    class kShader;
+    class kBufferGPUResource;
+    class kImageTextureGPUResource;
+
     class kGPUResourceManipulator
     {
     public:
         kGPUResourceManipulator(void);
         virtual ~kGPUResourceManipulator(void);
         
+        kBufferGPUResource* GiveResource(kBufferInfo*);
+        kImageTextureGPUResource* GiveResource(kImageInfo*);
     };
 }
 

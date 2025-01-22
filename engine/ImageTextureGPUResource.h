@@ -4,11 +4,20 @@
 
 namespace pipeline {
 
-	class CImageTextureGPUResource : public IGPUResource
+
+	struct kImageInfo {
+        uint32_t m_Width;
+		uint32_t m_Height;
+		uint32_t m_Components;
+		uint32_t m_DataSize;
+		uint8_t* m_pData;
+	};
+
+	class kImageTextureGPUResource : public IGPUResource
 	{
 	public:
-		CImageTextureGPUResource();
-		virtual ~CImageTextureGPUResource();
+		kImageTextureGPUResource();
+		virtual ~kImageTextureGPUResource();
 
 	protected:
 
