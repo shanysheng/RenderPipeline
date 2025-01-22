@@ -1,6 +1,8 @@
 .vscode/*
 *.exe
 *.pdb
+*.idb
+lib/*.lib
 .vs
 Debug/
 Release/

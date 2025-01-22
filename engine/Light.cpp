@@ -2,5 +2,11 @@
 
 namespace pipeline {
     
-    
+    kLight::kLight() {
+
+    }
+
+    kLight::~kLight() {
+
+    }
 }

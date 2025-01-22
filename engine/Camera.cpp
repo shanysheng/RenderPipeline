@@ -2,107 +2,107 @@
 
 namespace pipeline {
    
-    Camera::Camera()
+    kCamera::kCamera()
     {
         
     }
     
-    Camera::~Camera()
+    kCamera::~kCamera()
     {
         
     }
     
-    bool Camera::ViewportToWorld( const Vector2f& pt, Vector3f& start, Vector3f& dir ) const
+    bool kCamera::ViewportToWorld( const kVector2f& pt, kVector3f& start, kVector3f& dir ) const
     {
         return false;
     }
     
-    bool Camera::ViewportToWorld( const Vector2f& pt, Vector3f& worldpt ) const
+    bool kCamera::ViewportToWorld( const kVector2f& pt, kVector3f& worldpt ) const
     {
         return false;
     }
     
-    bool Camera::ViewportToWorld( const Vector2f& pt, Vector3f& worldpt, const Vector3f& planept, const Vector3f& planenormal ) const
+    bool kCamera::ViewportToWorld( const kVector2f& pt, kVector3f& worldpt, const kVector3f& planept, const kVector3f& planenormal ) const
     {
         return false;
     }
     
-    bool Camera::WorldToViewport(const Vector3f& point, Vector2f& viewport_pt ) const
+    bool kCamera::WorldToViewport(const kVector3f& point, kVector2f& viewport_pt ) const
     {
         return false;
     }
     
-    Ray Camera::ViewportPointToRay (const Vector3f& position)
+    kRay kCamera::ViewportPointToRay (const kVector3f& position)
     {
-        return Ray();
+        return kRay();
     }
     
-    Vector3f Camera::ViewportToScreenPoint (const Vector3f& position)
+    kVector3f kCamera::ViewportToScreenPoint (const kVector3f& position)
     {
-        return Vector3f();
+        return kVector3f();
     }
     
-    Vector3f Camera::ViewportToWorldPoint (const Vector3f& position)
+    kVector3f kCamera::ViewportToWorldPoint (const kVector3f& position)
     {
-        return Vector3f();
+        return kVector3f();
     }
     
-    Vector3f Camera::WorldToScreenPoint (const Vector3f& position)
+    kVector3f kCamera::WorldToScreenPoint (const kVector3f& position)
     {
-        return Vector3f();
+        return kVector3f();
     }
     
-    Vector3f Camera::WorldToViewportPoint (const Vector3f& position)
+    kVector3f kCamera::WorldToViewportPoint (const kVector3f& position)
     {
-        return Vector3f();
+        return kVector3f();
     }
     
-    SGNode* Camera::RaycastTry (const Ray& ray, float distance, int layerMask)
+    kSGNode* kCamera::RaycastTry (const kRay& ray, float distance, int layerMask)
     {
         return NULL;
     }
     
-    SGNode* Camera::RaycastTry2D (const Ray& ray, float distance, int layerMask)
+    kSGNode* kCamera::RaycastTry2D (const kRay& ray, float distance, int layerMask)
     {
         return NULL;
     }
     
-    Ray Camera::ScreenPointToRay (const Vector3f& position)
+    kRay kCamera::ScreenPointToRay (const kVector3f& position)
     {
-        return Ray();
+        return kRay();
     }
     
-    Vector3f Camera::ScreenToViewportPoint (const Vector3f& position)
+    kVector3f kCamera::ScreenToViewportPoint (const kVector3f& position)
     {
-        return Vector3f();
+        return kVector3f();
     }
     
-    Vector3f Camera::ScreenToWorldPoint (const Vector3f& position)
+    kVector3f kCamera::ScreenToWorldPoint (const kVector3f& position)
     {
-        return Vector3f();
+        return kVector3f();
     }
     
-    void Camera::CopyFrom (const Camera& other)
-    {
-        
-    }
-    
-    void Camera::CalculateFrustumCorners (Rect viewport, float z, Vector3f outCorners[])
+    void kCamera::CopyFrom (const kCamera& other)
     {
         
     }
     
-    void Camera::DoClear ()
+    void kCamera::CalculateFrustumCorners (kRect viewport, float z, kVector3f outCorners[])
     {
         
     }
     
-    void Camera::Render ()
+    void kCamera::DoClear ()
     {
         
     }
     
-    bool Camera::RenderToCubemap (Texture* cubemap)
+    void kCamera::Render ()
+    {
+        
+    }
+    
+    bool kCamera::RenderToCubemap (kTexture* cubemap)
     {
         return false;
     }

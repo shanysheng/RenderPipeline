@@ -47,7 +47,7 @@ namespace pipeline{
         virtual void _DoAfterLastFrame( CFrameInfo * pFI);
         
     private:
-        friend class CRenderingEngine;
+        friend class kRenderingEngine;
         
     protected:
         bool m_bStopped;

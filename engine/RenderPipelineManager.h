@@ -14,26 +14,26 @@
 
 namespace pipeline{
     
-    class CRenderPipelineManager
+    class kRenderPipelineManager
     {
     public:
-        CRenderPipelineManager();
-        virtual ~CRenderPipelineManager();
+        kRenderPipelineManager();
+        virtual ~kRenderPipelineManager();
         
         IRenderPipeline*		Give( const std::string& Name, const std::string& PrototypeName);
         IRenderPipeline*		operator [] (const std::string& Name);
         
-        CRenderModuleManager&	GetRenderModuleManager();
+        kRenderModuleManager&	GetRenderModuleManager();
         
-        void	SetRenderingEngine( CRenderingEngine * pRE ){ m_pRenderingEngine = pRE; }
+        void	SetRenderingEngine( kRenderingEngine * pRE ){ m_pRenderingEngine = pRE; }
         void	Register(const std::string& PrototypeName, IRenderPipeline * pPrototype);
         
         void	ClearPrototypes();
         void	ClearRenderPipeline();
         
     protected:
-        CRenderingEngine*   	m_pRenderingEngine;
-        CRenderModuleManager	m_RenderModuleMgr;
+        kRenderingEngine*   	m_pRenderingEngine;
+        kRenderModuleManager	m_RenderModuleMgr;
         
         std::unordered_map< std::string, IRenderPipeline *> 	m_Prototypes;
         std::unordered_map< std::string, IRenderPipeline *> 	m_RenderPipelines;

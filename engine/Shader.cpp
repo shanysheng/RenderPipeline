@@ -3,275 +3,275 @@
 namespace pipeline {
     
     
-    Shader::Shader()
+    kShader::kShader()
     {
         
     }
     
     
-    void Shader::Bind() const
+    void kShader::Bind() const
     {
         
     }
     
-    void Shader::Unbind() const
+    void kShader::Unbind() const
     {
         
     }
     
     
-    std::string Shader::IDToProperty (int id)
+    std::string kShader::IDToProperty (int id)
     {
         return "";
     }
     
-    bool Shader::IsKeywordEnabled (const std::string& keyword)
+    bool kShader::IsKeywordEnabled (const std::string& keyword)
     {
         return false;
     }
     
     
-    Color Shader::GetGlobalColor (const std::string& name)
+    kColor kShader::GetGlobalColor (const std::string& name)
     {
-        return Color();
+        return kColor();
     }
     
-    Color Shader::GetGlobalColor (int nameID)
+    kColor kShader::GetGlobalColor (int nameID)
     {
-        return Color();
+        return kColor();
     }
     
-    float Shader::GetGlobalFloat (int nameID)
-    {
-        return 0.0f;
-    }
-    
-    float Shader::GetGlobalFloat (const std::string& name)
+    float kShader::GetGlobalFloat (int nameID)
     {
         return 0.0f;
     }
     
-    void Shader::GetGlobalFloatArray (int nameID, std::vector<float>& values)
+    float kShader::GetGlobalFloat (const std::string& name)
+    {
+        return 0.0f;
+    }
+    
+    void kShader::GetGlobalFloatArray (int nameID, std::vector<float>& values)
     {
         
     }
     
-    void Shader::GetGlobalFloatArray (const std::string& name, std::vector<float>& values)
+    void kShader::GetGlobalFloatArray (const std::string& name, std::vector<float>& values)
     {
         
     }
     
-    float* Shader::GetGlobalFloatArray (int nameID)
+    float* kShader::GetGlobalFloatArray (int nameID)
     {
         return NULL;
     }
     
     
-    int Shader::GetGlobalInt (const std::string& name)
+    int kShader::GetGlobalInt (const std::string& name)
     {
         return 0;
     }
     
-    int Shader::GetGlobalInt (int nameID)
+    int kShader::GetGlobalInt (int nameID)
     {
         return 0;
     }
     
-    int Shader::GetGlobalIntImpl (int nameID)
+    int kShader::GetGlobalIntImpl (int nameID)
     {
         return 0;
     }
     
     
-    Matrix4x4f Shader::GetGlobalMatrix (int nameID)
+    kMatrix4x4f kShader::GetGlobalMatrix (int nameID)
     {
-        return Matrix4x4f();
+        return kMatrix4x4f();
     }
     
-    Matrix4x4f Shader::GetGlobalMatrix (const std::string& name)
+    kMatrix4x4f kShader::GetGlobalMatrix (const std::string& name)
     {
-        return Matrix4x4f();
+        return kMatrix4x4f();
     }
     
     
-    void Shader::GetGlobalMatrixArray (const std::string& name, std::vector<Matrix4x4f>& values)
-    {
-        
-    }
-    
-    Matrix4x4f* Shader::GetGlobalMatrixArray (const std::string& name)
-    {
-        return NULL;
-    }
-    
-    void Shader::GetGlobalMatrixArray (int nameID, std::vector<Matrix4x4f>& values)
+    void kShader::GetGlobalMatrixArray (const std::string& name, std::vector<kMatrix4x4f>& values)
     {
         
     }
     
-    Matrix4x4f* Shader::GetGlobalMatrixArray (int nameID)
+    kMatrix4x4f* kShader::GetGlobalMatrixArray (const std::string& name)
     {
         return NULL;
     }
     
-    
-    Texture* Shader::GetGlobalTexture (int nameID)
-    {
-        return NULL;
-    }
-    
-    Texture* Shader::GetGlobalTexture (const std::string& name)
-    {
-        return NULL;
-    }
-    
-    Vector4f Shader::GetGlobalVector (int nameID)
-    {
-        return Vector4f();
-    }
-    
-    Vector4f Shader::GetGlobalVector (const std::string& name)
-    {
-        return Vector4f();
-    }
-    
-    void Shader::GetGlobalVectorArray (const std::string& name, std::vector<Vector4f>& values)
+    void kShader::GetGlobalMatrixArray (int nameID, std::vector<kMatrix4x4f>& values)
     {
         
     }
     
-    void Shader::GetGlobalVectorArray (int nameID, std::vector<Vector4f>& values)
+    kMatrix4x4f* kShader::GetGlobalMatrixArray (int nameID)
+    {
+        return NULL;
+    }
+    
+    
+    kTexture* kShader::GetGlobalTexture (int nameID)
+    {
+        return NULL;
+    }
+    
+    kTexture* kShader::GetGlobalTexture (const std::string& name)
+    {
+        return NULL;
+    }
+    
+    kVector4f kShader::GetGlobalVector (int nameID)
+    {
+        return kVector4f();
+    }
+    
+    kVector4f kShader::GetGlobalVector (const std::string& name)
+    {
+        return kVector4f();
+    }
+    
+    void kShader::GetGlobalVectorArray (const std::string& name, std::vector<kVector4f>& values)
     {
         
     }
     
-    Vector4f* Shader::GetGlobalVectorArray (int nameID)
+    void kShader::GetGlobalVectorArray (int nameID, std::vector<kVector4f>& values)
+    {
+        
+    }
+    
+    kVector4f* kShader::GetGlobalVectorArray (int nameID)
     {
         return NULL;
     }
     
-    Vector4f* Shader::GetGlobalVectorArray (const std::string& name)
+    kVector4f* kShader::GetGlobalVectorArray (const std::string& name)
     {
         return NULL;
     }
     
     
-    int Shader::PropertyToID (const std::string& name)
+    int kShader::PropertyToID (const std::string& name)
     {
         return 0;
     }
     
-    void Shader::SetGlobalColor (const std::string& name, const Color& value)
+    void kShader::SetGlobalColor (const std::string& name, const kColor& value)
     {
         
     }
     
-    void Shader::SetGlobalColor (int nameID, const Color& value)
+    void kShader::SetGlobalColor (int nameID, const kColor& value)
     {
         
     }
     
-    void Shader::SetGlobalFloat (int nameID, float value)
+    void kShader::SetGlobalFloat (int nameID, float value)
     {
         
     }
     
-    void Shader::SetGlobalFloat (const std::string& name, float value)
+    void kShader::SetGlobalFloat (const std::string& name, float value)
     {
         
     }
     
-    void Shader::SetGlobalFloatArray (int nameID, std::vector<float>& values)
+    void kShader::SetGlobalFloatArray (int nameID, std::vector<float>& values)
     {
         
     }
     
-    void Shader::SetGlobalFloatArray (const std::string& name, std::vector<float>& values)
+    void kShader::SetGlobalFloatArray (const std::string& name, std::vector<float>& values)
     {
         
     }
     
-    void Shader::SetGlobalFloatArray (int nameID, float* values)
+    void kShader::SetGlobalFloatArray (int nameID, float* values)
     {
         
     }
     
-    void Shader::SetGlobalFloatArray (const std::string& name, float* values)
+    void kShader::SetGlobalFloatArray (const std::string& name, float* values)
     {
         
     }
     
-    void Shader::SetGlobalInt (const std::string& name, int value)
+    void kShader::SetGlobalInt (const std::string& name, int value)
     {
         
     }
     
-    void Shader::SetGlobalInt (int nameID, int value)
+    void kShader::SetGlobalInt (int nameID, int value)
     {
         
     }
     
-    void Shader::SetGlobalMatrix (const std::string& name, const Matrix4x4f& value)
+    void kShader::SetGlobalMatrix (const std::string& name, const kMatrix4x4f& value)
     {
         
     }
     
-    void Shader::SetGlobalMatrix (int nameID, const Matrix4x4f& value)
+    void kShader::SetGlobalMatrix (int nameID, const kMatrix4x4f& value)
     {
         
     }
     
-    void Shader::SetGlobalMatrixArray (int nameID, std::vector<Matrix4x4f>& values)
+    void kShader::SetGlobalMatrixArray (int nameID, std::vector<kMatrix4x4f>& values)
     {
         
     }
     
-    void Shader::SetGlobalMatrixArray (const std::string& name, std::vector<Matrix4x4f>& values)
+    void kShader::SetGlobalMatrixArray (const std::string& name, std::vector<kMatrix4x4f>& values)
     {
         
     }
     
-    void Shader::SetGlobalMatrixArray (const std::string& name, Matrix4x4f* values)
+    void kShader::SetGlobalMatrixArray (const std::string& name, kMatrix4x4f* values)
     {
         
     }
     
-    void Shader::SetGlobalMatrixArray (int nameID, Matrix4x4f* values)
+    void kShader::SetGlobalMatrixArray (int nameID, kMatrix4x4f* values)
     {
         
     }
     
-    void Shader::SetGlobalTexture (const std::string& name, Texture* value)
+    void kShader::SetGlobalTexture (const std::string& name, kTexture* value)
     {
         
     }
     
-    void Shader::SetGlobalVector (int nameID, const Vector4f& value)
+    void kShader::SetGlobalVector (int nameID, const kVector4f& value)
     {
         
     }
     
-    void Shader::SetGlobalVector (const std::string& name, const Vector4f& value)
+    void kShader::SetGlobalVector (const std::string& name, const kVector4f& value)
     {
         
     }
     
-    void Shader::SetGlobalVectorArray (int nameID, std::vector<Vector4f>& values)
+    void kShader::SetGlobalVectorArray (int nameID, std::vector<kVector4f>& values)
     {
         
     }
     
-    void Shader::SetGlobalVectorArray (const std::string& name, std::vector<Vector4f>& values)
+    void kShader::SetGlobalVectorArray (const std::string& name, std::vector<kVector4f>& values)
     {
         
     }
     
-    void Shader::SetGlobalVectorArray (int nameID, Vector4f* values)
+    void kShader::SetGlobalVectorArray (int nameID, kVector4f* values)
     {
         
     }
     
-    void Shader::SetGlobalVectorArray (const std::string& name, Vector4f* values)
+    void kShader::SetGlobalVectorArray (const std::string& name, kVector4f* values)
     {
         
     }

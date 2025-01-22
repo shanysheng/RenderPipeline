@@ -13,11 +13,11 @@
 namespace pipeline{
     
     class IRenderModule;
-    class CRenderModuleManager
+    class kRenderModuleManager
     {
     public:
-        CRenderModuleManager();
-        virtual ~CRenderModuleManager();
+        kRenderModuleManager();
+        virtual ~kRenderModuleManager();
         
         void				Register(const std::string& PrototypeName, IRenderModule * pPrototype);
         

@@ -3,18 +3,18 @@
 
 namespace pipeline
 {
-    CPreRenderManager::CPreRenderManager()
+    kPreRenderManager::kPreRenderManager()
     {
         
     }
     
-    CPreRenderManager::~CPreRenderManager()
+    kPreRenderManager::~kPreRenderManager()
     {
         ClearPreRenders();
         ClearPrototypes();
     }
     
-    IPreRender * CPreRenderManager::Give( const std::string& PreRenderMame, const std::string& PrototypeName )
+    IPreRender * kPreRenderManager::Give( const std::string& PreRenderMame, const std::string& PrototypeName )
     {
         std::unordered_map< std::string, IPreRender *>::iterator pos;
         pos = m_PreRenders.find(PreRenderMame);
@@ -34,7 +34,7 @@ namespace pipeline
         return NULL;
     }
     
-    IPreRender* CPreRenderManager::operator [](const std::string& PreRenderName )
+    IPreRender* kPreRenderManager::operator [](const std::string& PreRenderName )
     {
         std::unordered_map< std::string, IPreRender *>::iterator pos;
         pos = m_PreRenders.find(PreRenderName);
@@ -44,7 +44,7 @@ namespace pipeline
         return pos->second;
     }
     
-    void CPreRenderManager::Register(const std::string& PrototypeName, IPreRender* pPrototype )
+    void kPreRenderManager::Register(const std::string& PrototypeName, IPreRender* pPrototype )
     {
         std::unordered_map< std::string, IPreRender *>::iterator pos;
         pos = m_Prototypes.find(PrototypeName);
@@ -60,7 +60,7 @@ namespace pipeline
         m_Prototypes[PrototypeName] = pPrototype;
     }
     
-    void CPreRenderManager::ClearPreRenders()
+    void kPreRenderManager::ClearPreRenders()
     {
         std::unordered_map< std::string, IPreRender *>::iterator pos;
         pos = m_PreRenders.begin();
@@ -75,7 +75,7 @@ namespace pipeline
         m_PreRenders.clear();
     }
     
-    void CPreRenderManager::ClearPrototypes()
+    void kPreRenderManager::ClearPrototypes()
     {
         std::unordered_map< std::string, IPreRender *>::iterator pos ;
         pos = m_Prototypes.begin();

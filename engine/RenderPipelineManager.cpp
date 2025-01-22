@@ -3,17 +3,17 @@
 
 namespace pipeline{
     
-    CRenderPipelineManager::CRenderPipelineManager():m_pRenderingEngine(NULL)
+    kRenderPipelineManager::kRenderPipelineManager():m_pRenderingEngine(NULL)
     {
     }
     
-    CRenderPipelineManager::~CRenderPipelineManager()
+    kRenderPipelineManager::~kRenderPipelineManager()
     {
         ClearRenderPipeline();
         ClearPrototypes();
     }
     
-    IRenderPipeline*CRenderPipelineManager::Give( const std::string& Name, const std::string& PrototypeName )
+    IRenderPipeline*kRenderPipelineManager::Give( const std::string& Name, const std::string& PrototypeName )
     {
         std::unordered_map< std::string, IRenderPipeline *>::iterator pos;
         pos = m_RenderPipelines.find(Name);
@@ -34,7 +34,7 @@ namespace pipeline{
         return NULL;
     }
     
-    void CRenderPipelineManager::Register(const std::string& PrototypeName, IRenderPipeline * pPrototype )
+    void kRenderPipelineManager::Register(const std::string& PrototypeName, IRenderPipeline * pPrototype )
     {
         std::unordered_map< std::string, IRenderPipeline *>::iterator pos;
         pos = m_Prototypes.find(PrototypeName);
@@ -50,7 +50,7 @@ namespace pipeline{
         m_Prototypes.insert(std::make_pair(PrototypeName, pPrototype));
     }
     
-    IRenderPipeline * CRenderPipelineManager::operator [](const std::string& Name)
+    IRenderPipeline * kRenderPipelineManager::operator [](const std::string& Name)
     {
         std::unordered_map< std::string, IRenderPipeline *>::iterator pos;
         pos = m_RenderPipelines.find(Name);
@@ -61,7 +61,7 @@ namespace pipeline{
         
     }
     
-    void CRenderPipelineManager::ClearPrototypes()
+    void kRenderPipelineManager::ClearPrototypes()
     {
         std::unordered_map< std::string, IRenderPipeline *>::iterator pos;
         pos = m_Prototypes.begin();
@@ -76,7 +76,7 @@ namespace pipeline{
         m_Prototypes.clear();
     }
     
-    void CRenderPipelineManager::ClearRenderPipeline()
+    void kRenderPipelineManager::ClearRenderPipeline()
     {
         std::unordered_map< std::string, IRenderPipeline *>::iterator pos;
         pos = m_RenderPipelines.begin();
@@ -92,7 +92,7 @@ namespace pipeline{
     }
     
     
-    CRenderModuleManager& CRenderPipelineManager::GetRenderModuleManager()
+    kRenderModuleManager& kRenderPipelineManager::GetRenderModuleManager()
     {
         return m_RenderModuleMgr;
     }

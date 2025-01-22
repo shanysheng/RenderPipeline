@@ -11,20 +11,20 @@
 
 namespace pipeline{
     
-    class Rect
+    class kRect
     {
     public:
         float x,y;
         
         static const float epsilon;
-        static const Rect xAxis;
-        static const Rect yAxis;
-        static const Rect one;
-        static const Rect zero;
+        static const kRect xAxis;
+        static const kRect yAxis;
+        static const kRect one;
+        static const kRect zero;
 
     public:
-        Rect(float inx, float iny);
-        Rect(const Rect& v);
+        kRect(float inx, float iny);
+        kRect(const kRect& v);
         
         void Set(float inx, float iny);
         
@@ -34,132 +34,132 @@ namespace pipeline{
         const float& operator[](int i)const;
         
         // component-wise multiplication
-        Rect operator+(const Rect& rhs) const;
-        Rect operator-(const Rect& rhs) const;
-        Rect operator*(const Rect& rhs) const;
-        Rect operator/(const Rect& rhs) const;
-        Rect operator*(float scale) const;
-        Rect operator/(float scale) const;
+        kRect operator+(const kRect& rhs) const;
+        kRect operator-(const kRect& rhs) const;
+        kRect operator*(const kRect& rhs) const;
+        kRect operator/(const kRect& rhs) const;
+        kRect operator*(float scale) const;
+        kRect operator/(float scale) const;
         
-        Rect& operator += (const Rect& rhs);
-        Rect& operator -= (const Rect& rhs);
-        Rect& operator *=(const Rect& rhs);
-        Rect& operator /=(const Rect& rhs);
-        Rect& operator *= (const float scale);
-        Rect& operator /= (const float scale);
+        kRect& operator += (const kRect& rhs);
+        kRect& operator -= (const kRect& rhs);
+        kRect& operator *=(const kRect& rhs);
+        kRect& operator /=(const kRect& rhs);
+        kRect& operator *= (const float scale);
+        kRect& operator /= (const float scale);
         
-        Rect operator -() const;
+        kRect operator -() const;
 
         // dot product
-        float operator|(const Rect& rhs) const;
+        float operator|(const kRect& rhs) const;
         
         // cross product
-        float operator^(const Rect& rhs) const;
+        float operator^(const kRect& rhs) const;
         
-        bool operator == (const Rect& rhs)const;
-        bool operator != (const Rect& rhs)const;
+        bool operator == (const kRect& rhs)const;
+        bool operator != (const kRect& rhs)const;
         
         float Length() const;
         void Normalize();
 
-        static float DotProduct(const Rect& lhs, const Rect& rhs);
-        static float CrossProduct(const Rect& lhs, const Rect& rhs);
-        static float DistSquared(const Rect& lhs, const Rect& rhs);
-        static float Distance(const Rect& lhs, const Rect& rhs);
+        static float DotProduct(const kRect& lhs, const kRect& rhs);
+        static float CrossProduct(const kRect& lhs, const kRect& rhs);
+        static float DistSquared(const kRect& lhs, const kRect& rhs);
+        static float Distance(const kRect& lhs, const kRect& rhs);
     };
     
     //-----------------------------------------------------------------------------------
-    inline Rect::Rect(float inx, float iny)
+    inline kRect::kRect(float inx, float iny)
     {
         this->x = inx;
         this->y = iny;
     }
     
-    inline Rect::Rect(const Rect& v)
+    inline kRect::kRect(const kRect& v)
     {
         this->x = v.x;
         this->y = v.y;
     }
     
-    inline void Rect::Set(float inx, float iny)
+    inline void kRect::Set(float inx, float iny)
     {
         this->x = inx;
         this->y = iny;
     }
     
-    inline float* Rect::data() { return &x; }
-    inline const float* Rect::data()const { return &x; }
-    inline float& Rect::operator[](int i) { return (&x)[i]; }
-    inline const float& Rect::operator[](int i)const { return (&x)[i]; }
+    inline float* kRect::data() { return &x; }
+    inline const float* kRect::data()const { return &x; }
+    inline float& kRect::operator[](int i) { return (&x)[i]; }
+    inline const float& kRect::operator[](int i)const { return (&x)[i]; }
     
     // component-wise multiplication
-    inline Rect Rect::operator+(const Rect& rhs) const
+    inline kRect kRect::operator+(const kRect& rhs) const
     {
-        return Rect(this->x+rhs.x, this->y+rhs.y);
+        return kRect(this->x+rhs.x, this->y+rhs.y);
     }
     
-    inline Rect Rect::operator-(const Rect& rhs) const
+    inline kRect kRect::operator-(const kRect& rhs) const
     {
-        return Rect(this->x-rhs.x, this->y-rhs.y);
+        return kRect(this->x-rhs.x, this->y-rhs.y);
     }
     
-    inline Rect Rect::operator*(const Rect& rhs) const
+    inline kRect kRect::operator*(const kRect& rhs) const
     {
-        return Rect(this->x*rhs.x, this->y*rhs.y);
+        return kRect(this->x*rhs.x, this->y*rhs.y);
     }
     
-    inline Rect Rect::operator/(const Rect& rhs) const
+    inline kRect kRect::operator/(const kRect& rhs) const
     {
-        return Rect(this->x/rhs.x, this->y/rhs.y);
+        return kRect(this->x/rhs.x, this->y/rhs.y);
     }
     
-    inline Rect Rect::operator*(float scale) const
+    inline kRect kRect::operator*(float scale) const
     {
-        return Rect(x*scale, y*scale);
+        return kRect(x*scale, y*scale);
     }
     
-    inline Rect Rect::operator/(float scale) const
+    inline kRect kRect::operator/(float scale) const
     {
         const float tmp = 1.f/scale;
-        return Rect(x*tmp, y*tmp);
+        return kRect(x*tmp, y*tmp);
     }
     
-    inline Rect& Rect::operator += (const Rect& rhs)
+    inline kRect& kRect::operator += (const kRect& rhs)
     {
         this->x += rhs.x;
         this->y += rhs.y;
         return *this;
     }
     
-    inline Rect& Rect::operator -= (const Rect& rhs)
+    inline kRect& kRect::operator -= (const kRect& rhs)
     {
         this->x -= rhs.x;
         this->y -= rhs.y;
         return *this;
     }
     
-    inline Rect& Rect::operator *=(const Rect& rhs)
+    inline kRect& kRect::operator *=(const kRect& rhs)
     {
         this->x *= rhs.x;
         this->y *= rhs.y;
         return *this;
     }
     
-    inline Rect& Rect::operator /=(const Rect& rhs)
+    inline kRect& kRect::operator /=(const kRect& rhs)
     {
         this->x /= rhs.x;
         this->y /= rhs.y;
         return *this;
     }
     
-    inline Rect& Rect::operator *= (const float scale)
+    inline kRect& kRect::operator *= (const float scale)
     {
         x *= scale;
         y *= scale;
         return *this;
     }
     
-    inline Rect& Rect::operator /= (const float scale)
+    inline kRect& kRect::operator /= (const float scale)
     {
         const float tmp = 1.f/scale;
         x *= tmp;
@@ -167,54 +167,54 @@ namespace pipeline{
         return *this;
     }
     
-    inline Rect Rect::operator -() const
+    inline kRect kRect::operator -() const
     {
-        return Rect(-x, -y);
+        return kRect(-x, -y);
     }
     
-    inline float Rect::operator|(const Rect& rhs) const
+    inline float kRect::operator|(const kRect& rhs) const
     {
         return this->x*rhs.x + this->y*rhs.y;
     }
     
-    inline float Rect::operator^(const Rect& rhs) const
+    inline float kRect::operator^(const kRect& rhs) const
     {
         return this->x*rhs.y - this->y*rhs.x;
     }
     
-    inline bool Rect::operator == (const Rect& rhs)const
+    inline bool kRect::operator == (const kRect& rhs)const
     {
         return this->x == rhs.x && this->y == rhs.y;
     }
     
-    inline bool Rect::operator != (const Rect& rhs)const
+    inline bool kRect::operator != (const kRect& rhs)const
     {
         return this->x != rhs.x || this->y != rhs.y;
     }
     
-    inline float Rect::Length() const
+    inline float kRect::Length() const
     {
         return std::sqrt(x*x+y*y);
     }
     
-    inline void Rect::Normalize()
+    inline void kRect::Normalize()
     {
         float scale = 1.0f/Length();
         x *= scale;
         y *= scale;
     }
     
-    inline float Rect::DotProduct(const Rect& lhs, const Rect& rhs)
+    inline float kRect::DotProduct(const kRect& lhs, const kRect& rhs)
     {
         return lhs | rhs;
     }
     
-    inline float Rect::CrossProduct(const Rect& lhs, const Rect& rhs)
+    inline float kRect::CrossProduct(const kRect& lhs, const kRect& rhs)
     {
         return lhs ^ rhs;
     }
     
-    inline float Rect::DistSquared(const Rect& lhs, const Rect& rhs)
+    inline float kRect::DistSquared(const kRect& lhs, const kRect& rhs)
     {
         float offsetx = lhs.x-rhs.x;
         float offsety = lhs.y-rhs.y;
@@ -222,7 +222,7 @@ namespace pipeline{
         return offsetx*offsetx+offsety*offsety;
     }
     
-    inline float Rect::Distance(const Rect& lhs, const Rect& rhs)
+    inline float kRect::Distance(const kRect& lhs, const kRect& rhs)
     {
         float offsetx = lhs.x-rhs.x;
         float offsety = lhs.y-rhs.y;

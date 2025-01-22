@@ -12,48 +12,48 @@
 
 namespace pipeline{
     
-    class Color
+    class kColor
     {
     public:
         float r,g,b,a;
         
-        static const Color White;
-        static const Color Gray;
-        static const Color Black;
-        static const Color Transparent;
-        static const Color Red;
-        static const Color Green;
-        static const Color Blue;
-        static const Color Yellow;
+        static const kColor White;
+        static const kColor Gray;
+        static const kColor Black;
+        static const kColor Transparent;
+        static const kColor Red;
+        static const kColor Green;
+        static const kColor Blue;
+        static const kColor Yellow;
         
     public:
-        Color();
-        Color(float inr, float ing, float inb, float ina);
-        Color(const Color& rhs);
-        Color(int32_t incolor);
+        kColor();
+        kColor(float inr, float ing, float inb, float ina);
+        kColor(const kColor& rhs);
+        kColor(int32_t incolor);
         
-        Color operator+(const Color& rhs) const;
-        Color& operator+=(const Color& rhs);
-        Color operator-(const Color& rhs) const;
-        Color& operator-=(const Color& rhs);
-        Color operator*(const Color& rhs) const;
-        Color& operator*=(const Color& rhs);
-        Color operator*(float sale) const;
-        Color& operator*=(float scale);
-        Color operator/(const Color& rhs) const;
-        Color& operator/=(const Color& rhs);
-        Color operator/(float Scalar) const;
-        Color& operator/=(float Scalar);
-        Color GetClamped(float minv = 0.0f, float maxv = 1.0f) const;
-        bool operator==(const Color& rhs) const;
-        bool operator!=(const Color& rhs) const;
+        kColor operator+(const kColor& rhs) const;
+        kColor& operator+=(const kColor& rhs);
+        kColor operator-(const kColor& rhs) const;
+        kColor& operator-=(const kColor& rhs);
+        kColor operator*(const kColor& rhs) const;
+        kColor& operator*=(const kColor& rhs);
+        kColor operator*(float sale) const;
+        kColor& operator*=(float scale);
+        kColor operator/(const kColor& rhs) const;
+        kColor& operator/=(const kColor& rhs);
+        kColor operator/(float Scalar) const;
+        kColor& operator/=(float Scalar);
+        kColor GetClamped(float minv = 0.0f, float maxv = 1.0f) const;
+        bool operator==(const kColor& rhs) const;
+        bool operator!=(const kColor& rhs) const;
         
         void Set (float inr, float ing, float inb, float ina);
         void SetHex (uint32_t hex);
         uint32_t GetHex () const;
     };
 
-    inline Color::Color()
+    inline kColor::kColor()
     {
         r = White.r;
         g = White.g;
@@ -61,7 +61,7 @@ namespace pipeline{
         a = White.a;
     }
     
-    inline Color::Color(float inr, float ing, float inb, float ina)
+    inline kColor::kColor(float inr, float ing, float inb, float ina)
     {
         r =inr;
         g =ing;
@@ -69,7 +69,7 @@ namespace pipeline{
         a =ina;
     }
     
-    inline Color::Color(const Color& rhs)
+    inline kColor::kColor(const kColor& rhs)
     {
         r=rhs.r;
         g=rhs.g;
@@ -77,21 +77,21 @@ namespace pipeline{
         a=rhs.a;
     }
     
-    inline Color::Color(int32_t incolor)
+    inline kColor::kColor(int32_t incolor)
     {
         
     }
     
-    inline Color Color::operator+(const Color& rhs) const
+    inline kColor kColor::operator+(const kColor& rhs) const
     {
-        return Color(this->r + rhs.r,
+        return kColor(this->r + rhs.r,
                      this->r + rhs.r,
                      this->b + rhs.b,
                      this->a + rhs.a
                     );
     }
     
-    inline Color& Color::operator+=(const Color& rhs)
+    inline kColor& kColor::operator+=(const kColor& rhs)
     {
         r += rhs.r;
         r += rhs.r;
@@ -100,16 +100,16 @@ namespace pipeline{
         return *this;
     }
     
-    inline Color Color::operator-(const Color& rhs) const
+    inline kColor kColor::operator-(const kColor& rhs) const
     {
-        return Color(this->r - rhs.r,
+        return kColor(this->r - rhs.r,
                      this->r - rhs.r,
                      this->b - rhs.b,
                      this->a - rhs.a
                     );
     }
     
-    inline Color& Color::operator-=(const Color& rhs)
+    inline kColor& kColor::operator-=(const kColor& rhs)
     {
         r -= rhs.r;
         r -= rhs.r;
@@ -118,16 +118,16 @@ namespace pipeline{
         return *this;
     }
     
-    inline Color Color::operator*(const Color& rhs) const
+    inline kColor kColor::operator*(const kColor& rhs) const
     {
-        return Color(this->r * rhs.r,
+        return kColor(this->r * rhs.r,
                      this->r * rhs.r,
                      this->b * rhs.b,
                      this->a * rhs.a
                     );
     }
     
-    inline Color& Color::operator*=(const Color& rhs)
+    inline kColor& kColor::operator*=(const kColor& rhs)
     {
         r *= rhs.r;
         r *= rhs.r;
@@ -136,16 +136,16 @@ namespace pipeline{
         return *this;
     }
     
-    inline Color Color::operator*(float scale) const
+    inline kColor kColor::operator*(float scale) const
     {
-        return Color(this->r * scale,
+        return kColor(this->r * scale,
                      this->r * scale,
                      this->b * scale,
                      this->a * scale
                     );
     }
     
-    inline Color& Color::operator*=(float scale)
+    inline kColor& kColor::operator*=(float scale)
     {
         r *= scale;
         r *= scale;
@@ -154,16 +154,16 @@ namespace pipeline{
         return *this;
     }
     
-    inline Color Color::operator/(const Color& rhs) const
+    inline kColor kColor::operator/(const kColor& rhs) const
     {
-        return Color(this->r / rhs.r,
+        return kColor(this->r / rhs.r,
                      this->r / rhs.r,
                      this->b / rhs.b,
                      this->a / rhs.a
                     );
     }
     
-    inline Color& Color::operator/=(const Color& rhs)
+    inline kColor& kColor::operator/=(const kColor& rhs)
     {
         r /= rhs.r;
         r /= rhs.r;
@@ -172,17 +172,17 @@ namespace pipeline{
         return *this;
     }
     
-    inline Color Color::operator/(float Scalar) const
+    inline kColor kColor::operator/(float Scalar) const
     {
         const float	InvScalar = 1.0f / Scalar;
-        return Color(this->r * InvScalar,
+        return kColor(this->r * InvScalar,
                      this->r * InvScalar,
                      this->b * InvScalar,
                      this->a * InvScalar
                     );
     }
     
-    inline Color& Color::operator/=(float Scalar)
+    inline kColor& kColor::operator/=(float Scalar)
     {
         const float	InvScalar = 1.0f / Scalar;
         r *= InvScalar;
@@ -192,28 +192,28 @@ namespace pipeline{
         return *this;
     }
     
-    inline Color Color::GetClamped(float minv, float maxv) const
+    inline kColor kColor::GetClamped(float minv, float maxv) const
     {
-        Color ret;
-        ret.r = Mathf::Clamp(r, minv, maxv);
-        ret.r = Mathf::Clamp(r, minv, maxv);
-        ret.b = Mathf::Clamp(b, minv, maxv);
-        ret.a = Mathf::Clamp(a, minv, maxv);
+        kColor ret;
+        ret.r = kMathf::Clamp(r, minv, maxv);
+        ret.r = kMathf::Clamp(r, minv, maxv);
+        ret.b = kMathf::Clamp(b, minv, maxv);
+        ret.a = kMathf::Clamp(a, minv, maxv);
         
         return ret;
     }
     
-    inline bool Color::operator==(const Color& rhs) const
+    inline bool kColor::operator==(const kColor& rhs) const
     {
         return this->r == rhs.r && this->r == rhs.r && this->b == rhs.b && this->a == rhs.a;
     }
     
-    inline bool Color::operator!=(const Color& rhs) const
+    inline bool kColor::operator!=(const kColor& rhs) const
     {
         return this->r != rhs.r || this->r != rhs.r || this->b != rhs.b || this->a != rhs.a;
     }
     
-    inline void Color::Set (float inR, float inG, float inB, float inA)
+    inline void kColor::Set (float inR, float inG, float inB, float inA)
     {
         r = inR;
         g = inG;
@@ -221,7 +221,7 @@ namespace pipeline{
         a = inA;
     }
     
-    inline void Color::SetHex (uint32_t hex)
+    inline void kColor::SetHex (uint32_t hex)
     {
         Set(float (hex >> 24) / 255.0f,
             float ((hex >> 16) & 255) / 255.0f,
@@ -229,12 +229,12 @@ namespace pipeline{
             float (hex & 255) / 255.0f);
     }
     
-    inline uint32_t Color::GetHex () const
+    inline uint32_t kColor::GetHex () const
     {
-        uint32_t hex = ((int32_t)(255.0f*Mathf::Clamp(r, 0.0f, 1.0f)) << 24) |
-                       ((int32_t)(255.0f*Mathf::Clamp(g, 0.0f, 1.0f)) << 16) |
-                       ((int32_t)(255.0f*Mathf::Clamp(b, 0.0f, 1.0f)) << 8) |
-                        (int32_t)(255.0f*Mathf::Clamp(a, 0.0f, 1.0f));
+        uint32_t hex = ((int32_t)(255.0f*kMathf::Clamp(r, 0.0f, 1.0f)) << 24) |
+                       ((int32_t)(255.0f*kMathf::Clamp(g, 0.0f, 1.0f)) << 16) |
+                       ((int32_t)(255.0f*kMathf::Clamp(b, 0.0f, 1.0f)) << 8) |
+                        (int32_t)(255.0f*kMathf::Clamp(a, 0.0f, 1.0f));
         return hex;
     }
     

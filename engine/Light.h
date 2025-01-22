@@ -38,12 +38,17 @@ namespace pipeline {
         Hard_Shadow,
     };
     
-    class Light
+    class kLight
     {
     public:
+        kLight();
+        virtual ~kLight();
+
+    public:
+
         LightType type;
 
-        Color m_Color ;
+        kColor m_Color ;
         float m_Intensity ;
         float m_Range ;
         float m_SpotAngle ;

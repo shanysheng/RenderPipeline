@@ -12,7 +12,7 @@
 namespace pipeline
 {
     const float C_PI = 3.1415926f;
-    class Mathf
+    class kMathf
     {
     public:
         template< class T >

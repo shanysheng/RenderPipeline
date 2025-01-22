@@ -13,15 +13,15 @@ namespace pipeline {
     
     
     class GeometryBuffer;
-    class Shader;
-    class Texture;
+    class kShader;
+    class kTexture;
 
     
-    class CGPUResourceManipulator
+    class kGPUResourceManipulator
     {
     public:
-        CGPUResourceManipulator(void);
-        virtual ~CGPUResourceManipulator(void);
+        kGPUResourceManipulator(void);
+        virtual ~kGPUResourceManipulator(void);
         
     };
 }

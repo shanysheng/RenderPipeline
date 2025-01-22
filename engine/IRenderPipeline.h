@@ -17,12 +17,12 @@ namespace pipeline{
     
     class IRenderTarget;
     class CCamera;
-    class CRenderQueue;
-    class CRenderQueueManager;
-    class CPreRenderManager;
-    class CRenderPipelineManager;
+    class kRenderQueue;
+    class kRenderQueueManager;
+    class kPreRenderManager;
+    class kRenderPipelineManager;
     class SceneManager;
-    class CRenderingEngine;
+    class kRenderingEngine;
     
     class IRenderPipeline: public IRenderControlUnit
     {
@@ -42,21 +42,21 @@ namespace pipeline{
         virtual void PerFrame( CFrameInfo * pFI);
         virtual void DrawAllRenderQueues( CFrameInfo * pFI);
         virtual void DrawRenderQueue ( CFrameInfo * pFI, int32_t QueueIndex);
-        virtual void DrawElement(CFrameInfo*, SGNode*);
+        virtual void DrawElement(CFrameInfo*, kSGNode*);
         
         void SetInCamera( CCamera* pCamera);
         void SetInRenderTarget( int i, IRenderTarget * pRT);
-        void SetInRenderQueue( int i, CRenderQueue * pRenderQueue);
+        void SetInRenderQueue( int i, kRenderQueue * pRenderQueue);
         void SetOutRenderTarget ( IRenderTarget * pRenderTarget);
-        void SetOutRenderQueue( int i, CRenderQueue* pRenderQueue);
+        void SetOutRenderQueue( int i, kRenderQueue* pRenderQueue);
         
-        void SetContext( CRenderingEngine * pRE);
+        void SetContext( kRenderingEngine * pRE);
         void SetContext( IRenderPipeline* pRight);
         
         void SetSceneManager(SceneManager*);
-        void SetRenderQueueManager(CRenderQueueManager*);
-        void SetPreRenderManager(CPreRenderManager*);
-        void SetRenderPipelineManager(CRenderPipelineManager*);
+        void SetRenderQueueManager(kRenderQueueManager*);
+        void SetPreRenderManager(kPreRenderManager*);
+        void SetRenderPipelineManager(kRenderPipelineManager*);
         
         uint32_t  GetInRenderTargetCount() const;
         uint32_t  GetInRenderQueueCount() const;
@@ -67,15 +67,15 @@ namespace pipeline{
         
     protected:
         SceneManager*               m_pSceneModelMpr;
-        CRenderQueueManager*        m_pRenderQueueMgr;
-        CPreRenderManager*          m_pPreRenderMgr;
-        CRenderPipelineManager*     m_pRenderPipelineMgr;
+        kRenderQueueManager*        m_pRenderQueueMgr;
+        kPreRenderManager*          m_pPreRenderMgr;
+        kRenderPipelineManager*     m_pRenderPipelineMgr;
         
         CCamera*                    m_pInCamera;
         IRenderTarget*              m_pOutRenderTarget;
         
-        std::vector<CRenderQueue*>  m_InRenderQueues;
-        std::vector<CRenderQueue*>  m_OutRenderQueues;
+        std::vector<kRenderQueue*>  m_InRenderQueues;
+        std::vector<kRenderQueue*>  m_OutRenderQueues;
     };
     
     

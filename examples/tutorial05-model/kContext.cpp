@@ -596,36 +596,6 @@ void kContext::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize s
 }
 
 
-VkFormat kContext::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
-    for (VkFormat format : candidates) {
-        VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
-
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-            return format;
-        }
-        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-            return format;
-        }
-    }
-
-    throw std::runtime_error("failed to find supported format!");
-}
-
-VkFormat kContext::chooseDepthFormat() {
-    return findSupportedFormat(
-        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-        VK_IMAGE_TILING_OPTIMAL,
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-    );
-}
-
-bool kContext::hasStencilComponent(VkFormat format) {
-    return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
-}
-
-
-
 void kContext::createImage(uint32_t width, uint32_t height, VkFormat format,
                             VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
                             VkImage& image, VkDeviceMemory& imageMemory) {
@@ -664,18 +634,33 @@ void kContext::createImage(uint32_t width, uint32_t height, VkFormat format,
     vkBindImageMemory(logicaldevice, image, imageMemory, 0);
 }
 
-void kContext::chooseSwapchainFormat() {
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
 
-    swapchainSurfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+VkFormat kContext::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    for (VkFormat format : candidates) {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
 
-    swapchainImageCount = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && swapchainImageCount > swapChainSupport.capabilities.maxImageCount) {
-        swapchainImageCount = swapChainSupport.capabilities.maxImageCount;
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+            return format;
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
     }
 
-    swapchainDepthFormat = chooseDepthFormat();
+    throw std::runtime_error("failed to find supported format!");
+}
+
+VkFormat kContext::chooseDepthFormat() {
+    return findSupportedFormat(
+        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
+}
+
+bool kContext::hasStencilComponent(VkFormat format) {
+    return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
 
@@ -699,3 +684,16 @@ VkPresentModeKHR kContext::chooseSwapPresentMode(const std::vector<VkPresentMode
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
+void kContext::chooseSwapchainFormat() {
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
+
+    swapchainSurfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+
+    swapchainImageCount = swapChainSupport.capabilities.minImageCount + 1;
+    if (swapChainSupport.capabilities.maxImageCount > 0 && swapchainImageCount > swapChainSupport.capabilities.maxImageCount) {
+        swapchainImageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    swapchainDepthFormat = chooseDepthFormat();
+}

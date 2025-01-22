@@ -25,7 +25,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -43,6 +43,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)_d</TargetName>
+    <OutDir>lib/</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>lib/</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -78,19 +85,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\Appearance.cpp" />
+    <ClCompile Include="engine\BufferGPUResource.cpp" />
+    <ClCompile Include="engine\ImageTextureGPUResource.cpp" />
+    <ClCompile Include="engine\Material.cpp" />
     <ClCompile Include="engine\Bound.cpp" />
     <ClCompile Include="engine\Camera.cpp" />
     <ClCompile Include="engine\CameraManager.cpp" />
-    <ClCompile Include="engine\Collider.cpp" />
     <ClCompile Include="engine\Color.cpp" />
     <ClCompile Include="engine\Common.cpp" />
-    <ClCompile Include="engine\Component.cpp" />
-    <ClCompile Include="engine\FeatureVisitor.cpp" />
-    <ClCompile Include="engine\Geometry.cpp" />
-    <ClCompile Include="engine\GeometryBuffer.cpp" />
     <ClCompile Include="engine\GPUResourceManager.cpp" />
-    <ClCompile Include="engine\IFeature.cpp" />
     <ClCompile Include="engine\IGPUResource.cpp" />
     <ClCompile Include="engine\IPreRender.cpp" />
     <ClCompile Include="engine\IRenderControlUnit.cpp" />
@@ -110,37 +113,25 @@
     <ClCompile Include="engine\RenderQueueManager.cpp" />
     <ClCompile Include="engine\RenderTarget.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
-    <ClCompile Include="engine\SceneIterator.cpp" />
-    <ClCompile Include="engine\SceneModelManipulator.cpp" />
-    <ClCompile Include="engine\SceneParser.cpp" />
     <ClCompile Include="engine\SGNode.cpp" />
     <ClCompile Include="engine\SGNodeIterator.cpp" />
     <ClCompile Include="engine\Shader.cpp" />
-    <ClCompile Include="engine\Shape.cpp" />
-    <ClCompile Include="engine\SkinAnim.cpp" />
-    <ClCompile Include="engine\SkinAnimClip.cpp" />
-    <ClCompile Include="engine\SkinShape.cpp" />
+    <ClCompile Include="engine\Mesh.cpp" />
     <ClCompile Include="engine\Texture.cpp" />
-    <ClCompile Include="engine\Transform.cpp" />
     <ClCompile Include="engine\Vector2.cpp" />
     <ClCompile Include="engine\Vector3.cpp" />
     <ClCompile Include="engine\Vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\Appearance.h" />
+    <ClInclude Include="engine\BufferGPUResource.h" />
+    <ClInclude Include="engine\ImageTextureGPUResource.h" />
+    <ClInclude Include="engine\Material.h" />
     <ClInclude Include="engine\Bound.h" />
     <ClInclude Include="engine\Camera.h" />
     <ClInclude Include="engine\CameraManager.h" />
-    <ClInclude Include="engine\Collider.h" />
     <ClInclude Include="engine\Color.h" />
     <ClInclude Include="engine\Common.h" />
-    <ClInclude Include="engine\Component.h" />
-    <ClInclude Include="engine\FeatureType.h" />
-    <ClInclude Include="engine\FeatureVisitor.h" />
-    <ClInclude Include="engine\Geometry.h" />
-    <ClInclude Include="engine\GeometryBuffer.h" />
     <ClInclude Include="engine\GPUResourceManager.h" />
-    <ClInclude Include="engine\IFeature.h" />
     <ClInclude Include="engine\IGPUResource.h" />
     <ClInclude Include="engine\IPreRender.h" />
     <ClInclude Include="engine\IRenderControlUnit.h" />
@@ -160,18 +151,11 @@
     <ClInclude Include="engine\RenderQueueManager.h" />
     <ClInclude Include="engine\RenderTarget.h" />
     <ClInclude Include="engine\Scene.h" />
-    <ClInclude Include="engine\SceneIterator.h" />
-    <ClInclude Include="engine\SceneModelManipulator.h" />
-    <ClInclude Include="engine\SceneParser.h" />
     <ClInclude Include="engine\SGNode.h" />
     <ClInclude Include="engine\SGNodeIterator.h" />
     <ClInclude Include="engine\Shader.h" />
-    <ClInclude Include="engine\Shape.h" />
-    <ClInclude Include="engine\SkinAnim.h" />
-    <ClInclude Include="engine\SkinAnimClip.h" />
-    <ClInclude Include="engine\SkinShape.h" />
+    <ClInclude Include="engine\Mesh.h" />
     <ClInclude Include="engine\Texture.h" />
-    <ClInclude Include="engine\Transform.h" />
     <ClInclude Include="engine\Vector2.h" />
     <ClInclude Include="engine\Vector3.h" />
     <ClInclude Include="engine\Vector4.h" />

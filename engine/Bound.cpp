@@ -2,12 +2,12 @@
 
 namespace pipeline {
     
-    Bound::Bound()
+    kBound::kBound()
     {
         
     }
     
-    Bound::Bound(const Vector3f& minpt, const Vector3f& maxpt)
+    kBound::kBound(const kVector3f& minpt, const kVector3f& maxpt)
     {
         
     }

@@ -3,9 +3,87 @@
 
 #include <iostream>
 
+
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+
+
+#include <iostream>
+#include <stdexcept>
+#include <cstdlib>
+#include <vector>
+#include <array>
+
+
+#include "RenderingEngine.h"
+
+
+const uint32_t WIDTH = 1280;
+const uint32_t HEIGHT = 720;
+
+namespace pipeline {
+
+
+    class baseApplication {
+    public:
+        void run() {
+            initWindow();
+            mainLoop();
+            cleanup();
+        }
+
+    private:
+        GLFWwindow* window;
+        kRenderingEngine m_Engine;
+
+
+        void initWindow() {
+
+            glfwInit();
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+            window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+
+            glfwSetWindowUserPointer(window, this);
+            glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
+            //m_Engine.createEngine(window);
+        }
+
+        static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+            auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
+            //app->m_Engine.frameChanged();
+        }
+
+        void mainLoop() {
+
+            while (!glfwWindowShouldClose(window)) {
+                glfwPollEvents();
+                //m_Engine.drawFrame();
+            }
+
+            //vkDeviceWaitIdle(kEngine.logicaldevice);
+        }
+
+        void cleanup() {
+            //m_Engine.cleanEngine();
+
+            glfwDestroyWindow(window);
+            glfwTerminate();
+        }
+
+    };
+
+
+}
+
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::cout << "Hello pipeline engine World!\n";
+
+    pipeline::baseApplication app;
+    app.run();
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单

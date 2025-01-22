@@ -13,23 +13,23 @@
 
 namespace pipeline{
     
-    class Camera;
-    class CameraManager
+    class kCamera;
+    class kCameraManager
     {
     public:
-        CameraManager();
-        virtual ~CameraManager();
+        kCameraManager();
+        virtual ~kCameraManager();
         
-        Camera * Give( const std::string& name );
-        Camera * operator [](const std::string& name );
+        kCamera* Give( const std::string& name );
+        kCamera* operator [](const std::string& name );
         
         void	Clear();
         
     protected:
-        Camera m_Current;
-        Camera m_Main;
+        kCamera m_Current;
+        kCamera m_Main;
         
-        std::map<std::string, Camera*> m_Cameras;
+        std::map<std::string, kCamera*> m_Cameras;
     };
 }
 

@@ -12,21 +12,21 @@
 
 namespace pipeline{
     
-    class CRenderQueue;
+    class kRenderQueue;
     
-    class CRenderQueueManager
+    class kRenderQueueManager
     {
     public:
-        CRenderQueueManager();
-        virtual ~CRenderQueueManager();
+        kRenderQueueManager();
+        virtual ~kRenderQueueManager();
         
         bool IsExisting( const std::string& queueName ) const;
-        CRenderQueue * Give( const std::string& queueName);
-        CRenderQueue * operator [](const std::string& queueName);
+        kRenderQueue * Give( const std::string& queueName);
+        kRenderQueue * operator [](const std::string& queueName);
         
         void ClearResources();
     protected:
-        std::unordered_map<std::string, CRenderQueue*> m_RenderQueues;
+        std::unordered_map<std::string, kRenderQueue*> m_RenderQueues;
     };
 }
 

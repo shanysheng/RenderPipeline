@@ -8,18 +8,19 @@
 #define PIPELINE_SGNODE_H_GUARD
 
 #include "Common.h"
-#include "Transform.h"
+#include "Vector3.h"
+#include "Matrix4x4.h"
 
 namespace pipeline {
     
     class Transform;
     class Component;
     
-    class SGNode
+    class kSGNode
     {
     public:
-        SGNode ();
-        SGNode (std::string name);
+        kSGNode ();
+        kSGNode (std::string name);
         
         bool IsActive();
         bool IsHierarchyActive();
@@ -34,19 +35,16 @@ namespace pipeline {
         
         const std::string& GetTag();
         void SetTag(const char* tagstr);
-        
-        Component* AddComponent(int32_t componentType);
-        Component* GetComponent(int32_t type);
-        void GetComponents(int32_t type, std::list<Component*>& results);
-        void GetComponentsInChildren(int32_t type, bool includeInactive, std::list<Component*>& results);
-        void GetComponentsInParent(int32_t type, bool includeInactive, std::list<Component*>& results);
-             
+          
         void BroadcastMessage(const std::string& methodName, int32_t options);
         void SendMessage(const std::string& methodName, int32_t options);
+
+        void SetLocalEulerHint(const kVector3f& euler);
+        void SetPositionAndRotation(const kVector3f& position, kMatrix4x4f rotation);
         
-        static SGNode* CreatePrimitive(int32_t type);
-        static SGNode* Find (const std::string& name);
-        static SGNode FindSGNodeWithTag (const std::string& tag);
+        static kSGNode* CreatePrimitive(int32_t type);
+        static kSGNode* Find (const std::string& name);
+        static kSGNode FindSGNodeWithTag (const std::string& tag);
         static int32_t FindSGNodesWithTag (const std::string& tag, std::list<Component*>& results);
 
     protected:
@@ -56,6 +54,11 @@ namespace pipeline {
         int32_t     m_Layer ;
         std::string m_Tag ;
         
+        kVector3f    localEulerAngles;
+        kVector3f    localPosition;
+        kMatrix4x4f localRotation;
+        kVector3f    localScale;
+
         //Component animation ;
         //Component audio ;
         //Component camera ;
@@ -64,8 +67,6 @@ namespace pipeline {
         //Component particleSystem;
         //Component renderer;
         //Component rigidbody;
-        
-        Transform transform;
     };
 }
 

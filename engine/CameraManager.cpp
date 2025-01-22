@@ -2,23 +2,23 @@
 
 namespace pipeline{
     
-    CameraManager::CameraManager()
+    kCameraManager::kCameraManager()
     {
         
     }
     
-    CameraManager::~CameraManager()
+    kCameraManager::~kCameraManager()
     {
         Clear();
     }
     
-    Camera* CameraManager::Give( const std::string& CameraName )
+    kCamera* kCameraManager::Give( const std::string& CameraName )
     {
-        std::map<std::string, Camera*>::iterator pos ;
+        std::map<std::string, kCamera*>::iterator pos ;
         pos = m_Cameras.find(CameraName);
         if (pos==m_Cameras.end())
         {
-            Camera* pCamera = new Camera();
+            kCamera* pCamera = new kCamera();
             m_Cameras.insert(std::make_pair(CameraName, pCamera));
             return pCamera;
         }
@@ -26,9 +26,9 @@ namespace pipeline{
         return pos->second;
     }
     
-    Camera* CameraManager::operator [](const std::string& CameraName )
+    kCamera* kCameraManager::operator [](const std::string& CameraName )
     {
-        std::map<std::string, Camera*>::iterator pos ;
+        std::map<std::string, kCamera*>::iterator pos ;
         pos = m_Cameras.find(CameraName);
         if (pos!=m_Cameras.end())
         {
@@ -39,9 +39,9 @@ namespace pipeline{
         
     }
     
-    void CameraManager::Clear()
+    void kCameraManager::Clear()
     {
-        std::map<std::string, Camera*>::iterator pos ;
+        std::map<std::string, kCamera*>::iterator pos ;
         pos = m_Cameras.begin();
         while(pos!=m_Cameras.end())
         {

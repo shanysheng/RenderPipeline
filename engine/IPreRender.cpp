@@ -21,7 +21,7 @@ namespace pipeline{
         m_OutRenderQueues.clear();
     }
     
-    void IPreRender::SetInTraverseRoot(const std::vector<SGNode*>& roots  )
+    void IPreRender::SetInTraverseRoot(const std::vector<kSGNode*>& roots  )
     {
         m_TraverseRoots = roots;
         IPreRender* pPreRender = dynamic_cast<IPreRender*>(m_pNextRCU);
@@ -38,7 +38,7 @@ namespace pipeline{
     }
     
     
-    void IPreRender::SetContext( CRenderingEngine * pRE )
+    void IPreRender::SetContext( kRenderingEngine * pRE )
     {
     }
     
@@ -52,12 +52,12 @@ namespace pipeline{
         m_pSceneModelMpr = pSceneModel;
     }
     
-    void IPreRender::SetRenderQueueManager(CRenderQueueManager*pRenderQueueMgr)
+    void IPreRender::SetRenderQueueManager(kRenderQueueManager*pRenderQueueMgr)
     {
         m_pRenderQueueMgr = pRenderQueueMgr;
     }
     
-    void IPreRender::SetPreRenderManager(CPreRenderManager* pPreRenderMgr)
+    void IPreRender::SetPreRenderManager(kPreRenderManager* pPreRenderMgr)
     {
         m_pPreRenderMgr = pPreRenderMgr;
     }
@@ -67,7 +67,7 @@ namespace pipeline{
         m_pInRenderTarget = pRT;
     }
     
-    void IPreRender::SetInRenderQueue( int i, CRenderQueue * pRenderQueue )
+    void IPreRender::SetInRenderQueue( int i, kRenderQueue * pRenderQueue )
     {
         uint32_t count = i+1;
         if(count > m_InRenderQueues.size())
@@ -81,7 +81,7 @@ namespace pipeline{
         return  (uint32_t)m_InRenderQueues.size();
     }
     
-    void IPreRender::SetOutRenderQueue( int i, CRenderQueue * pRenderQueue )
+    void IPreRender::SetOutRenderQueue( int i, kRenderQueue * pRenderQueue )
     {
         uint32_t count = i+1;
         if(count > m_OutRenderQueues.size())

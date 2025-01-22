@@ -53,7 +53,7 @@ namespace pipeline{
             return;
     }
 
-    void IRenderPipeline::DrawElement(CFrameInfo*, SGNode*)
+    void IRenderPipeline::DrawElement(CFrameInfo*, kSGNode*)
     {
 
     }
@@ -72,17 +72,17 @@ namespace pipeline{
         m_pOutRenderTarget = pRenderTarget;
     }
     
-    void IRenderPipeline::SetInRenderQueue( int i, CRenderQueue * pRenderQueue )
+    void IRenderPipeline::SetInRenderQueue( int i, kRenderQueue * pRenderQueue )
     {
  
     }
     
-    void IRenderPipeline::SetOutRenderQueue( int i, CRenderQueue* pRenderQueue )
+    void IRenderPipeline::SetOutRenderQueue( int i, kRenderQueue* pRenderQueue )
     {
 
     }
     
-    void IRenderPipeline::SetContext( CRenderingEngine * pRE )
+    void IRenderPipeline::SetContext( kRenderingEngine * pRE )
     {
         
     }
@@ -97,12 +97,12 @@ namespace pipeline{
         m_pSceneModelMpr = pSceneModel;
     }
     
-    void IRenderPipeline::SetRenderQueueManager(CRenderQueueManager*pRenderQueueMgr)
+    void IRenderPipeline::SetRenderQueueManager(kRenderQueueManager*pRenderQueueMgr)
     {
         m_pRenderQueueMgr = pRenderQueueMgr;
     }
     
-    void IRenderPipeline::SetPreRenderManager(CPreRenderManager* pPreRenderMgr)
+    void IRenderPipeline::SetPreRenderManager(kPreRenderManager* pPreRenderMgr)
     {
         m_pPreRenderMgr = pPreRenderMgr;
     }

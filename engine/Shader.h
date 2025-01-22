@@ -17,12 +17,12 @@
 
 namespace pipeline {
     
-    class Texture;
+    class kTexture;
     
-    class Shader
+    class kShader
     {
     public:
-        Shader();
+        kShader();
         
         virtual void Bind() const;
         virtual void Unbind() const;
@@ -30,8 +30,8 @@ namespace pipeline {
         static std::string IDToProperty (int id);
         static bool IsKeywordEnabled (const std::string& keyword);
         
-        static Color GetGlobalColor (const std::string& name);
-        static Color GetGlobalColor (int nameID);
+        static kColor GetGlobalColor (const std::string& name);
+        static kColor GetGlobalColor (int nameID);
         static float GetGlobalFloat (int nameID);
         static float GetGlobalFloat (const std::string& name);
         static void GetGlobalFloatArray (int nameID, std::vector<float>& values);
@@ -42,26 +42,26 @@ namespace pipeline {
         static int GetGlobalInt (int nameID);
         static int GetGlobalIntImpl (int nameID);
 
-        static Matrix4x4f GetGlobalMatrix (int nameID);
-        static Matrix4x4f GetGlobalMatrix (const std::string& name);
+        static kMatrix4x4f GetGlobalMatrix (int nameID);
+        static kMatrix4x4f GetGlobalMatrix (const std::string& name);
         
-        static void GetGlobalMatrixArray (const std::string& name, std::vector<Matrix4x4f>& values);
-        static Matrix4x4f* GetGlobalMatrixArray (const std::string& name);
-        static void GetGlobalMatrixArray (int nameID, std::vector<Matrix4x4f>& values);
-        static Matrix4x4f* GetGlobalMatrixArray (int nameID);
+        static void GetGlobalMatrixArray (const std::string& name, std::vector<kMatrix4x4f>& values);
+        static kMatrix4x4f* GetGlobalMatrixArray (const std::string& name);
+        static void GetGlobalMatrixArray (int nameID, std::vector<kMatrix4x4f>& values);
+        static kMatrix4x4f* GetGlobalMatrixArray (int nameID);
         
-        static Texture* GetGlobalTexture (int nameID);
-        static Texture* GetGlobalTexture (const std::string& name);
-        static Vector4f GetGlobalVector (int nameID);
-        static Vector4f GetGlobalVector (const std::string& name);
-        static void GetGlobalVectorArray (const std::string& name, std::vector<Vector4f>& values);
-        static void GetGlobalVectorArray (int nameID, std::vector<Vector4f>& values);
-        static Vector4f* GetGlobalVectorArray (int nameID);
-        static Vector4f* GetGlobalVectorArray (const std::string& name);
+        static kTexture* GetGlobalTexture (int nameID);
+        static kTexture* GetGlobalTexture (const std::string& name);
+        static kVector4f GetGlobalVector (int nameID);
+        static kVector4f GetGlobalVector (const std::string& name);
+        static void GetGlobalVectorArray (const std::string& name, std::vector<kVector4f>& values);
+        static void GetGlobalVectorArray (int nameID, std::vector<kVector4f>& values);
+        static kVector4f* GetGlobalVectorArray (int nameID);
+        static kVector4f* GetGlobalVectorArray (const std::string& name);
 
         static int PropertyToID (const std::string& name);
-        static void SetGlobalColor (const std::string& name, const Color& value);
-        static void SetGlobalColor (int nameID, const Color& value);
+        static void SetGlobalColor (const std::string& name, const kColor& value);
+        static void SetGlobalColor (int nameID, const kColor& value);
         static void SetGlobalFloat (int nameID, float value);
         static void SetGlobalFloat (const std::string& name, float value);
         static void SetGlobalFloatArray (int nameID, std::vector<float>& values);
@@ -70,19 +70,19 @@ namespace pipeline {
         static void SetGlobalFloatArray (const std::string& name, float* values);
         static void SetGlobalInt (const std::string& name, int value);
         static void SetGlobalInt (int nameID, int value);
-        static void SetGlobalMatrix (const std::string& name, const Matrix4x4f& value);
-        static void SetGlobalMatrix (int nameID, const Matrix4x4f& value);
-        static void SetGlobalMatrixArray (int nameID, std::vector<Matrix4x4f>& values);
-        static void SetGlobalMatrixArray (const std::string& name, std::vector<Matrix4x4f>& values);
-        static void SetGlobalMatrixArray (const std::string& name, Matrix4x4f* values);
-        static void SetGlobalMatrixArray (int nameID, Matrix4x4f* values);
-        static void SetGlobalTexture (const std::string& name, Texture* value);
-        static void SetGlobalVector (int nameID, const Vector4f& value);
-        static void SetGlobalVector (const std::string& name, const Vector4f& value);
-        static void SetGlobalVectorArray (int nameID, std::vector<Vector4f>& values);
-        static void SetGlobalVectorArray (const std::string& name, std::vector<Vector4f>& values);
-        static void SetGlobalVectorArray (int nameID, Vector4f* values);
-        static void SetGlobalVectorArray (const std::string& name, Vector4f* values);
+        static void SetGlobalMatrix (const std::string& name, const kMatrix4x4f& value);
+        static void SetGlobalMatrix (int nameID, const kMatrix4x4f& value);
+        static void SetGlobalMatrixArray (int nameID, std::vector<kMatrix4x4f>& values);
+        static void SetGlobalMatrixArray (const std::string& name, std::vector<kMatrix4x4f>& values);
+        static void SetGlobalMatrixArray (const std::string& name, kMatrix4x4f* values);
+        static void SetGlobalMatrixArray (int nameID, kMatrix4x4f* values);
+        static void SetGlobalTexture (const std::string& name, kTexture* value);
+        static void SetGlobalVector (int nameID, const kVector4f& value);
+        static void SetGlobalVector (const std::string& name, const kVector4f& value);
+        static void SetGlobalVectorArray (int nameID, std::vector<kVector4f>& values);
+        static void SetGlobalVectorArray (const std::string& name, std::vector<kVector4f>& values);
+        static void SetGlobalVectorArray (int nameID, kVector4f* values);
+        static void SetGlobalVectorArray (const std::string& name, kVector4f* values);
         
     protected:
         

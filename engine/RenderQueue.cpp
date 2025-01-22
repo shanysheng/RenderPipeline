@@ -3,64 +3,64 @@
 namespace pipeline{
     
     
-    CRenderQueue::CRenderQueue()
+    kRenderQueue::kRenderQueue()
     {
         m_Tag = 0;
         //m_bMatrixAggregated = false;
         m_pExtension = NULL;
     }
     
-    CRenderQueue::~CRenderQueue()
+    kRenderQueue::~kRenderQueue()
     {
         Clear();
     }
     
-    int CRenderQueue::GetRenderQueueTag()
+    int kRenderQueue::GetRenderQueueTag()
     {
         return m_Tag;
     }
     
-    IRenderQueueExtension* CRenderQueue::GetRenderQueueExtension()
+    IRenderQueueExtension* kRenderQueue::GetRenderQueueExtension()
     {
         return m_pExtension;
     }
     
-    void CRenderQueue::SetRenderQueueTag(int tag)
+    void kRenderQueue::SetRenderQueueTag(int tag)
     {
         m_Tag = tag;
     }
     
-    void CRenderQueue::SetRenderQueeuExtension(IRenderQueueExtension* pExtension)
+    void kRenderQueue::SetRenderQueeuExtension(IRenderQueueExtension* pExtension)
     {
         m_pExtension = pExtension;
     }
     
-    void CRenderQueue::PushBack(SGNode* pEntity)
+    void kRenderQueue::PushBack(kSGNode* pEntity)
     {
         m_Queue.push_back(pEntity);
     }
     
-    void CRenderQueue::PushFront( SGNode* pEntity)
+    void kRenderQueue::PushFront( kSGNode* pEntity)
     {
         m_Queue.push_front(pEntity);
     }
     
-    SGNode* CRenderQueue::operator [](int index)
+    kSGNode* kRenderQueue::operator [](int index)
     {
         return m_Queue[index];
     }
     
-    const SGNode* CRenderQueue::operator [](int index) const
+    const kSGNode* kRenderQueue::operator [](int index) const
     {
         return  m_Queue[index];
     }
     
-    int CRenderQueue::Size() const
+    int kRenderQueue::Size() const
     {
         return (int)m_Queue.size();
     }
     
-    void CRenderQueue::Clear()
+    void kRenderQueue::Clear()
     {
         m_Queue.clear();
     }

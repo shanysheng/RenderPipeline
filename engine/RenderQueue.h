@@ -18,11 +18,11 @@ namespace pipeline{
         virtual ~IRenderQueueExtension(){};
     };
     
-    class CRenderQueue
+    class kRenderQueue
     {
     public:
-        CRenderQueue();
-        virtual ~CRenderQueue();
+        kRenderQueue();
+        virtual ~kRenderQueue();
         
         bool IsMatrixAggregated();
         int GetRenderQueueTag();
@@ -31,11 +31,11 @@ namespace pipeline{
         void SetRenderQueueTag(int tag);
         void SetRenderQueeuExtension(IRenderQueueExtension* pExtension);
         
-        void PushBack( SGNode* pEntity);
-        void PushFront( SGNode* pEntity);
+        void PushBack( kSGNode* pEntity);
+        void PushFront( kSGNode* pEntity);
         
-        SGNode* operator [](int index);
-        const SGNode* operator [](int index) const;
+        kSGNode* operator [](int index);
+        const kSGNode* operator [](int index) const;
         
         int Size() const;
         void Clear();
@@ -43,12 +43,12 @@ namespace pipeline{
         void SetMatrixAggregated();
         
     protected:
-        std::deque<SGNode*> 	m_Queue;
+        std::deque<kSGNode*> 	m_Queue;
         
         int                     m_Tag;
         IRenderQueueExtension*  m_pExtension;
         
-        friend class CRenderQueueManager;
+        friend class kRenderQueueManager;
     };
 }
 

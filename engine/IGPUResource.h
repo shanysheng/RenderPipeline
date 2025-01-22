@@ -14,7 +14,7 @@ namespace pipeline{
     class IGPUResource
     {
     public:
-        friend class CGPUResourceManipulator;
+        friend class kGPUResourceManipulator;
         IGPUResource();
         
         uint32_t	GetRefenceCount()const{return m_ReferenceCount;}

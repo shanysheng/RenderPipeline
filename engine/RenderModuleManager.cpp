@@ -3,18 +3,18 @@
 
 namespace pipeline{
     
-    CRenderModuleManager::CRenderModuleManager()
+    kRenderModuleManager::kRenderModuleManager()
     {
         
     }
     
-    CRenderModuleManager::~CRenderModuleManager()
+    kRenderModuleManager::~kRenderModuleManager()
     {
         ClearRenderModules();
         ClearPrototypes();
     }
     
-    IRenderModule* CRenderModuleManager::Give( const std::string& Name, const std::string& PrototypeName )
+    IRenderModule* kRenderModuleManager::Give( const std::string& Name, const std::string& PrototypeName )
     {
         std::unordered_map< std::string, IRenderModule *>::iterator pos;
         pos = m_RenderModules.find(Name);
@@ -34,7 +34,7 @@ namespace pipeline{
         return NULL;
     }
     
-    void CRenderModuleManager::Register(const std::string& PrototypeName, IRenderModule * pPrototype )
+    void kRenderModuleManager::Register(const std::string& PrototypeName, IRenderModule * pPrototype )
     {
         std::unordered_map< std::string, IRenderModule *>::iterator pos;
         pos = m_Prototypes.find(PrototypeName);
@@ -49,7 +49,7 @@ namespace pipeline{
         m_Prototypes.insert(std::make_pair(PrototypeName, pPrototype));
     }
     
-    IRenderModule* CRenderModuleManager::operator [](const std::string& Name)
+    IRenderModule* kRenderModuleManager::operator [](const std::string& Name)
     {
         std::unordered_map< std::string, IRenderModule *>::iterator pos;
         pos = m_RenderModules.find(Name);
@@ -59,7 +59,7 @@ namespace pipeline{
         return pos->second;
     }
     
-    void CRenderModuleManager::ClearPrototypes()
+    void kRenderModuleManager::ClearPrototypes()
     {
         std::unordered_map< std::string, IRenderModule *>::iterator pos;
         pos = m_Prototypes.begin();
@@ -74,7 +74,7 @@ namespace pipeline{
         m_Prototypes.clear();
     }
     
-    void CRenderModuleManager::ClearRenderModules()
+    void kRenderModuleManager::ClearRenderModules()
     {
         std::unordered_map< std::string, IRenderModule *>::iterator pos;
         pos = m_RenderModules.begin();

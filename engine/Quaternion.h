@@ -12,197 +12,197 @@
 
 namespace pipeline{
     
-    class Matrix4x4f;
+    class kMatrix4x4f;
 
-    class Quaternionf
+    class kQuaternionf
     {
     public:
         float x,y,z,w;
         
     public:
-        Quaternionf () ;
-        Quaternionf (float inX, float inY, float inZ, float inW);
-        //Quaternionf& operator=(const Quaternionf& Other);
+        kQuaternionf () ;
+        kQuaternionf (float inX, float inY, float inZ, float inW);
+        //kQuaternionf& operator=(const kQuaternionf& Other);
         void Set (float inX, float inY, float inZ, float inW);
-        void Set (const Quaternionf& aQuat);
+        void Set (const kQuaternionf& aQuat);
   /*
-        Quaternionf operator+(const Quaternionf& rhs) const;
-        Quaternionf operator+=(const Quaternionf& rhs);
-        Quaternionf operator-(const Quaternionf& rhs) const;
+        kQuaternionf operator+(const kQuaternionf& rhs) const;
+        kQuaternionf operator+=(const kQuaternionf& rhs);
+        kQuaternionf operator-(const kQuaternionf& rhs) const;
         bool IsIdentity(float tolerance) const;
-        Quaternionf operator-=(const Quaternionf& rhs);
-        Quaternionf operator*(const Quaternionf& rhs) const;
-        Quaternionf operator*=(const Quaternionf& rhs);
-        Vector3f operator*(const Vector3f& vec) const;
-        Matrix4x4f operator*(const Matrix4x4f& mat) const;
-        Quaternionf operator*=(const float scale);
-        Quaternionf operator*(const float scale) const;
-        Quaternionf operator/=(const float scale);
-        Quaternionf operator/(const float scale) const;
-        bool operator==(const Quaternionf& rhs) const;
-        bool operator!=(const Quaternionf& rhs) const;
+        kQuaternionf operator-=(const kQuaternionf& rhs);
+        kQuaternionf operator*(const kQuaternionf& rhs) const;
+        kQuaternionf operator*=(const kQuaternionf& rhs);
+        kVector3f operator*(const kVector3f& vec) const;
+        kMatrix4x4f operator*(const kMatrix4x4f& mat) const;
+        kQuaternionf operator*=(const float scale);
+        kQuaternionf operator*(const float scale) const;
+        kQuaternionf operator/=(const float scale);
+        kQuaternionf operator/(const float scale) const;
+        bool operator==(const kQuaternionf& rhs) const;
+        bool operator!=(const kQuaternionf& rhs) const;
         
         void Normalize();
         void Inverse ();
         */
-        //static Quaternionf identity ();
-        //static Quaternionf Normalize(const Quaternionf& q);
-        //static Quaternionf Inverse (const Quaternionf& q);
-        //static Vector3f QuaternionToEuler (const Quaternionf& quat);
-        //static Quaternionf EulerToQuaternion (const Vector3f& euler);
-        //static void QuaternionToMatrix (const Quaternionf& q, Matrix4x4f& m);
-        //static void MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q);
+        //static kQuaternionf identity ();
+        //static kQuaternionf Normalize(const kQuaternionf& q);
+        //static kQuaternionf Inverse (const kQuaternionf& q);
+        //static kVector3f QuaternionToEuler (const kQuaternionf& quat);
+        //static kQuaternionf EulerToQuaternion (const kVector3f& euler);
+        //static void QuaternionToMatrix (const kQuaternionf& q, kMatrix4x4f& m);
+        //static void MatrixToQuaternion (const kMatrix4x4f& m, kQuaternionf& q);
     };
     
-    inline Quaternionf::Quaternionf ()
+    inline kQuaternionf::kQuaternionf ()
     {
         
     }
     
-    inline Quaternionf::Quaternionf (float inX, float inY, float inZ, float inW)
+    inline kQuaternionf::kQuaternionf (float inX, float inY, float inZ, float inW)
     {
         
     }
     
-    //inline Quaternionf::Quaternionf& operator=(const Quaternionf& Other)
+    //inline kQuaternionf::kQuaternionf& operator=(const kQuaternionf& Other)
     //{
     //    
     //}
     
-    inline void Quaternionf::Set (float inX, float inY, float inZ, float inW)
+    inline void kQuaternionf::Set (float inX, float inY, float inZ, float inW)
     {
         
     }
     
-    inline void Quaternionf::Set (const Quaternionf& aQuat)
+    inline void kQuaternionf::Set (const kQuaternionf& aQuat)
     {
         
     }
     //
     //
-    //inline Quaternionf Quaternionf::operator+(const Quaternionf& rhs) const
+    //inline kQuaternionf kQuaternionf::operator+(const kQuaternionf& rhs) const
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator+=(const Quaternionf& rhs)
+    //inline kQuaternionf kQuaternionf::operator+=(const kQuaternionf& rhs)
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator-(const Quaternionf& rhs) const
+    //inline kQuaternionf kQuaternionf::operator-(const kQuaternionf& rhs) const
     //{
     //    
     //}
     //
-    ////inline bool Quaternionf::Equals(const Quaternionf& rhs) const
+    ////inline bool kQuaternionf::Equals(const kQuaternionf& rhs) const
     ////{
     ////    
     ////}
     //
-    //inline bool Quaternionf::IsIdentity(float tolerance) const
+    //inline bool kQuaternionf::IsIdentity(float tolerance) const
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator-=(const Quaternionf& rhs)
+    //inline kQuaternionf kQuaternionf::operator-=(const kQuaternionf& rhs)
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator*(const Quaternionf& rhs) const
+    //inline kQuaternionf kQuaternionf::operator*(const kQuaternionf& rhs) const
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator*=(const Quaternionf& rhs)
+    //inline kQuaternionf kQuaternionf::operator*=(const kQuaternionf& rhs)
     //{
     //    
     //}
     //
-    //inline Vector3f Quaternionf::operator*(const Vector3f& vec) const
+    //inline kVector3f kQuaternionf::operator*(const kVector3f& vec) const
     //{
     //    
     //}
     //
-    //inline Matrix4x4f Quaternionf::operator*(const Matrix4x4f& mat) const
+    //inline kMatrix4x4f kQuaternionf::operator*(const kMatrix4x4f& mat) const
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator*=(const float scale)
+    //inline kQuaternionf kQuaternionf::operator*=(const float scale)
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator*(const float scale) const
+    //inline kQuaternionf kQuaternionf::operator*(const float scale) const
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator/=(const float scale)
+    //inline kQuaternionf kQuaternionf::operator/=(const float scale)
     //{
     //    
     //}
     //
-    //inline Quaternionf Quaternionf::operator/(const float scale) const
+    //inline kQuaternionf kQuaternionf::operator/(const float scale) const
     //{
     //    
     //}
     //
-    //inline bool Quaternionf::operator==(const Quaternionf& rhs) const
+    //inline bool kQuaternionf::operator==(const kQuaternionf& rhs) const
     //{
     //    
     //}
     //
-    //inline bool Quaternionf::operator!=(const Quaternionf& rhs) const
+    //inline bool kQuaternionf::operator!=(const kQuaternionf& rhs) const
     //{
     //    
     //}
     //
     //
-    //inline void Quaternionf::Normalize()
+    //inline void kQuaternionf::Normalize()
     //{
     //    
     //}
     //
-    //inline void Quaternionf::Inverse ()
+    //inline void kQuaternionf::Inverse ()
     //{
     //    
     //}
     ///*
     //
-    //inline static Quaternionf Quaternionf::identity ()
+    //inline static kQuaternionf kQuaternionf::identity ()
     //{
     //    
     //}
     //
-    //inline static Quaternionf Quaternionf::Normalize(const Quaternionf& q)
+    //inline static kQuaternionf kQuaternionf::Normalize(const kQuaternionf& q)
     //{
     //    
     //}
     //
-    //inline static Quaternionf Quaternionf::Inverse (const Quaternionf& q)
+    //inline static kQuaternionf kQuaternionf::Inverse (const kQuaternionf& q)
     //{
     //    
     //}
     //
-    //inline static Vector3f Quaternionf::QuaternionToEuler (const Quaternionf& quat)
+    //inline static kVector3f kQuaternionf::QuaternionToEuler (const kQuaternionf& quat)
     //{
     //    
     //}
     //
-    //inline static Quaternionf Quaternionf::EulerToQuaternion (const Vector3f& euler)
+    //inline static kQuaternionf kQuaternionf::EulerToQuaternion (const kVector3f& euler)
     //{
     //    
     //}
     //
-    //inline static void Quaternionf::QuaternionToMatrix (const Quaternionf& q, Matrix4x4f& m)
+    //inline static void kQuaternionf::QuaternionToMatrix (const kQuaternionf& q, kMatrix4x4f& m)
     //{
     //    
     //}
     //
-    //inline static void Quaternionf::MatrixToQuaternion (const Matrix4x4f& m, Quaternionf& q)
+    //inline static void kQuaternionf::MatrixToQuaternion (const kMatrix4x4f& m, kQuaternionf& q)
     //{
     //    
     //}*/

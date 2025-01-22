@@ -12,14 +12,14 @@
 
 namespace pipeline{
     
-    class Bound
+    class kBound
     {
     public:
-        Bound();
-        Bound(const Vector3f& minpt, const Vector3f& maxpt);
+        kBound();
+        kBound(const kVector3f& minpt, const kVector3f& maxpt);
 
-        Vector3f m_Min;
-        Vector3f m_Max;
+        kVector3f m_Min;
+        kVector3f m_Max;
     };
 }
 

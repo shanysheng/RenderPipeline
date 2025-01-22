@@ -16,12 +16,12 @@
 namespace pipeline{
     
     class CCamera;
-    class CRenderQueue;
+    class kRenderQueue;
     class IRenderTarget;
     class SceneManager;
-    class CRenderQueueManager;
-    class CPreRenderManager;
-    class CRenderingEngine;
+    class kRenderQueueManager;
+    class kPreRenderManager;
+    class kRenderingEngine;
     
     class IPreRender : public IRenderControlUnit
     {
@@ -38,17 +38,17 @@ namespace pipeline{
         // 	virtual void PostChildrenBeforeFirstFrame( CFrameInfo * pFI);
         // 	virtual void PostChildrenAfterLastFrame( CFrameInfo * pFI);
     public:
-        void SetInTraverseRoot( const std::vector<SGNode*>& roots);
+        void SetInTraverseRoot( const std::vector<kSGNode*>& roots);
         void SetInCamera( CCamera* pCamera);
         void SetInRenderTarget( IRenderTarget * pRT);
-        void SetInRenderQueue( int i, CRenderQueue * pRenderQueue);
-        void SetOutRenderQueue( int i, CRenderQueue * pRenderQueue);
+        void SetInRenderQueue( int i, kRenderQueue * pRenderQueue);
+        void SetOutRenderQueue( int i, kRenderQueue * pRenderQueue);
         
-        void SetContext( CRenderingEngine * pRE);
+        void SetContext( kRenderingEngine * pRE);
         
         void SetSceneManager(SceneManager*);
-        void SetRenderQueueManager(CRenderQueueManager*);
-        void SetPreRenderManager(CPreRenderManager*);
+        void SetRenderQueueManager(kRenderQueueManager*);
+        void SetPreRenderManager(kPreRenderManager*);
         
         uint32_t  GetInRenderQueueCount() const;
         uint32_t  GetOutRenderQueueCount() const;
@@ -60,12 +60,12 @@ namespace pipeline{
         IRenderTarget *             m_pInRenderTarget;
         
         SceneManager *              m_pSceneModelMpr;
-        CRenderQueueManager *       m_pRenderQueueMgr;
-        CPreRenderManager *         m_pPreRenderMgr;
+        kRenderQueueManager *       m_pRenderQueueMgr;
+        kPreRenderManager *         m_pPreRenderMgr;
         
-        std::vector<CRenderQueue*>  m_InRenderQueues;
-        std::vector<CRenderQueue*>  m_OutRenderQueues;
-        std::vector<SGNode*>        m_TraverseRoots;
+        std::vector<kRenderQueue*>  m_InRenderQueues;
+        std::vector<kRenderQueue*>  m_OutRenderQueues;
+        std::vector<kSGNode*>        m_TraverseRoots;
     };
 }
 

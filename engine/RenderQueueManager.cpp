@@ -3,23 +3,23 @@
 
 namespace pipeline{
     
-    CRenderQueueManager::CRenderQueueManager()
+    kRenderQueueManager::kRenderQueueManager()
     {
         
     }
     
-    CRenderQueueManager::~CRenderQueueManager()
+    kRenderQueueManager::~kRenderQueueManager()
     {
         ClearResources();
     }
     
-    CRenderQueue* CRenderQueueManager::Give( const std::string& QueueName)
+    kRenderQueue* kRenderQueueManager::Give( const std::string& QueueName)
     {
-        std::unordered_map<std::string, CRenderQueue*>::iterator mit;
+        std::unordered_map<std::string, kRenderQueue*>::iterator mit;
         mit = m_RenderQueues.find(QueueName);
         if (mit == m_RenderQueues.end())
         {
-            CRenderQueue* pRenderQueue = new CRenderQueue;
+            kRenderQueue* pRenderQueue = new kRenderQueue;
             m_RenderQueues.insert(std::make_pair(QueueName, pRenderQueue));
             return pRenderQueue;
         }
@@ -27,9 +27,9 @@ namespace pipeline{
         return mit->second;
     }
     
-    bool CRenderQueueManager::IsExisting( const std::string& QueueName ) const
+    bool kRenderQueueManager::IsExisting( const std::string& QueueName ) const
     {
-        std::unordered_map<std::string, CRenderQueue*>::const_iterator mit;
+        std::unordered_map<std::string, kRenderQueue*>::const_iterator mit;
         mit = m_RenderQueues.find(QueueName);
         if (mit == m_RenderQueues.end())
         {
@@ -39,9 +39,9 @@ namespace pipeline{
         return true;
     }
     
-    CRenderQueue* CRenderQueueManager::operator [](const std::string& QueueName )
+    kRenderQueue* kRenderQueueManager::operator [](const std::string& QueueName )
     {
-        std::unordered_map<std::string, CRenderQueue*>::iterator mit;
+        std::unordered_map<std::string, kRenderQueue*>::iterator mit;
         mit = m_RenderQueues.find(QueueName);
         if(mit == m_RenderQueues.end())
             return NULL;
@@ -49,9 +49,9 @@ namespace pipeline{
         return mit->second;
     }
     
-    void CRenderQueueManager::ClearResources()
+    void kRenderQueueManager::ClearResources()
     {
-        std::unordered_map<std::string, CRenderQueue*>::iterator pos ;
+        std::unordered_map<std::string, kRenderQueue*>::iterator pos ;
         pos = m_RenderQueues.begin();
         while (pos!=m_RenderQueues.end())
         {

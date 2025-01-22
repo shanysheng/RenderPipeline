@@ -26,13 +26,13 @@ namespace pipeline{
         virtual ~IRenderModule(){};
         virtual IRenderModule * Clone() const = 0;
         
-        virtual IRenderingAttribute * CreateAttribute( SGNode * pFeature ) = 0;
-        virtual IRenderingAttribute * DeleteAttribute( SGNode * pFeature ) = 0;
-        virtual void AfterFreeGPUResources(CFrameInfo*pFI, SGNode * pFeature, IRenderingAttribute * pAttrib ){};
+        virtual IRenderingAttribute * CreateAttribute( kSGNode * pFeature ) = 0;
+        virtual IRenderingAttribute * DeleteAttribute( kSGNode * pFeature ) = 0;
+        virtual void AfterFreeGPUResources(CFrameInfo*pFI, kSGNode * pFeature, IRenderingAttribute * pAttrib ){};
         
         
         virtual void	ApplyForGPUResources(const CFrameInfo*, const CCamera *, const CRenderQueueElement *,
-                                             IRenderingAttribute * pAttrib, std::vector<SGNode*>& GPUResourceApplicants) = 0;
+                                             IRenderingAttribute * pAttrib, std::vector<kSGNode*>& GPUResourceApplicants) = 0;
         
         virtual	bool  PrepareResources(const CFrameInfo*, const CCamera *, const CRenderQueueElement *,
                                        IRenderingAttribute * pAttrib, const  std::vector<IGPUResource*>& GPUResources ) =0;

@@ -17,11 +17,11 @@ namespace pipeline {
         
     };
     
-    class RenderTarget
+    class kRenderTarget
     {
     public:
-        RenderTarget(){}
-        virtual ~RenderTarget(){}
+        kRenderTarget(){}
+        virtual ~kRenderTarget(){}
         
         virtual int		GetType() = 0;
         

@@ -13,22 +13,22 @@
 namespace pipeline {
     
     
-    class SGNode;
+    class kSGNode;
+    class kScene;
     class CCamera;
     class CCameraManager;
     class IPreRender;
-    class CGPUResourceManipulator;
     class CCameraManager;
     class CLocalClock;
     class CSynClock;
     
     class IRenderTarget;
-    class CRenderQueueManager;
+    class kRenderQueueManager;
     class CCameraManager;
     class CRenderTargetManager;
-    class CPreRenderManager;
-    class CGPUResourceManipulator;
-    class CRenderPipelineManager;
+    class kPreRenderManager;
+    class kGPUResourceManipulator;
+    class kRenderPipelineManager;
     
     class CWinInfo
     {
@@ -36,31 +36,26 @@ namespace pipeline {
     };
     
     
-    class CRenderingEngine
+    class kRenderingEngine
     {
     public:
-        CRenderingEngine(void);
-        virtual ~CRenderingEngine(void);
-
+        kRenderingEngine(void);
+        virtual ~kRenderingEngine(void);
         
-        virtual int		Configure( const std::string& ConfigFileName );
+        virtual int Configure( const std::string& ConfigFileName );
+        virtual int Initialize( const CWinInfo& WinInfo );
+        virtual void Finalize();
         
-        virtual int		Initialize( const CWinInfo& WinInfo );
+        int OpenSceneModel( const std::string& SceneModelName, int ActiveSceneGraph =0 );
+        void CloseSceneModel();
         
-        virtual void	Finalize();
+        void SetRenderTraverseRoot( const std::vector<kSGNode*>& roots );
+        void SetCamera(CCamera& Camera );
+        void GetCamera( CCamera& Camera );
         
-        int		OpenSceneModel( const std::string& SceneModelName, int ActiveSceneGraph =0 );
-        void	CloseSceneModel();
-        
-        void	SetRenderTraverseRoot( const std::vector<SGNode*>& roots );
-        void	SetCamera(CCamera& Camera );
-        void	GetCamera( CCamera& Camera );
-        
-        
-        void	ClearScreen(float r = 0.0f, float g = 0.3f, float b = 0.9f, float a = 0.0f);
-        void	DoRendering();
-        void	SwapBuffers();
- 
+        void ClearScreen(float r = 0.0f, float g = 0.3f, float b = 0.9f, float a = 0.0f);
+        void DoRendering();
+        void SwapBuffers();
         
         void SetSetupTimeBudget(double);
         void SetDrawingTimeBudget(double);
@@ -71,20 +66,17 @@ namespace pipeline {
         double GetDrawingTimeBudget();
         int32_t GetGPUMemoryBudget();
         int32_t GetExtraRenderingObjectBudget();
-
         
     protected:
 
-        //CSceneModelManipulator2*	GetSceneModelManipulator2()	{return m_pSceneModelMpr;}
-        CRenderQueueManager*					GetRenderQueueManager()		{return m_pRenderQueueMgr;}
+        kRenderQueueManager*					GetRenderQueueManager()		{return m_pRenderQueueMgr;}
         CCameraManager*							GetCameraManager()			{return m_pCameraMgr;}
         CRenderTargetManager*					GetRenderTargetManager()	{return m_pRenderTargetMgr;}
-        CPreRenderManager*						GetPreRenderManager()		{return m_pPreRenderMgr;}
-        CGPUResourceManipulator*				GetGPUResourceManipulator()	{return m_pGPUResourceMpr;}
-        CRenderPipelineManager*					GetRenderPipelineManager()	{return m_pRenderPipelineMgr;}
+        kPreRenderManager*						GetPreRenderManager()		{return m_pPreRenderMgr;}
+        kGPUResourceManipulator*				GetGPUResourceManipulator()	{return m_pGPUResourceMpr;}
+        kRenderPipelineManager*					GetRenderPipelineManager()	{return m_pRenderPipelineMgr;}
         CLocalClock*							GetLocalClock()				{return m_pLocalClock;}
         CSynClock*								GetSynClock()				{return m_pSynClock;}
-        
         
     protected:
         
@@ -92,9 +84,9 @@ namespace pipeline {
         virtual int RegisterRenderPipelinePrototypes();
         
         // user override functions
-        virtual int OnConfigure(){return 0;}
-        virtual int OnRegisterPreRenderPrototypes(){return 0;}
-        virtual int OnRegisterRenderPipelinePrototypes(){return 0;}
+        virtual int OnConfigure();
+        virtual int OnRegisterPreRenderPrototypes();
+        virtual int OnRegisterRenderPipelinePrototypes();
         
         virtual void UpdateSynClockMillSecondTime();
         virtual void UpdateFrameIndex();
@@ -103,24 +95,25 @@ namespace pipeline {
         
         CWinInfo								m_WinInfo;
         
-        //CSceneModelManipulator2*   	m_pSceneModelMpr;
+        kGPUResourceManipulator*				m_pGPUResourceMpr;
         
-        CGPUResourceManipulator*				m_pGPUResourceMpr;
-        
-        CRenderQueueManager*   					m_pRenderQueueMgr;
+        kRenderQueueManager*   					m_pRenderQueueMgr;
         CCameraManager*							m_pCameraMgr;
+
         CRenderTargetManager*					m_pRenderTargetMgr;
-        CPreRenderManager*						m_pPreRenderMgr;
-        CRenderPipelineManager*					m_pRenderPipelineMgr;
-        std::vector<SGNode*>	m_TraverseRoots;
+        kPreRenderManager*						m_pPreRenderMgr;
+        kRenderPipelineManager*					m_pRenderPipelineMgr;
+
+        std::vector<kSGNode*>	                m_TraverseRoots;
+
         CLocalClock*							m_pLocalClock;
 
         CSynClock*								m_pSynClock;
         
-        //CFrameInfo								m_FrameInfo;
+        //CFrameInfo							m_FrameInfo;
         
-        IPreRender*								 m_pStartPreRender;
-        IRenderTarget*						 m_pPrimeTarget;
+        IPreRender*								m_pStartPreRender;
+        IRenderTarget*						    m_pPrimeTarget;
     };
 
 }

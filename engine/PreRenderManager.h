@@ -14,13 +14,13 @@
 namespace pipeline{
     
     class IPreRender;
-    class CRenderingEngine;
+    class kRenderingEngine;
     
-    class CPreRenderManager
+    class kPreRenderManager
     {
     public:
-        CPreRenderManager();
-        virtual ~CPreRenderManager();
+        kPreRenderManager();
+        virtual ~kPreRenderManager();
         
         void		Register(const std::string& PrototypeName, IPreRender* pPrototype);
         

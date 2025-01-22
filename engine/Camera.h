@@ -17,42 +17,42 @@
 
 namespace pipeline {
     
-    class SGNode;
-    class RenderTarget;
-    class Texture;
+    class kSGNode;
+    class kRenderTarget;
+    class kTexture;
     
-    class Camera
+    class kCamera
     {
     public:
-        Camera();
-        ~Camera();
+        kCamera();
+        ~kCamera();
 
  
-        bool ViewportToWorld( const Vector2f& pt, Vector3f& start, Vector3f& dir ) const;
-        bool ViewportToWorld( const Vector2f& pt, Vector3f& worldpt ) const;
-        bool ViewportToWorld( const Vector2f& pt, Vector3f& worldpt, const Vector3f& planept, const Vector3f& planenormal ) const;
-        bool WorldToViewport(const Vector3f& point, Vector2f& viewport_pt ) const;
+        bool ViewportToWorld( const kVector2f& pt, kVector3f& start, kVector3f& dir ) const;
+        bool ViewportToWorld( const kVector2f& pt, kVector3f& worldpt ) const;
+        bool ViewportToWorld( const kVector2f& pt, kVector3f& worldpt, const kVector3f& planept, const kVector3f& planenormal ) const;
+        bool WorldToViewport(const kVector3f& point, kVector2f& viewport_pt ) const;
         
-        Ray ViewportPointToRay (const Vector3f& position);
-        Vector3f ViewportToScreenPoint (const Vector3f& position);
-        Vector3f ViewportToWorldPoint (const Vector3f& position);
-        Vector3f WorldToScreenPoint (const Vector3f& position);
-        Vector3f WorldToViewportPoint (const Vector3f& position);
+        kRay ViewportPointToRay (const kVector3f& position);
+        kVector3f ViewportToScreenPoint (const kVector3f& position);
+        kVector3f ViewportToWorldPoint (const kVector3f& position);
+        kVector3f WorldToScreenPoint (const kVector3f& position);
+        kVector3f WorldToViewportPoint (const kVector3f& position);
         
-        SGNode* RaycastTry (const Ray& ray, float distance, int layerMask);
-        SGNode* RaycastTry2D (const Ray& ray, float distance, int layerMask);
+        kSGNode* RaycastTry (const kRay& ray, float distance, int layerMask);
+        kSGNode* RaycastTry2D (const kRay& ray, float distance, int layerMask);
         
-        Ray ScreenPointToRay (const Vector3f& position);
-        Vector3f ScreenToViewportPoint (const Vector3f& position);
-        Vector3f ScreenToWorldPoint (const Vector3f& position);
+        kRay ScreenPointToRay (const kVector3f& position);
+        kVector3f ScreenToViewportPoint (const kVector3f& position);
+        kVector3f ScreenToWorldPoint (const kVector3f& position);
         
         
-        void CopyFrom (const Camera& other);
-        void CalculateFrustumCorners (Rect viewport, float z, Vector3f outCorners[]);
+        void CopyFrom (const kCamera& other);
+        void CalculateFrustumCorners (kRect viewport, float z, kVector3f outCorners[]);
         
         void DoClear ();
         void Render ();
-        bool RenderToCubemap (Texture* cubemap);
+        bool RenderToCubemap (kTexture* cubemap);
         
 
     public:
@@ -65,19 +65,19 @@ namespace pipeline {
         float m_FarClipPlane ;
         
         float m_DefaultDepth ;
-        Color m_BackGroundColor;
+        kColor m_BackGroundColor;
         
-        Vector3f    m_Position;
-        Vector3f    m_Target;
-        Vector3f    m_Updir;
+        kVector3f    m_Position;
+        kVector3f    m_Target;
+        kVector3f    m_Updir;
         
-        Matrix4x4f m_CameraToWorldMatrix;
-        Matrix4x4f m_ProjectionMatrix ;
-        Matrix4x4f m_WorldToCameraMatrix ;
-        Matrix4x4f m_CullingMatrix ;
+        kMatrix4x4f m_CameraToWorldMatrix;
+        kMatrix4x4f m_ProjectionMatrix ;
+        kMatrix4x4f m_WorldToCameraMatrix ;
+        kMatrix4x4f m_CullingMatrix ;
         
-        Vector4f m_ViewportRect ;
-        RenderTarget* targetTexture ;
+        kVector4f m_ViewportRect ;
+        kRenderTarget* targetTexture ;
     };
 }
 #endif
