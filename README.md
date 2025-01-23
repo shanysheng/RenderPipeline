@@ -35,6 +35,10 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [ ] obj
 - [ ] 3dgs
 - [ ] gltf
+### samples
+- [ ] model
+- [ ] 3dgs
+
 
 
 # Architecture

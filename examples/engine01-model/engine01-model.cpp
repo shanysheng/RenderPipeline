@@ -36,7 +36,7 @@ namespace pipeline {
 
     private:
         GLFWwindow* window;
-        kRenderingEngine m_Engine;
+        kEngine m_Engine;
 
 
         void initWindow() {
@@ -48,26 +48,26 @@ namespace pipeline {
             glfwSetWindowUserPointer(window, this);
             glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
-            //m_Engine.createEngine(window);
+            m_Engine.createEngine(window);
         }
 
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
             auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
-            //app->m_Engine.frameChanged();
+            app->m_Engine.frameChanged();
         }
 
         void mainLoop() {
 
             while (!glfwWindowShouldClose(window)) {
                 glfwPollEvents();
-                //m_Engine.drawFrame();
+                m_Engine.drawFrame();
             }
 
             //vkDeviceWaitIdle(kEngine.logicaldevice);
         }
 
         void cleanup() {
-            //m_Engine.cleanEngine();
+            m_Engine.cleanEngine();
 
             glfwDestroyWindow(window);
             glfwTerminate();

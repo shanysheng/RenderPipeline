@@ -129,6 +129,18 @@
     <ClCompile Include="engine\FileManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="engine\RHISwapchain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\kGraphicPipeline.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\tiny_obj_loader.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\objModel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Material.h">
@@ -243,6 +255,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\FileManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\RHISwapchain.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\kGraphicPipeline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\tiny_obj_loader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\objModel.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

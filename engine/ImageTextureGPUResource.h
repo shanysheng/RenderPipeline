@@ -1,9 +1,11 @@
 #pragma once
 #include "IGPUResource.h"
 
+#include "Common.h"
 
 namespace pipeline {
 
+	class kRHIContext;
 
 	struct kImageInfo {
         uint32_t m_Width;
@@ -13,23 +15,29 @@ namespace pipeline {
 		uint8_t* m_pData;
 	};
 
-	class kImageTextureGPUResource : public IGPUResource
+	class kTexture
 	{
 	public:
-		kImageTextureGPUResource();
-		virtual ~kImageTextureGPUResource();
+		kTexture() {};
+		virtual ~kTexture() {};
 
-		VkImage GetImage() { return m_TextureImage; };
-		VkImageView GetImageView() { return m_TextureImageView; };
-		VkSampler GetImageSampler() { return m_TextureSampler; };
+		void createTexture(kRHIContext& contextref, const std::string& filename);
+
+		VkImage getImage() { return textureImage; };
+		VkImageView getImageView() { return textureImageView; };
+		VkSampler getImageSampler() { return textureSampler; };
+
+		void cleanupTexture(kRHIContext& contextref);
 
 	protected:
-
+		void createTextureImage(kRHIContext& contextref, const std::string& filename);
+		void createTextureImageView(kRHIContext& contextref);
+		void createTextureSampler(kRHIContext& contextref);
 
 	protected:
-		VkImage							m_TextureImage;
-		VkDeviceMemory					m_TextureImageMemory;
-		VkImageView						m_TextureImageView;
-		VkSampler						m_TextureSampler;
+		VkImage							textureImage;
+		VkDeviceMemory					textureImageMemory;
+		VkImageView						textureImageView;
+		VkSampler						textureSampler;
 	};
 }
