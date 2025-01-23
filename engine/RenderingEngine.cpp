@@ -35,11 +35,11 @@ namespace pipeline {
 
     }
 
-    void kRenderingEngine::SetCamera(CCamera& Camera) {
+    void kRenderingEngine::SetCamera(kCamera& Camera) {
 
     }
 
-    void kRenderingEngine::GetCamera(CCamera& Camera) {
+    void kRenderingEngine::GetCamera(kCamera& Camera) {
 
     }
 
@@ -54,39 +54,6 @@ namespace pipeline {
 
     void kRenderingEngine::SwapBuffers() {
 
-    }
-
-
-    void kRenderingEngine::SetSetupTimeBudget(double) {
-
-    }
-
-    void kRenderingEngine::SetDrawingTimeBudget(double) {
-
-    }
-
-    void kRenderingEngine::SetGPUMemoryBudget(int32_t) {
-
-    }
-
-    void kRenderingEngine::SetExtraRenderingObjectBudget(int32_t) {
-
-    }
-
-    double kRenderingEngine::GetSetupTimeBudget() {
-        return 0.0;
-    }
-
-    double kRenderingEngine::GetDrawingTimeBudget() {
-        return 0.0;
-    }
-
-    int32_t kRenderingEngine::GetGPUMemoryBudget() {
-        return 0;
-    }
-
-    int32_t kRenderingEngine::GetExtraRenderingObjectBudget() {
-        return 0;
     }
 
     int kRenderingEngine::RegisterPreRenderPrototypes() {

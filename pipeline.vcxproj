@@ -74,6 +74,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\BufferGPUResource.cpp" />
+    <ClCompile Include="engine\FileManager.cpp" />
     <ClCompile Include="engine\ImageTextureGPUResource.cpp" />
     <ClCompile Include="engine\Material.cpp" />
     <ClCompile Include="engine\Bound.cpp" />
@@ -112,6 +114,7 @@
     <ClCompile Include="engine\RenderQueue.cpp" />
     <ClCompile Include="engine\RenderQueueManager.cpp" />
     <ClCompile Include="engine\RenderTarget.cpp" />
+    <ClCompile Include="engine\RHIContext.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
     <ClCompile Include="engine\SGNode.cpp" />
     <ClCompile Include="engine\SGNodeIterator.cpp" />
@@ -124,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\BufferGPUResource.h" />
+    <ClInclude Include="engine\FileManager.h" />
     <ClInclude Include="engine\ImageTextureGPUResource.h" />
     <ClInclude Include="engine\Material.h" />
     <ClInclude Include="engine\Bound.h" />
@@ -150,6 +154,7 @@
     <ClInclude Include="engine\RenderQueue.h" />
     <ClInclude Include="engine\RenderQueueManager.h" />
     <ClInclude Include="engine\RenderTarget.h" />
+    <ClInclude Include="engine\RHIContext.h" />
     <ClInclude Include="engine\Scene.h" />
     <ClInclude Include="engine\SGNode.h" />
     <ClInclude Include="engine\SGNodeIterator.h" />

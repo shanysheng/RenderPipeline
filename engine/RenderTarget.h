@@ -1,9 +1,3 @@
-/*
-* Copyright 2017 sheng chongshan. All rights reserved.
-* email: shany.sheng@qq.com
-* License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
-*/
-
 #ifndef PIPELINE_RENDERTARGET_H_GUARD
 #define PIPELINE_RENDERTARGET_H_GUARD
 
@@ -11,7 +5,7 @@
 
 namespace pipeline {
     
-    class CWinInfo
+    class kWinInfo
     {
     public:
         
@@ -37,7 +31,7 @@ namespace pipeline {
         virtual int		CreateRenderTarget(uint32_t in_Width, uint32_t in_Height) {return false;}
         virtual int     ResizeRenderTarget(uint32_t in_Width, uint32_t in_Height) {return false;}
         
-        virtual int		CreateRenderWindow( const CWinInfo& WinInfo) {return false;}
+        virtual int		CreateRenderWindow( const kWinInfo& WinInfo) {return false;}
     };
 }
 

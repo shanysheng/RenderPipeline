@@ -1,9 +1,3 @@
-/*
-* Copyright 2017 sheng chongshan. All rights reserved.
-* email: shany.sheng@qq.com
-* License: https://github.com/shanysheng/RenderPipeline/blob/master/LICENSE
-*/
-
 #ifndef PIPELINE_GPURESOURCEMANAGER_H_GUARD
 #define PIPELINE_GPURESOURCEMANAGER_H_GUARD
 
@@ -18,11 +12,11 @@ namespace pipeline {
     class kBufferGPUResource;
     class kImageTextureGPUResource;
 
-    class kGPUResourceManipulator
+    class kGPUResourceManager
     {
     public:
-        kGPUResourceManipulator(void);
-        virtual ~kGPUResourceManipulator(void);
+        kGPUResourceManager(void);
+        virtual ~kGPUResourceManager(void);
         
         kBufferGPUResource* GiveResource(kBufferInfo*);
         kImageTextureGPUResource* GiveResource(kImageInfo*);

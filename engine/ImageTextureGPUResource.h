@@ -19,7 +19,17 @@ namespace pipeline {
 		kImageTextureGPUResource();
 		virtual ~kImageTextureGPUResource();
 
+		VkImage GetImage() { return m_TextureImage; };
+		VkImageView GetImageView() { return m_TextureImageView; };
+		VkSampler GetImageSampler() { return m_TextureSampler; };
+
 	protected:
 
+
+	protected:
+		VkImage							m_TextureImage;
+		VkDeviceMemory					m_TextureImageMemory;
+		VkImageView						m_TextureImageView;
+		VkSampler						m_TextureSampler;
 	};
 }

@@ -123,6 +123,12 @@
     <ClCompile Include="engine\ImageTextureGPUResource.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="engine\RHIContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\FileManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Material.h">
@@ -231,6 +237,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\ImageTextureGPUResource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\RHIContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\FileManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
