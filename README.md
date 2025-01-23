@@ -10,10 +10,14 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - - [RenderUnit](#RenderUnit)
 - - [PreRender](#PreRender)
 - - [RenderPipeline](#RenderPipeline)
-- [Demo](#Demo)
-<br>
+- [Samples](#Samples)
 
 # Overview
+* graphic: vulkan
+* framework: render pipeline
+
+# Implementations
+
 ### vulkan
 - [x] Device: VkInstance, VkPhysicalDevice, VkDevice, VkQueue
 - [x] Swapchain: VkSwapchainKHR, VkImage, VkImageView, VkFramebuffer, VkRenderPass
@@ -32,9 +36,6 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [ ] 3dgs
 - [ ] gltf
 
-# Implementations
-* graphic: vulkan
-* framework: render pipeline
 
 # Architecture
 
@@ -51,5 +52,5 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 <img src=./doc/images/renderpipeline.jpg  /><br>
 
 
-# Demo
+# Samples
 
