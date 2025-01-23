@@ -1,9 +1,12 @@
 #include "RenderingEngine.h"
 
 namespace pipeline {
+
+	const int MAX_FRAMES_IN_FLIGHT = 2;
     
     kRenderingEngine::kRenderingEngine(void) {
-
+		m_pWindow = nullptr;
+		currentFrame = 0;
     }
 
     kRenderingEngine::~kRenderingEngine(void) {
@@ -12,15 +15,21 @@ namespace pipeline {
 
 
     int kRenderingEngine::Configure(const std::string& ConfigFileName) {
+		OnConfigure();
+
         return 1;
     }
 
-    int kRenderingEngine::Initialize(const kWinInfo& WinInfo) {
+    int kRenderingEngine::Initialize(const kWinInfo& wininfo) {
+
+		m_WinInfo = wininfo;
+		createEngine(m_WinInfo.pwindow);
+
         return 1;
     }
 
     void  kRenderingEngine::Finalize() {
-
+		cleanEngine();
     }
 
     int kRenderingEngine::OpenSceneModel(const std::string& SceneModelName, int ActiveSceneGraph ) {
@@ -44,17 +53,20 @@ namespace pipeline {
     }
 
 
-    void kRenderingEngine::ClearScreen(float r, float g, float b, float a) {
+	void kRenderingEngine::ClearScreen(float r, float g, float b, float a) {
 
-    }
+	}
 
-    void kRenderingEngine::DoRendering() {
+	void kRenderingEngine::DoRendering() {
 
-    }
+		drawFrame();
 
-    void kRenderingEngine::SwapBuffers() {
+	}
 
-    }
+	void kRenderingEngine::SwapBuffers() {
+
+	}
+
 
     int kRenderingEngine::RegisterPreRenderPrototypes() {
         return 1;
@@ -78,7 +90,7 @@ namespace pipeline {
     }
 
 
-	void kEngine::createEngine(GLFWwindow* pwindow) {
+	void kRenderingEngine::createEngine(GLFWwindow* pwindow) {
 
 		m_pWindow = pwindow;
 
@@ -91,8 +103,7 @@ namespace pipeline {
 
 
 		m_Context.createContext(m_pWindow);
-		m_Renderpass.createRenderpass(m_Context);
-		m_Swapchain.createSwapchain(m_Context, m_Extent, m_Renderpass);
+		m_Swapchain.createSwapchain(m_Context, m_Extent);
 
 		GraphicsPipelineCreateInfo createinfo;
 		createinfo.vertex_shader_file = "shaders/model_depth_vert.spv";
@@ -111,7 +122,7 @@ namespace pipeline {
 		createSyncObjects();
 	}
 
-	VkExtent2D kEngine::chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities) {
+	VkExtent2D kRenderingEngine::chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities) {
 		if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 			return capabilities.currentExtent;
 		}
@@ -131,7 +142,7 @@ namespace pipeline {
 		}
 	}
 
-	void kEngine::createSyncObjects() {
+	void kRenderingEngine::createSyncObjects() {
 		imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -152,7 +163,7 @@ namespace pipeline {
 		}
 	}
 
-	void kEngine::createCommandBuffers() {
+	void kRenderingEngine::createCommandBuffers() {
 		commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
 		VkCommandBufferAllocateInfo allocInfo{};
@@ -166,7 +177,7 @@ namespace pipeline {
 		}
 	}
 
-	void kEngine::createDescriptorSets(VkDeviceSize bufferSize) {
+	void kRenderingEngine::createDescriptorSets(VkDeviceSize bufferSize) {
 
 		std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, m_GraphicPipeline.getDescriptorSetLayout());
 		VkDescriptorSetAllocateInfo allocInfo{};
@@ -213,7 +224,7 @@ namespace pipeline {
 		}
 	}
 
-	void kEngine::createUniformBuffers(VkDeviceSize bufferSize) {
+	void kRenderingEngine::createUniformBuffers(VkDeviceSize bufferSize) {
 
 		m_UniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -224,7 +235,7 @@ namespace pipeline {
 		}
 	}
 
-	void kEngine::updateUniformBuffer(uint32_t currentImage) {
+	void kRenderingEngine::updateUniformBuffer(uint32_t currentImage) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -239,7 +250,7 @@ namespace pipeline {
 		m_UniformBuffers[currentImage]->updateBuffer(&ubo, sizeof(ubo));
 	}
 
-	void kEngine::recordCommandBuffer(uint32_t imageIndex) {
+	void kRenderingEngine::recordCommandBuffer(uint32_t imageIndex) {
 		VkCommandBuffer commandBuffer = commandBuffers[currentFrame];
 
 		VkCommandBufferBeginInfo beginInfo{};
@@ -252,7 +263,7 @@ namespace pipeline {
 		{
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = m_Renderpass;
+			renderPassInfo.renderPass = m_Swapchain.getRenderPass();
 			renderPassInfo.framebuffer = m_Swapchain.getFramebuffer(imageIndex);
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent = m_Extent;
@@ -300,7 +311,7 @@ namespace pipeline {
 	}
 
 
-	void kEngine::drawFrame() {
+	void kRenderingEngine::drawFrame() {
 
 		// Acquire an image from the swap chain
 		// Execute commands that draw onto the acquired image
@@ -406,7 +417,7 @@ namespace pipeline {
 		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
 
-	void kEngine::cleanEngine() {
+	void kRenderingEngine::cleanEngine() {
 
 		m_Model.Unload(m_Context);
 
@@ -422,12 +433,11 @@ namespace pipeline {
 
 		m_Swapchain.cleanupSwapChain(m_Context);
 		m_GraphicPipeline.cleanupGraphicsPipeline(m_Context);
-		m_Renderpass.cleanupRenderpass(m_Context);
 		m_Context.cleanupContext();
 
 	}
 
-	void kEngine::recreateSwapChain() {
+	void kRenderingEngine::recreateSwapChain() {
 		int width = 0, height = 0;
 		glfwGetFramebufferSize(m_pWindow, &width, &height);
 		while (width == 0 || height == 0) {
@@ -441,7 +451,7 @@ namespace pipeline {
 			static_cast<uint32_t>(height)
 		};
 
-		m_Swapchain.recreateSwapChain(m_Context, actualExtent, m_Renderpass);
+		m_Swapchain.recreateSwapChain(m_Context, actualExtent);
 	}
 
 

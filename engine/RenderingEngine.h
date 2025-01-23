@@ -86,29 +86,115 @@ namespace pipeline {
     class kWinInfo
     {
     public:
+        kWinInfo() {
+            pwindow = nullptr;
+        }
+
+        GLFWwindow* pwindow;
     };
     
     
     class kRenderingEngine
     {
     public:
-        kRenderingEngine(void);
-        virtual ~kRenderingEngine(void);
-        
-        virtual int Configure( const std::string& ConfigFileName );
-        virtual int Initialize( const kWinInfo& WinInfo );
+        kRenderingEngine();
+        virtual ~kRenderingEngine();
+
+        //------------------------------------------------------------------------------
+        //	Desc:	The function Configure configures the rendering engine 
+        //			according to the config file, whose file name is the input 
+        //			parameter ConfigFileName. When the string ConfigFileName is 
+        //			empty or the file can not be found, the function uses the default 
+        //			settings. This function should be called just after CRenderingEngine 
+        //			object is constructed. OnConfigure as an over-writable function is 
+        //			invoked in Configure, which gives developers opportunity to 
+        //			configure rendering engine in desired way. If OnConfigure returns 
+        //			non-zero value, the default configuration is skipped.
+        //
+        //------------------------------------------------------------------------------
+        virtual int Configure(const std::string& ConfigFileName);
+
+        //------------------------------------------------------------------------------
+        //	Desc:	The function Initialize initializes the rendering engine when the 
+        //			rendering output window is ready. It should not be invoked before 
+        //			invoking the function Configure. The input parameter is a WinInfo 
+        //			object, which specifies the parameters of the rendering output 
+        //			window. 
+        //
+        //------------------------------------------------------------------------------
+        virtual int Initialize(const kWinInfo& wininfo);
+
+        //------------------------------------------------------------------------------
+        //	Desc:	The function stops the render engine, and release the window 
+        //			related resources allocated for the engine. When the engine is 
+        //			finalized, the states inside the engine are set back to the 
+        //			uninitialized but configured states. That is, after calling the 
+        //			function Finalize, the function Initialize should be called again, 
+        //			but no need to call the function Configure if the engine is to be 
+        //			reused again. The destructor calls this function automatically. 
+        //------------------------------------------------------------------------------
         virtual void Finalize();
-        
-        int OpenSceneModel( const std::string& SceneModelName, int ActiveSceneGraph =0 );
+
+        //------------------------------------------------------------------------------
+        //	Desc:	The function OpenSceneModel is to open a scene model whose name
+        //			is given by the input parameter SceneModelName, and set the 
+        //			to-be-rendered scene graph. The string SceneModelName can be the 
+        //			full path of the file, or just file name. When the string 
+        //			SceneModelName is empty or the scene model can not be found in 
+        //			default path, the function will return 0. It should be called 
+        //			after calling Configure and Initialize. After executing 
+        //			OpenSceneModel, the first kd-tree is regarded as the default 
+        //			render traverse root. Moreover, according to the first kd-tree 
+        //			(or the scene graph corresponding to the kd-tree), the engine's 
+        //			internal camera is set to a set of default values. It means after 
+        //			calling OpenSceneModel, developers can use GetCamera to retrieve 
+        //			the default viewing parameters.
+        //
+        //	param:	SceneModelName is the full path of vdb, such as:J:\\a\\a.vdb
+        //			
+        //			return true if successful, else return false.			
+        //------------------------------------------------------------------------------
+        int OpenSceneModel(const std::string& SceneModelName, int ActiveSceneGraph = 0);
         void CloseSceneModel();
+
+
+        //------------------------------------------------------------------------------
+        //	Desc:	The function does all rendering tasks to generate one image in 
+        //			the back frame buffer of the rendering output window, with respect 
+        //			to the internal camera. By default, it renders the entities in the 
+        //			active scene graph. For most walk-through application, the 
+        //			application developers should call SetCamera and DoRendering at 
+        //			certain rate with the changing viewing parameters. 
+        //
+        //------------------------------------------------------------------------------
+        void ClearScreen(float r = 0.0f, float g = 0.3f, float b = 0.9f, float a = 0.0f);
+        void DoRendering();
+        void SwapBuffers();
+
+        void frameChanged() { framebufferResized = true; }
+
+    protected:
+
+        void createEngine(GLFWwindow* pwindow);
+        void drawFrame();
+        void cleanEngine();
+
+        void createSyncObjects();
+        void recreateSwapChain();
+        VkExtent2D chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities);
+
+        void createUniformBuffers(VkDeviceSize bufferSize);
+        void updateUniformBuffer(uint32_t currentImage);
+
+        void createCommandBuffers();
+        void createDescriptorSets(VkDeviceSize bufferSize);
+        void recordCommandBuffer(uint32_t imageIndex);
+
+
         
         void SetRenderTraverseRoot( const std::vector<kSGNode*>& roots );
         void SetCamera(kCamera& Camera );
         void GetCamera(kCamera& Camera );
-        
-        void ClearScreen(float r = 0.0f, float g = 0.3f, float b = 0.9f, float a = 0.0f);
-        void DoRendering();
-        void SwapBuffers();
         
         
     protected:
@@ -151,46 +237,6 @@ namespace pipeline {
         
         IPreRender*								m_pStartPreRender;
         IRenderTarget*						    m_pPrimeTarget;
-    };
-
-
-    const int MAX_FRAMES_IN_FLIGHT = 2;
-
-
-    class kEngine
-    {
-    public:
-        kEngine() {
-            m_pWindow = nullptr;
-            currentFrame = 0;
-        }
-
-        virtual ~kEngine() {
-        }
-
-        void createEngine(GLFWwindow* pwindow);
-        void drawFrame();
-        void cleanEngine();
-
-        void frameChanged() { framebufferResized = true; }
-
-    protected:
-        void createSyncObjects();
-        void recreateSwapChain();
-        VkExtent2D chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities);
-
-        void createUniformBuffers(VkDeviceSize bufferSize);
-        void updateUniformBuffer(uint32_t currentImage);
-
-        void createCommandBuffers();
-        void createDescriptorSets(VkDeviceSize bufferSize);
-        void recordCommandBuffer(uint32_t imageIndex);
-
-
-
-
-
-
 
     protected:
 
@@ -201,7 +247,6 @@ namespace pipeline {
         kGraphicPipeline				m_GraphicPipeline;
 
         kRHISwapchain					m_Swapchain;
-        kRenderpaas						m_Renderpass;
 
         VkExtent2D						m_Extent;
 
@@ -217,8 +262,9 @@ namespace pipeline {
         uint32_t						currentFrame = 0;
 
         bool							framebufferResized = false;
-
     };
+
+
 
 }
 

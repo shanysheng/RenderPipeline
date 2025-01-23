@@ -2,27 +2,27 @@
 
 namespace pipeline {
     
-    kTexture::kTexture()
+    ITexture::ITexture()
     {
         
     }
     
-    kTexture::kTexture(int32_t id)
+    ITexture::ITexture(int32_t id)
     {
         
     }
     
-    kTexture::~kTexture()
+    ITexture::~ITexture()
     {
         
     }
     
-    void kTexture::Bind() const
+    void ITexture::Bind() const
     {
         
     }
     
-    void kTexture::Unbind() const
+    void ITexture::Unbind() const
     {
         
     }

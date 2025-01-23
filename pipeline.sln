@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pipeline", "pipeline.vcxproj", "{B488A280-3716-44DB-860B-FC729AD68E72}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine01-model", "examples\engine01-model\engine01-model.vcxproj", "{C52986FF-F437-4EB9-93EA-069DF5D1B8D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B488A280-3716-44DB-860B-FC729AD68E72} = {B488A280-3716-44DB-860B-FC729AD68E72}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

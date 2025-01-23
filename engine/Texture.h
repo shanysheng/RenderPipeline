@@ -6,12 +6,12 @@
 namespace pipeline {
     
 
-    class kTexture : public IGPUResource
+    class ITexture : public IGPUResource
     {
     public:
-        kTexture();
-        kTexture(int32_t id);
-        virtual ~kTexture();
+        ITexture();
+        ITexture(int32_t id);
+        virtual ~ITexture();
         
         virtual void Bind() const ;
         virtual void Unbind() const ;
@@ -23,12 +23,12 @@ namespace pipeline {
         int32_t m_TextureID;
     };
         
-    inline int32_t kTexture::GetTextureID()
+    inline int32_t ITexture::GetTextureID()
     {
         return m_TextureID;
     }
     
-    inline void   kTexture::SetTextureID(int32_t id)
+    inline void   ITexture::SetTextureID(int32_t id)
     {
         m_TextureID = id;
     }

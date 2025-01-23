@@ -6,41 +6,27 @@ namespace pipeline {
 
 	class kRHIContext;
 
-	class kRenderpaas
-	{
-	public:
-		kRenderpaas() {};
-		virtual ~kRenderpaas() {}
-
-		void createRenderpass(kRHIContext& contextref);
-		void cleanupRenderpass(kRHIContext& contextref);
-
-		operator VkRenderPass() const;
-
-	protected:
-
-		VkRenderPass	m_RenderPass;
-	};
-
-
-
 	class kRHISwapchain
 	{
 	public:
 		kRHISwapchain();
 		virtual ~kRHISwapchain();
 
-		void createSwapchain(kRHIContext& contextref, VkExtent2D extent, VkRenderPass renderpass);
+		void createSwapchain(kRHIContext& contextref, VkExtent2D extent);
 
 		void cleanupSwapChain(kRHIContext& contextref);
-		void recreateSwapChain(kRHIContext& contextref, VkExtent2D extent, VkRenderPass renderpass);
+		void recreateSwapChain(kRHIContext& contextref, VkExtent2D extent);
 
 		VkSwapchainKHR getSwapchain() { return swapChain; }
+		VkRenderPass getRenderPass() { return m_RenderPass; }
 		VkFramebuffer getFramebuffer(int index) { return swapChainFramebuffers[index]; }
 
-
 	protected:
-		void createFramebuffers(kRHIContext& contextref, VkRenderPass renderpass);
+
+		void createRenderpass(kRHIContext& contextref);
+		void cleanupRenderpass(kRHIContext& contextref);
+
+		void createFramebuffers(kRHIContext& contextref);
 		void createSwapchainImageViews(kRHIContext& contextref);
 		void createDepthResources(kRHIContext& contextref);
 
@@ -53,13 +39,12 @@ namespace pipeline {
 		std::vector<VkImageView>	swapChainImageViews;
 		std::vector<VkFramebuffer>	swapChainFramebuffers;
 
+		VkRenderPass				m_RenderPass;
 
 		VkImage						depthImage;
 		VkFormat					depthFormat;
 		VkDeviceMemory				depthImageMemory;
 		VkImageView					depthImageView;
 	};
-
-
 
 }
