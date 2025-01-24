@@ -186,10 +186,8 @@ namespace pipeline {
 
         void recreateSwapChain();
 
-        void createUniformBuffers(VkDeviceSize bufferSize);
-        void updateUniformBuffer(uint32_t currentImage);
 
-        void createDescriptorSets(VkDeviceSize bufferSize);
+
         void recordCommandBuffer(uint32_t imageIndex);
 
 
@@ -218,9 +216,6 @@ namespace pipeline {
         virtual int OnRegisterPreRenderPrototypes();
         virtual int OnRegisterRenderPipelinePrototypes();
         
-        virtual void UpdateSynClockMillSecondTime();
-        virtual void UpdateFrameIndex();
-        
     protected:
         
         kWinInfo								m_WinInfo;
@@ -228,6 +223,43 @@ namespace pipeline {
 
         kRHIContext						        m_Context;
         kRHISwapchain					        m_Swapchain;
+
+
+        // Acquire an image from the swap chain
+        // Execute commands that draw onto the acquired image
+        // Present that image to the screen for presentation, returning it to the swapchain
+        //
+        // Semaphore
+        // 
+        // A semaphore is either unsignaled or signaled. It begins life as unsignaled. The way 
+        // we use a semaphore to order queue operations is by providing the same semaphore as 
+        // a 'signal' semaphore in one queue operation and as a 'wait' semaphore in another 
+        // queue operation. For example, lets say we have semaphore S and queue operations A 
+        // and B that we want to execute in order. What we tell Vulkan is that operation A will 
+        // 'signal' semaphore S when it finishes executing, and operation B will 'wait' on 
+        // semaphore S before it begins executing. When operation A finishes, semaphore S 
+        // will be signaled, while operation B wont start until S is signaled. After operation 
+        // B begins executing, semaphore S is automatically reset back to being unsignaled, 
+        // allowing it to be used again.
+        // Note that in this code snippet, both calls to vkQueueSubmit() return immediately - 
+        // the waiting only happens on the GPU. The CPU continues running without blocking. 
+        // To make the CPU wait, we need a different synchronization primitive, Fence.
+        //
+        // Fence
+        //
+        // A fence has a similar purpose, in that it is used to synchronize execution, but 
+        // it is for ordering the execution on the CPU, otherwise known as the host. Simply 
+        // put, if the host needs to know when the GPU has finished something, we use a fence.
+        // A concrete example is taking a screenshot. Say we have already done the necessary 
+        // work on the GPU. Now need to transfer the image from the GPU over to the host and 
+        // then save the memory to a file. We have command buffer A which executes the transfer 
+        // and fence F. We submit command buffer A with fence F, then immediately tell the host 
+        // to wait for F to signal. This causes the host to block until command buffer A finishes 
+        // execution. Thus we are safe to let the host save the file to disk, as the memory 
+        // transfer has completed.
+        // Unlike the semaphore example, this example does block host execution. This means the 
+        // host won't do anything except wait until execution has finished. For this case, we 
+        // had to make sure the transfer was complete before we could save the screenshot to disk.
 
         std::vector<VkSemaphore>		        m_ImageAvailableSemaphores;
         std::vector<VkSemaphore>		        m_RenderFinishedSemaphores;
@@ -251,17 +283,10 @@ namespace pipeline {
     protected:
 
 
-        kGraphicPipeline				m_GraphicPipeline;
-
-        Model							m_Model;
-
-        std::vector<VkDescriptorSet>	descriptorSets;
-        std::vector<kUniformBuffer*>	m_UniformBuffers;
-
-        bool							framebufferResized = false;
+        kGraphicPipeline				        m_GraphicPipeline;
+        Model							        m_Model;
+        bool							        framebufferResized = false;
     };
-
-
 
 }
 

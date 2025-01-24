@@ -74,25 +74,12 @@ namespace pipeline {
     {
     public:
         Model() {
-
         };
 
-        void Load(kRHIContext& contextref) {
+        void Load(kRHIContext& contextref, VkDescriptorSetLayout layout);
+        void Unload(kRHIContext& contextref);
 
-            loadModelFromfile();
-
-            m_VertexBuffer.createVertexBuffer(contextref, (const char*)m_Vertex.data(), m_Vertex.size() * sizeof(Vertex));
-            m_IndexBuffer.createIndexBuffer(contextref, (const char*)m_Indices.data(), m_Indices.size() * sizeof(uint32_t));
-
-            m_Texture.createTexture(contextref, TEXTURE_PATH);
-        }
-
-        void Unload(kRHIContext& contextref) {
-
-            m_Texture.cleanupTexture(contextref);
-            m_IndexBuffer.cleanupBuffer(contextref);
-            m_VertexBuffer.cleanupBuffer(contextref);
-        }
+        void updateUniformBuffer(kRHIContext& contextref, uint32_t currentImage);
 
         VkBuffer getVertexBuffer() { return m_VertexBuffer.getBuffer(); }
         VkBuffer getIndexBuffer() { return m_IndexBuffer.getBuffer(); }
@@ -104,6 +91,9 @@ namespace pipeline {
     protected:
         void loadModelFromfile();
 
+        void createUniformBuffers(kRHIContext& contextref, VkDeviceSize bufferSize);
+        void createDescriptorSets(kRHIContext& contextref, VkDeviceSize bufferSize, VkDescriptorSetLayout layout);
+
     public:
         std::vector<Vertex>     m_Vertex;
         std::vector<uint32_t>   m_Indices;
@@ -113,6 +103,9 @@ namespace pipeline {
         kBuffer     m_IndexBuffer;
 
         kTexture	m_Texture;
+
+        VkDescriptorSet	    descriptorSet;
+        kUniformBuffer      m_UniformBuffer;
     };
 
 }
