@@ -8,7 +8,7 @@
 #include "BufferGPUResource.h"
 #include "RHISwapchain.h"
 #include "RHIContext.h"
-#include "kGraphicPipeline.h"
+#include "GraphicPipeline.h"
 
 
 #include "objModel.h"
@@ -88,9 +88,13 @@ namespace pipeline {
     public:
         kWinInfo() {
             pwindow = nullptr;
+            width = 0;
+            height = 0;
         }
 
         GLFWwindow* pwindow;
+        uint32_t    width;
+        uint32_t    height;
     };
     
     
@@ -175,18 +179,16 @@ namespace pipeline {
 
     protected:
 
-        void createEngine(GLFWwindow* pwindow);
         void drawFrame();
-        void cleanEngine();
 
-        void createSyncObjects();
+        void CreateSyncObjects();
+        void CreateCommandBuffers();
+
         void recreateSwapChain();
-        VkExtent2D chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities);
 
         void createUniformBuffers(VkDeviceSize bufferSize);
         void updateUniformBuffer(uint32_t currentImage);
 
-        void createCommandBuffers();
         void createDescriptorSets(VkDeviceSize bufferSize);
         void recordCommandBuffer(uint32_t imageIndex);
 
@@ -203,7 +205,7 @@ namespace pipeline {
         kCameraManager*							GetCameraManager()			{return m_pCameraMgr;}
         kRenderTargetManager*					GetRenderTargetManager()	{return m_pRenderTargetMgr;}
         kPreRenderManager*						GetPreRenderManager()		{return m_pPreRenderMgr;}
-        kGPUResourceManager*				    GetGPUResourceManager()	{return m_pGPUResourceMpr;}
+        kGPUResourceManager*				    GetGPUResourceManager()	    {return m_pGPUResourceMpr;}
         kRenderPipelineManager*					GetRenderPipelineManager()	{return m_pRenderPipelineMgr;}
         
     protected:
@@ -222,44 +224,39 @@ namespace pipeline {
     protected:
         
         kWinInfo								m_WinInfo;
+
+
+        kRHIContext						        m_Context;
+        kRHISwapchain					        m_Swapchain;
+
+        std::vector<VkSemaphore>		        m_ImageAvailableSemaphores;
+        std::vector<VkSemaphore>		        m_RenderFinishedSemaphores;
+        std::vector<VkFence>			        m_InFlightFences;
+        std::vector<VkCommandBuffer>	        m_CommandBuffers;
+        uint32_t						        m_CurrentFrame = 0;
+
         
         kGPUResourceManager*				    m_pGPUResourceMpr;
-        
         kRenderQueueManager*   					m_pRenderQueueMgr;
         kCameraManager*							m_pCameraMgr;
-
         kRenderTargetManager*					m_pRenderTargetMgr;
         kPreRenderManager*						m_pPreRenderMgr;
         kRenderPipelineManager*					m_pRenderPipelineMgr;
 
         std::vector<kSGNode*>	                m_TraverseRoots;
 
-        
         IPreRender*								m_pStartPreRender;
         IRenderTarget*						    m_pPrimeTarget;
 
     protected:
 
-        GLFWwindow* m_pWindow;
-
-        kRHIContext						m_Context;
 
         kGraphicPipeline				m_GraphicPipeline;
-
-        kRHISwapchain					m_Swapchain;
-
-        VkExtent2D						m_Extent;
 
         Model							m_Model;
 
         std::vector<VkDescriptorSet>	descriptorSets;
-        std::vector<VkCommandBuffer>	commandBuffers;
         std::vector<kUniformBuffer*>	m_UniformBuffers;
-
-        std::vector<VkSemaphore>		imageAvailableSemaphores;
-        std::vector<VkSemaphore>		renderFinishedSemaphores;
-        std::vector<VkFence>			inFlightFences;
-        uint32_t						currentFrame = 0;
 
         bool							framebufferResized = false;
     };

@@ -1,4 +1,4 @@
-#include "kGraphicPipeline.h"
+#include "GraphicPipeline.h"
 
 #include "RHIContext.h"
 #include "BufferGPUResource.h"
@@ -9,7 +9,7 @@
 namespace pipeline {
 
 
-    void kGraphicPipeline::createGraphicsPipeline(kRHIContext& contextref, GraphicsPipelineCreateInfo& createinfo) {
+    void kGraphicPipeline::createGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& createinfo) {
 
         createDescriptorSetLayout(contextref);
 

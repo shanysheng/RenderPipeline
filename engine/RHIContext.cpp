@@ -1,4 +1,5 @@
 #include "RHIContext.h"
+#include "FileManager.h"
 
 namespace pipeline {
 
@@ -468,28 +469,9 @@ namespace pipeline {
     }
 
 
-    std::vector<char> readFile(const std::string& filename) {
-        std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-        if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
-        }
-
-        size_t fileSize = (size_t)file.tellg();
-        std::vector<char> buffer(fileSize);
-
-        file.seekg(0);
-        file.read(buffer.data(), fileSize);
-
-        file.close();
-
-        return buffer;
-    }
-
-
     VkShaderModule kRHIContext::createShaderModule(const std::string& filename) {
 
-        auto vertShaderCode = readFile(filename);
+        auto vertShaderCode = kFileManager::LoadFile(filename);
 
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

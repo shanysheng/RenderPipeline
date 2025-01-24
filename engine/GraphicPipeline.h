@@ -12,7 +12,7 @@ namespace pipeline {
 
 	class kRHIContext;
 
-	struct GraphicsPipelineCreateInfo {
+	struct kGraphicsPipelineCreateInfo {
 		VkRenderPass render_pass = VK_NULL_HANDLE;
 		std::string vertex_shader_file;
 		std::string frag_shader_file;
@@ -26,7 +26,7 @@ namespace pipeline {
 		kGraphicPipeline() {};
 		virtual ~kGraphicPipeline() {};
 
-		void createGraphicsPipeline(kRHIContext& contextref, GraphicsPipelineCreateInfo& info);
+		void createGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& info);
 		void cleanupGraphicsPipeline(kRHIContext& contextref);
 
 		VkPipeline getPipeline() { return graphicsPipeline; }

@@ -89,7 +89,7 @@
     <ClCompile Include="engine\BufferGPUResource.cpp" />
     <ClCompile Include="engine\FileManager.cpp" />
     <ClCompile Include="engine\ImageTextureGPUResource.cpp" />
-    <ClCompile Include="engine\kGraphicPipeline.cpp" />
+    <ClCompile Include="engine\GraphicPipeline.cpp" />
     <ClCompile Include="engine\Material.cpp" />
     <ClCompile Include="engine\Bound.cpp" />
     <ClCompile Include="engine\Camera.cpp" />
@@ -133,7 +133,7 @@
     <ClInclude Include="engine\BufferGPUResource.h" />
     <ClInclude Include="engine\FileManager.h" />
     <ClInclude Include="engine\ImageTextureGPUResource.h" />
-    <ClInclude Include="engine\kGraphicPipeline.h" />
+    <ClInclude Include="engine\GraphicPipeline.h" />
     <ClInclude Include="engine\Material.h" />
     <ClInclude Include="engine\Bound.h" />
     <ClInclude Include="engine\Camera.h" />

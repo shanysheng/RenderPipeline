@@ -1,12 +1,14 @@
 #pragma once
 
+#include "Common.h"
+
 namespace pipeline{
 
-	class FileManager
+	class kFileManager
 	{
 	public:
-		FileManager();
-		virtual ~FileManager();
+
+		static std::vector<char> LoadFile(const std::string& filePath, bool bbinary = true);
 	};
 
 }

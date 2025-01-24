@@ -132,7 +132,7 @@
     <ClCompile Include="engine\RHISwapchain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\kGraphicPipeline.cpp">
+    <ClCompile Include="engine\GraphicPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\tiny_obj_loader.cc">
@@ -260,7 +260,7 @@
     <ClInclude Include="engine\RHISwapchain.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\kGraphicPipeline.h">
+    <ClInclude Include="engine\GraphicPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\tiny_obj_loader.h">

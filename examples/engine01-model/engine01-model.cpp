@@ -48,8 +48,13 @@ namespace pipeline {
             glfwSetWindowUserPointer(window, this);
             glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+
             kWinInfo wininfo;
             wininfo.pwindow = window;
+            wininfo.width = width;
+            wininfo.height = height;
 
             m_Engine.Initialize(wininfo);
         }

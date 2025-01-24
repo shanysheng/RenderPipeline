@@ -12,39 +12,38 @@ namespace pipeline {
 		kRHISwapchain();
 		virtual ~kRHISwapchain();
 
-		void createSwapchain(kRHIContext& contextref, VkExtent2D extent);
+		void CreateSwapchain(kRHIContext& contextref, VkExtent2D extent);
+		void RecreateSwapchain(kRHIContext& contextref, VkExtent2D extent);
+		void ReleaseSwapchain(kRHIContext& contextref);
 
-		void cleanupSwapChain(kRHIContext& contextref);
-		void recreateSwapChain(kRHIContext& contextref, VkExtent2D extent);
-
-		VkSwapchainKHR getSwapchain() { return swapChain; }
-		VkRenderPass getRenderPass() { return m_RenderPass; }
-		VkFramebuffer getFramebuffer(int index) { return swapChainFramebuffers[index]; }
+		VkSwapchainKHR GetSwapchain() { return m_Swapchain; }
+		VkRenderPass GetRenderPass() { return m_RenderPass; }
+		VkFramebuffer GetFramebuffer(int index) { return m_SwapchainFramebuffers[index]; }
 
 	protected:
 
-		void createRenderpass(kRHIContext& contextref);
-		void cleanupRenderpass(kRHIContext& contextref);
-
-		void createFramebuffers(kRHIContext& contextref);
-		void createSwapchainImageViews(kRHIContext& contextref);
-		void createDepthResources(kRHIContext& contextref);
+		void CreateRenderpass(kRHIContext& contextref);
+		void CreateSwapchainColorImageViews(kRHIContext& contextref);
+		void CreateSwapchainDepthImageView(kRHIContext& contextref);
+		void CreateFramebuffers(kRHIContext& contextref);
 
 
 	protected:
-		VkSwapchainKHR				swapChain;
-		std::vector<VkImage>		swapChainImages;
-		VkFormat					swapChainImageFormat;
-		VkExtent2D					swapChainExtent;
-		std::vector<VkImageView>	swapChainImageViews;
-		std::vector<VkFramebuffer>	swapChainFramebuffers;
-
 		VkRenderPass				m_RenderPass;
 
-		VkImage						depthImage;
-		VkFormat					depthFormat;
-		VkDeviceMemory				depthImageMemory;
-		VkImageView					depthImageView;
+		VkSwapchainKHR				m_Swapchain;
+		VkExtent2D					m_SwapchainExtent;
+
+		VkFormat					m_SwapchainColorImageFormat;
+		std::vector<VkImage>		m_SwapchainColorImages;
+		std::vector<VkImageView>	m_SwapchainColorImageViews;
+
+		VkFormat					m_SwapchainDepthFormat;
+		VkImage						m_SwapchainDepthImage;
+		VkDeviceMemory				m_SwapchainDepthImageMemory;
+		VkImageView					m_SwapchainDepthImageView;
+
+		std::vector<VkFramebuffer>	m_SwapchainFramebuffers;
 	};
 
 }

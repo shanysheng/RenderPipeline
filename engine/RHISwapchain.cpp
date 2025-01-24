@@ -12,23 +12,24 @@ namespace pipeline {
     }
 
 
-    void kRHISwapchain::createSwapchain(kRHIContext& contextref, VkExtent2D extent) {
+    void kRHISwapchain::CreateSwapchain(kRHIContext& contextref, VkExtent2D extent) {
 
-        createRenderpass(contextref);
+        CreateRenderpass(contextref);
         
         SwapChainSupportDetails swapChainSupport = contextref.querySwapChainSupport(contextref.physicalDevice, contextref.surface);
-
         VkSurfaceFormatKHR surfaceFormat = contextref.getSwapchainSurfaceFormat();
         VkPresentModeKHR presentMode = contextref.getPresentMode();
-
-        std::cout << "extent width:" << extent.width << ", height:" << extent.height << std::endl;
-
         uint32_t imageCount = contextref.getSwapchainImageCount();
+
+        m_SwapchainColorImageFormat = surfaceFormat.format;
+        m_SwapchainExtent = extent;
+
+        std::cout << "swapchain imageCount:" << imageCount << ", extent width:" << extent.width << ", height:" << extent.height << std::endl;
+
 
         VkSwapchainCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         createInfo.surface = contextref.surface;
-
         createInfo.minImageCount = imageCount;
         createInfo.imageFormat = surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -53,101 +54,20 @@ namespace pipeline {
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        if (vkCreateSwapchainKHR(contextref.logicaldevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+        if (vkCreateSwapchainKHR(contextref.logicaldevice, &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");
         }
 
-        vkGetSwapchainImagesKHR(contextref.logicaldevice, swapChain, &imageCount, nullptr);
+        vkGetSwapchainImagesKHR(contextref.logicaldevice, m_Swapchain, &imageCount, nullptr);
+        m_SwapchainColorImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(contextref.logicaldevice, m_Swapchain, &imageCount, m_SwapchainColorImages.data());
 
-        swapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(contextref.logicaldevice, swapChain, &imageCount, swapChainImages.data());
-
-        swapChainImageFormat = surfaceFormat.format;
-        swapChainExtent = extent;
-
-        createSwapchainImageViews(contextref);
-        createDepthResources(contextref);
-        createFramebuffers(contextref);
+        CreateSwapchainColorImageViews(contextref);
+        CreateSwapchainDepthImageView(contextref);
+        CreateFramebuffers(contextref);
     }
 
-
-    void kRHISwapchain::createSwapchainImageViews(kRHIContext& contextref) {
-        swapChainImageViews.resize(swapChainImages.size());
-
-        for (size_t i = 0; i < swapChainImages.size(); i++) {
-            swapChainImageViews[i] = contextref.createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
-        }
-    }
-
-
-    void kRHISwapchain::createDepthResources(kRHIContext& contextref) {
-
-        depthFormat = contextref.getDepthFormat();
-
-        contextref.createImage(swapChainExtent.width, swapChainExtent.height, depthFormat,
-            VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            depthImage, depthImageMemory);
-
-        depthImageView = contextref.createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
-    }
-
-
-
-    void kRHISwapchain::createFramebuffers(kRHIContext& contextref) {
-        swapChainFramebuffers.resize(swapChainImageViews.size());
-
-        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-            std::array<VkImageView, 2> attachments = {
-                swapChainImageViews[i],
-                depthImageView
-            };
-
-            VkFramebufferCreateInfo framebufferInfo{};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = m_RenderPass;
-            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
-            framebufferInfo.layers = 1;
-
-            if (vkCreateFramebuffer(contextref.logicaldevice, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create framebuffer!");
-            }
-        }
-    }
-
-
-    void kRHISwapchain::cleanupSwapChain(kRHIContext& contextref) {
-
-        vkDestroyImageView(contextref.logicaldevice, depthImageView, nullptr);
-        vkDestroyImage(contextref.logicaldevice, depthImage, nullptr);
-        vkFreeMemory(contextref.logicaldevice, depthImageMemory, nullptr);
-
-        for (auto framebuffer : swapChainFramebuffers) {
-            vkDestroyFramebuffer(contextref.logicaldevice, framebuffer, nullptr);
-        }
-
-        for (auto imageView : swapChainImageViews) {
-            vkDestroyImageView(contextref.logicaldevice, imageView, nullptr);
-        }
-
-        vkDestroySwapchainKHR(contextref.logicaldevice, swapChain, nullptr);
-
-        vkDestroyRenderPass(contextref.logicaldevice, m_RenderPass, nullptr);
-
-        std::cout << "cleanup kSwapchain" << std::endl;
-    }
-
-    void kRHISwapchain::recreateSwapChain(kRHIContext& contextref, VkExtent2D extent) {
-
-        cleanupSwapChain(contextref);
-        createSwapchain(contextref, extent);
-    }
-
-
-
-    void kRHISwapchain::createRenderpass(kRHIContext& contextref) {
+    void kRHISwapchain::CreateRenderpass(kRHIContext& contextref) {
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = contextref.getSwapchainSurfaceFormat().format;
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -200,12 +120,80 @@ namespace pipeline {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-
         if (vkCreateRenderPass(contextref.logicaldevice, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
             throw std::runtime_error("failed to create render pass!");
         }
     }
 
+    void kRHISwapchain::CreateSwapchainColorImageViews(kRHIContext& contextref) {
 
+        m_SwapchainColorImageViews.resize(m_SwapchainColorImages.size());
+        for (size_t i = 0; i < m_SwapchainColorImages.size(); i++) {
+            m_SwapchainColorImageViews[i] = contextref.createImageView(m_SwapchainColorImages[i], m_SwapchainColorImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+        }
+    }
+
+    void kRHISwapchain::CreateSwapchainDepthImageView(kRHIContext& contextref) {
+
+        m_SwapchainDepthFormat = contextref.getDepthFormat();
+
+        contextref.createImage(m_SwapchainExtent.width, m_SwapchainExtent.height, m_SwapchainDepthFormat,
+                                VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
+                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_SwapchainDepthImage, m_SwapchainDepthImageMemory);
+
+        m_SwapchainDepthImageView = contextref.createImageView(m_SwapchainDepthImage, m_SwapchainDepthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+    }
+
+
+    void kRHISwapchain::CreateFramebuffers(kRHIContext& contextref) {
+
+        m_SwapchainFramebuffers.resize(m_SwapchainColorImageViews.size());
+        for (size_t i = 0; i < m_SwapchainColorImageViews.size(); i++) {
+            std::array<VkImageView, 2> attachments = {
+                m_SwapchainColorImageViews[i],
+                m_SwapchainDepthImageView
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = m_RenderPass;
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.width = m_SwapchainExtent.width;
+            framebufferInfo.height = m_SwapchainExtent.height;
+            framebufferInfo.layers = 1;
+
+            if (vkCreateFramebuffer(contextref.logicaldevice, &framebufferInfo, nullptr, &m_SwapchainFramebuffers[i]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create framebuffer!");
+            }
+        }
+    }
+
+
+    void kRHISwapchain::ReleaseSwapchain(kRHIContext& contextref) {
+
+        vkDestroyImage(contextref.logicaldevice, m_SwapchainDepthImage, nullptr);
+        vkFreeMemory(contextref.logicaldevice, m_SwapchainDepthImageMemory, nullptr);
+        vkDestroyImageView(contextref.logicaldevice, m_SwapchainDepthImageView, nullptr);
+
+        for (auto imageView : m_SwapchainColorImageViews) {
+            vkDestroyImageView(contextref.logicaldevice, imageView, nullptr);
+        }
+
+        for (auto framebuffer : m_SwapchainFramebuffers) {
+            vkDestroyFramebuffer(contextref.logicaldevice, framebuffer, nullptr);
+        }
+
+        vkDestroySwapchainKHR(contextref.logicaldevice, m_Swapchain, nullptr);
+        vkDestroyRenderPass(contextref.logicaldevice, m_RenderPass, nullptr);
+
+        std::cout << "cleanup kSwapchain" << std::endl;
+    }
+
+    void kRHISwapchain::RecreateSwapchain(kRHIContext& contextref, VkExtent2D extent) {
+
+        ReleaseSwapchain(contextref);
+        CreateSwapchain(contextref, extent);
+    }
 
 }
