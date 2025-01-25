@@ -1,27 +1,27 @@
-#include "GraphicPipeline.h"
+#include "RHIGraphicPipeline.h"
 
-#include "RHIContext.h"
-#include "BufferGPUResource.h"
+#include "RHIDevice.h"
+#include "RHIBuffer.h"
 
 #include <iostream>
 #include <array>
 
 namespace pipeline {
 
-    kGraphicPipeline::kGraphicPipeline() {};
-    kGraphicPipeline::~kGraphicPipeline() {};
+    kRHIGraphicPipeline::kRHIGraphicPipeline() {};
+    kRHIGraphicPipeline::~kRHIGraphicPipeline() {};
 
-    void kGraphicPipeline::CreateGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& createinfo) {
+    void kRHIGraphicPipeline::CreateGraphicsPipeline(kRHIDevice& rhidevice, kGraphicsPipelineCreateInfo& createinfo) {
 
-        CreateDescriptorSetLayout(contextref);
+        CreateDescriptorSetLayout(rhidevice);
 
         //auto vertShaderCode = readFile("shaders/ubo_vert.spv");
         //auto fragShaderCode = readFile("shaders/ubo_frag.spv");
         //auto vertShaderCode = readFile("shaders/texture_vert.spv");
         //auto fragShaderCode = readFile("shaders/texture_frag.spv");
 
-        VkShaderModule vertShaderModule = contextref.createShaderModule(createinfo.vertex_shader_file);
-        VkShaderModule fragShaderModule = contextref.createShaderModule(createinfo.frag_shader_file);
+        VkShaderModule vertShaderModule = rhidevice.CreateShaderModule(createinfo.vertex_shader_file);
+        VkShaderModule fragShaderModule = rhidevice.CreateShaderModule(createinfo.frag_shader_file);
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -110,7 +110,7 @@ namespace pipeline {
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &m_DescriptorSetLayout;
 
-        if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(rhidevice.logicaldevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -131,16 +131,16 @@ namespace pipeline {
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS) {
+        if (vkCreateGraphicsPipelines(rhidevice.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
-        vkDestroyShaderModule(contextref.logicaldevice, fragShaderModule, nullptr);
-        vkDestroyShaderModule(contextref.logicaldevice, vertShaderModule, nullptr);
+        vkDestroyShaderModule(rhidevice.logicaldevice, fragShaderModule, nullptr);
+        vkDestroyShaderModule(rhidevice.logicaldevice, vertShaderModule, nullptr);
     }
 
 
-    void kGraphicPipeline::CreateDescriptorSetLayout(kRHIContext& contextref) {
+    void kRHIGraphicPipeline::CreateDescriptorSetLayout(kRHIDevice& rhidevice) {
 
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
         uboLayoutBinding.binding = 0;
@@ -163,16 +163,16 @@ namespace pipeline {
         layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
         layoutInfo.pBindings = bindings.data();
 
-        if (vkCreateDescriptorSetLayout(contextref.logicaldevice, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
+        if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor set layout!");
         }
     }
 
-    void kGraphicPipeline::ReleaseGraphicsPipeline(kRHIContext& contextref) {
+    void kRHIGraphicPipeline::ReleaseGraphicsPipeline(kRHIDevice& rhidevice) {
 
-        vkDestroyPipeline(contextref.logicaldevice, m_GraphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(contextref.logicaldevice, m_PipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(contextref.logicaldevice, m_DescriptorSetLayout, nullptr);
+        vkDestroyPipeline(rhidevice.logicaldevice, m_Pipeline, nullptr);
+        vkDestroyPipelineLayout(rhidevice.logicaldevice, m_PipelineLayout, nullptr);
+        vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_DescriptorSetLayout, nullptr);
 
         std::cout << "cleanup cleanupGraphicsPipeline" << std::endl;
     }

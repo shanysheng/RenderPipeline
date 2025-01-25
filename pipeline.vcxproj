@@ -87,10 +87,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\BufferGPUResource.cpp" />
+    <ClCompile Include="engine\RHIBuffer.cpp" />
     <ClCompile Include="engine\FileManager.cpp" />
-    <ClCompile Include="engine\ImageTextureGPUResource.cpp" />
-    <ClCompile Include="engine\GraphicPipeline.cpp" />
+    <ClCompile Include="engine\RHITexture2D.cpp" />
+    <ClCompile Include="engine\RHIGraphicPipeline.cpp" />
     <ClCompile Include="engine\Material.cpp" />
     <ClCompile Include="engine\Bound.cpp" />
     <ClCompile Include="engine\Camera.cpp" />
@@ -117,7 +117,7 @@
     <ClCompile Include="engine\RenderQueue.cpp" />
     <ClCompile Include="engine\RenderQueueManager.cpp" />
     <ClCompile Include="engine\RenderTarget.cpp" />
-    <ClCompile Include="engine\RHIContext.cpp" />
+    <ClCompile Include="engine\RHIDevice.cpp" />
     <ClCompile Include="engine\RHISwapchain.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
     <ClCompile Include="engine\SGNode.cpp" />
@@ -131,10 +131,10 @@
     <ClCompile Include="engine\Vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\BufferGPUResource.h" />
+    <ClInclude Include="engine\RHIBuffer.h" />
     <ClInclude Include="engine\FileManager.h" />
-    <ClInclude Include="engine\ImageTextureGPUResource.h" />
-    <ClInclude Include="engine\GraphicPipeline.h" />
+    <ClInclude Include="engine\RHITexture2D.h" />
+    <ClInclude Include="engine\RHIGraphicPipeline.h" />
     <ClInclude Include="engine\Material.h" />
     <ClInclude Include="engine\Bound.h" />
     <ClInclude Include="engine\Camera.h" />
@@ -161,7 +161,7 @@
     <ClInclude Include="engine\RenderQueue.h" />
     <ClInclude Include="engine\RenderQueueManager.h" />
     <ClInclude Include="engine\RenderTarget.h" />
-    <ClInclude Include="engine\RHIContext.h" />
+    <ClInclude Include="engine\RHIDevice.h" />
     <ClInclude Include="engine\RHISwapchain.h" />
     <ClInclude Include="engine\Scene.h" />
     <ClInclude Include="engine\SGNode.h" />

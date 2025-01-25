@@ -12,8 +12,8 @@
 #include <glm/gtx/hash.hpp>
 
 
-#include "BufferGPUResource.h"
-#include "ImageTextureGPUResource.h"
+#include "RHIBuffer.h"
+#include "RHITexture2D.h"
 
 
 namespace pipeline {
@@ -73,24 +73,24 @@ namespace pipeline {
         Model();
         virtual ~Model();
 
-        void Load(kRHIContext& contextref, VkDescriptorSetLayout layout);
-        void Unload(kRHIContext& contextref);
+        void Load(kRHIDevice& rhidevice, VkDescriptorSetLayout layout);
+        void Unload(kRHIDevice& rhidevice);
 
-        void UpdateUniformBuffer(kRHIContext& contextref, uint32_t currentImage);
+        void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
         void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
 
     protected:
         void LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array);
-        void CreateDescriptorSets(kRHIContext& contextref, VkDeviceSize bufferSize, VkDescriptorSetLayout layout);
+        void CreateDescriptorSets(kRHIDevice& rhidevice, VkDeviceSize bufferSize, VkDescriptorSetLayout layout);
 
     protected:
 
-        kBuffer                 m_VertexBuffer;
-        kBuffer                 m_IndexBuffer;
+        kRHIBuffer              m_VertexBuffer;
+        kRHIBuffer              m_IndexBuffer;
         uint32_t                m_IndexCount;
 
-        kUniformBuffer          m_UniformBuffer;
-        kTexture	            m_Texture;
+        kRHIBuffer              m_UniformBuffer;
+        kRHITexture2D           m_Texture;
 
         VkDescriptorSet	        m_DescriptorSet;
     };

@@ -1,6 +1,6 @@
 #include "RHISwapchain.h"
 
-#include "RHIContext.h"
+#include "RHIDevice.h"
 
 
 namespace pipeline {
@@ -12,32 +12,29 @@ namespace pipeline {
     }
 
 
-    void kRHISwapchain::CreateSwapchain(kRHIContext& contextref, VkExtent2D extent) {
+    void kRHISwapchain::CreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent) {
 
-        CreateRenderpass(contextref);
-        
-        SwapChainSupportDetails swapChainSupport = contextref.querySwapChainSupport(contextref.physicalDevice, contextref.surface);
-        VkSurfaceFormatKHR surfaceFormat = contextref.getSwapchainSurfaceFormat();
-        VkPresentModeKHR presentMode = contextref.getPresentMode();
-        uint32_t imageCount = contextref.getSwapchainImageCount();
-
-        m_SwapchainColorImageFormat = surfaceFormat.format;
         m_SwapchainExtent = extent;
 
-        std::cout << "swapchain imageCount:" << imageCount << ", extent width:" << extent.width << ", height:" << extent.height << std::endl;
+        ChooseSwapchainFormat(rhidevice);
+
+        CreateRenderpass(rhidevice);
+
+
+        std::cout << "swapchain imageCount:" << m_SwapchainImageCount << ", extent width:" << extent.width << ", height:" << extent.height << std::endl;
 
 
         VkSwapchainCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = contextref.surface;
-        createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = surfaceFormat.format;
-        createInfo.imageColorSpace = surfaceFormat.colorSpace;
+        createInfo.surface = rhidevice.surface;
+        createInfo.minImageCount = m_SwapchainImageCount;
+        createInfo.imageFormat = m_SwapchainSurfaceFormat.format;
+        createInfo.imageColorSpace = m_SwapchainSurfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        QueueFamilyIndices indices = contextref.findQueueFamilies(contextref.physicalDevice, contextref.surface);
+        QueueFamilyIndices indices = rhidevice.GetQueueFamilyIndices();
         uint32_t queueFamilyIndices[] = { indices.graphicsAndComputeFamily.value(), indices.presentFamily.value() };
 
         if (indices.graphicsAndComputeFamily != indices.presentFamily) {
@@ -49,27 +46,28 @@ namespace pipeline {
             createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         }
 
-        createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+        //createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        createInfo.presentMode = presentMode;
+        createInfo.presentMode = m_PresentMode;
         createInfo.clipped = VK_TRUE;
 
-        if (vkCreateSwapchainKHR(contextref.logicaldevice, &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS) {
+        if (vkCreateSwapchainKHR(rhidevice.logicaldevice, &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");
         }
 
-        vkGetSwapchainImagesKHR(contextref.logicaldevice, m_Swapchain, &imageCount, nullptr);
+        uint32_t imageCount;
+        vkGetSwapchainImagesKHR(rhidevice.logicaldevice, m_Swapchain, &imageCount, nullptr);
         m_SwapchainColorImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(contextref.logicaldevice, m_Swapchain, &imageCount, m_SwapchainColorImages.data());
+        vkGetSwapchainImagesKHR(rhidevice.logicaldevice, m_Swapchain, &imageCount, m_SwapchainColorImages.data());
 
-        CreateSwapchainColorImageViews(contextref);
-        CreateSwapchainDepthImageView(contextref);
-        CreateFramebuffers(contextref);
+        CreateSwapchainColorImageViews(rhidevice);
+        CreateSwapchainDepthImageView(rhidevice);
+        CreateFramebuffers(rhidevice);
     }
 
-    void kRHISwapchain::CreateRenderpass(kRHIContext& contextref) {
+    void kRHISwapchain::CreateRenderpass(kRHIDevice& rhidevice) {
         VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = contextref.getSwapchainSurfaceFormat().format;
+        colorAttachment.format = m_SwapchainSurfaceFormat.format;
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -79,7 +77,7 @@ namespace pipeline {
         colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentDescription depthAttachment{};
-        depthAttachment.format = contextref.getDepthFormat();
+        depthAttachment.format = m_SwapchainDepthFormat;
         depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -120,32 +118,30 @@ namespace pipeline {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if (vkCreateRenderPass(contextref.logicaldevice, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(rhidevice.logicaldevice, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
             throw std::runtime_error("failed to create render pass!");
         }
     }
 
-    void kRHISwapchain::CreateSwapchainColorImageViews(kRHIContext& contextref) {
+    void kRHISwapchain::CreateSwapchainColorImageViews(kRHIDevice& rhidevice) {
 
         m_SwapchainColorImageViews.resize(m_SwapchainColorImages.size());
         for (size_t i = 0; i < m_SwapchainColorImages.size(); i++) {
-            m_SwapchainColorImageViews[i] = contextref.createImageView(m_SwapchainColorImages[i], m_SwapchainColorImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+            m_SwapchainColorImageViews[i] = rhidevice.CreateImageView(m_SwapchainColorImages[i], m_SwapchainSurfaceFormat.format, VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
 
-    void kRHISwapchain::CreateSwapchainDepthImageView(kRHIContext& contextref) {
+    void kRHISwapchain::CreateSwapchainDepthImageView(kRHIDevice& rhidevice) {
 
-        m_SwapchainDepthFormat = contextref.getDepthFormat();
-
-        contextref.createImage(m_SwapchainExtent.width, m_SwapchainExtent.height, m_SwapchainDepthFormat,
+        rhidevice.CreateImage(m_SwapchainExtent.width, m_SwapchainExtent.height, m_SwapchainDepthFormat,
                                 VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 
                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_SwapchainDepthImage, m_SwapchainDepthImageMemory);
 
-        m_SwapchainDepthImageView = contextref.createImageView(m_SwapchainDepthImage, m_SwapchainDepthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+        m_SwapchainDepthImageView = rhidevice.CreateImageView(m_SwapchainDepthImage, m_SwapchainDepthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     }
 
 
-    void kRHISwapchain::CreateFramebuffers(kRHIContext& contextref) {
+    void kRHISwapchain::CreateFramebuffers(kRHIDevice& rhidevice) {
 
         m_SwapchainFramebuffers.resize(m_SwapchainColorImageViews.size());
         for (size_t i = 0; i < m_SwapchainColorImageViews.size(); i++) {
@@ -163,37 +159,96 @@ namespace pipeline {
             framebufferInfo.height = m_SwapchainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(contextref.logicaldevice, &framebufferInfo, nullptr, &m_SwapchainFramebuffers[i]) != VK_SUCCESS) {
+            if (vkCreateFramebuffer(rhidevice.logicaldevice, &framebufferInfo, nullptr, &m_SwapchainFramebuffers[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create framebuffer!");
             }
         }
     }
 
 
-    void kRHISwapchain::ReleaseSwapchain(kRHIContext& contextref) {
+    void kRHISwapchain::ReleaseSwapchain(kRHIDevice& rhidevice) {
 
-        vkDestroyImage(contextref.logicaldevice, m_SwapchainDepthImage, nullptr);
-        vkFreeMemory(contextref.logicaldevice, m_SwapchainDepthImageMemory, nullptr);
-        vkDestroyImageView(contextref.logicaldevice, m_SwapchainDepthImageView, nullptr);
+        vkDestroyImage(rhidevice.logicaldevice, m_SwapchainDepthImage, nullptr);
+        vkFreeMemory(rhidevice.logicaldevice, m_SwapchainDepthImageMemory, nullptr);
+        vkDestroyImageView(rhidevice.logicaldevice, m_SwapchainDepthImageView, nullptr);
 
         for (auto imageView : m_SwapchainColorImageViews) {
-            vkDestroyImageView(contextref.logicaldevice, imageView, nullptr);
+            vkDestroyImageView(rhidevice.logicaldevice, imageView, nullptr);
         }
 
         for (auto framebuffer : m_SwapchainFramebuffers) {
-            vkDestroyFramebuffer(contextref.logicaldevice, framebuffer, nullptr);
+            vkDestroyFramebuffer(rhidevice.logicaldevice, framebuffer, nullptr);
         }
 
-        vkDestroySwapchainKHR(contextref.logicaldevice, m_Swapchain, nullptr);
-        vkDestroyRenderPass(contextref.logicaldevice, m_RenderPass, nullptr);
+        vkDestroySwapchainKHR(rhidevice.logicaldevice, m_Swapchain, nullptr);
+        vkDestroyRenderPass(rhidevice.logicaldevice, m_RenderPass, nullptr);
 
         std::cout << "cleanup kSwapchain" << std::endl;
     }
 
-    void kRHISwapchain::RecreateSwapchain(kRHIContext& contextref, VkExtent2D extent) {
+    void kRHISwapchain::RecreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent) {
 
-        ReleaseSwapchain(contextref);
-        CreateSwapchain(contextref, extent);
+        ReleaseSwapchain(rhidevice);
+        CreateSwapchain(rhidevice, extent);
+    }
+
+
+    VkFormat kRHISwapchain::FindSupportedFormat(kRHIDevice& rhidevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+        for (VkFormat format : candidates) {
+            VkFormatProperties props;
+            vkGetPhysicalDeviceFormatProperties(rhidevice.physicalDevice, format, &props);
+
+            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+                return format;
+            }
+            else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+                return format;
+            }
+        }
+
+        throw std::runtime_error("failed to find supported format!");
+    }
+
+    VkFormat kRHISwapchain::ChooseDepthFormat(kRHIDevice& rhidevice) {
+        return FindSupportedFormat(rhidevice,
+            { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+            VK_IMAGE_TILING_OPTIMAL,
+            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+        );
+    }
+
+    VkSurfaceFormatKHR kRHISwapchain::ChooseSwapSurfaceFormat(kRHIDevice& rhidevice, const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+        for (const auto& availableFormat : availableFormats) {
+            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                return availableFormat;
+            }
+        }
+
+        return availableFormats[0];
+    }
+
+    VkPresentModeKHR kRHISwapchain::ChooseSwapPresentMode(kRHIDevice& rhidevice, const std::vector<VkPresentModeKHR>& availablePresentModes) {
+        for (const auto& availablePresentMode : availablePresentModes) {
+            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                return availablePresentMode;
+            }
+        }
+
+        return VK_PRESENT_MODE_FIFO_KHR;
+    }
+
+    void kRHISwapchain::ChooseSwapchainFormat(kRHIDevice& rhidevice) {
+
+        SwapChainSupportDetails swapChainSupport = rhidevice.GetSwapchainSupportDetails();
+
+        m_SwapchainImageCount = swapChainSupport.capabilities.minImageCount;
+        if (swapChainSupport.capabilities.maxImageCount > 0 && m_SwapchainImageCount > swapChainSupport.capabilities.maxImageCount) {
+            m_SwapchainImageCount = swapChainSupport.capabilities.maxImageCount;
+        }
+
+        m_PresentMode = ChooseSwapPresentMode(rhidevice, swapChainSupport.presentModes);
+        m_SwapchainSurfaceFormat = ChooseSwapSurfaceFormat(rhidevice, swapChainSupport.formats);
+        m_SwapchainDepthFormat = ChooseDepthFormat(rhidevice);
     }
 
 }

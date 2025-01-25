@@ -25,7 +25,7 @@ namespace pipeline {
 
 		VkExtent2D extent = { m_WinInfo.width, m_WinInfo.height };
 
-		m_Context.createContext(m_WinInfo.pwindow);
+		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
 		kGraphicsPipelineCreateInfo createinfo;
@@ -56,7 +56,7 @@ namespace pipeline {
 
 		m_Swapchain.ReleaseSwapchain(m_Context);
 		m_GraphicPipeline.ReleaseGraphicsPipeline(m_Context);
-		m_Context.cleanupContext();
+		m_Context.ReleaseDevice();
 
     }
 

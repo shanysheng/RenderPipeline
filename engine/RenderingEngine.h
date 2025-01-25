@@ -5,10 +5,10 @@
 #include "Common.h"
 
 
-#include "BufferGPUResource.h"
+#include "RHIBuffer.h"
 #include "RHISwapchain.h"
-#include "RHIContext.h"
-#include "GraphicPipeline.h"
+#include "RHIDevice.h"
+#include "RHIGraphicPipeline.h"
 
 
 #include "objModel.h"
@@ -214,7 +214,7 @@ namespace pipeline {
         kWinInfo								m_WinInfo;
 
 
-        kRHIContext						        m_Context;
+        kRHIDevice						        m_Context;
         kRHISwapchain					        m_Swapchain;
         bool							        m_FramebufferResized = false;
 
@@ -276,7 +276,7 @@ namespace pipeline {
 
     protected:
 
-        kGraphicPipeline				        m_GraphicPipeline;
+        kRHIGraphicPipeline				        m_GraphicPipeline;
         Model							        m_Model;
     };
 

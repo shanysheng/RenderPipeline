@@ -1,5 +1,5 @@
-#include "ImageTextureGPUResource.h"
-#include "RHIContext.h"
+#include "RHITexture2D.h"
+#include "RHIDevice.h"
 
 namespace pipeline {
 
@@ -7,9 +7,9 @@ namespace pipeline {
 #include "stb_image.h"
 
 
-    void copyBufferToImage(kRHIContext& contextref, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+    void kRHITexture2D::CopyBufferToImage(kRHIDevice& rhidevice, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 
-        VkCommandBuffer commandBuffer = contextref.beginSingleTimeCommands();
+        VkCommandBuffer commandBuffer = rhidevice.BeginSingleTimeCommands();
 
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
@@ -24,12 +24,12 @@ namespace pipeline {
 
         vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-        contextref.endSingleTimeCommands(commandBuffer);
+        rhidevice.EndSingleTimeCommands(commandBuffer);
     }
 
-    void transitionImageLayout(kRHIContext& contextref, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+    void kRHITexture2D::TransitionImageLayout(kRHIDevice& rhidevice, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
 
-        VkCommandBuffer commandBuffer = contextref.beginSingleTimeCommands();
+        VkCommandBuffer commandBuffer = rhidevice.BeginSingleTimeCommands();
 
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -74,11 +74,10 @@ namespace pipeline {
             1, &barrier
         );
 
-        contextref.endSingleTimeCommands(commandBuffer);
+        rhidevice.EndSingleTimeCommands(commandBuffer);
     }
 
-
-    void kTexture::createTextureImage(kRHIContext& contextref, const std::string& filename) {
+    void kRHITexture2D::CreateTextureImage(kRHIDevice& rhidevice, const std::string& filename) {
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -89,36 +88,36 @@ namespace pipeline {
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        contextref.createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        rhidevice.CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
         void* data;
-        vkMapMemory(contextref.logicaldevice, stagingBufferMemory, 0, imageSize, 0, &data);
+        vkMapMemory(rhidevice.logicaldevice, stagingBufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, static_cast<size_t>(imageSize));
-        vkUnmapMemory(contextref.logicaldevice, stagingBufferMemory);
+        vkUnmapMemory(rhidevice.logicaldevice, stagingBufferMemory);
 
         stbi_image_free(pixels);
 
-        contextref.createImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
+        rhidevice.CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            textureImage, textureImageMemory);
+            m_TextureImage, m_TextureImageMemory);
 
-        transitionImageLayout(contextref, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        copyBufferToImage(contextref, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-        transitionImageLayout(contextref, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        TransitionImageLayout(rhidevice, m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        CopyBufferToImage(rhidevice, stagingBuffer, m_TextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        TransitionImageLayout(rhidevice, m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        vkDestroyBuffer(contextref.logicaldevice, stagingBuffer, nullptr);
-        vkFreeMemory(contextref.logicaldevice, stagingBufferMemory, nullptr);
+        vkDestroyBuffer(rhidevice.logicaldevice, stagingBuffer, nullptr);
+        vkFreeMemory(rhidevice.logicaldevice, stagingBufferMemory, nullptr);
     }
 
 
 
-    void kTexture::createTextureImageView(kRHIContext& contextref) {
-        textureImageView = contextref.createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+    void kRHITexture2D::CreateTextureImageView(kRHIDevice& rhidevice) {
+        m_TextureImageView = rhidevice.CreateImageView(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
     }
 
-    void kTexture::createTextureSampler(kRHIContext& contextref) {
+    void kRHITexture2D::CreateTextureSampler(kRHIDevice& rhidevice) {
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(contextref.physicalDevice, &properties);
+        vkGetPhysicalDeviceProperties(rhidevice.physicalDevice, &properties);
 
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -135,28 +134,27 @@ namespace pipeline {
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-        if (vkCreateSampler(contextref.logicaldevice, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+        if (vkCreateSampler(rhidevice.logicaldevice, &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
     }
 
-    void kTexture::createTexture(kRHIContext& contextref, const std::string& filename) {
+    void kRHITexture2D::CreateTexture(kRHIDevice& rhidevice, const std::string& filename) {
 
-        createTextureImage(contextref, filename);
-        createTextureImageView(contextref);
-        createTextureSampler(contextref);
+        CreateTextureImage(rhidevice, filename);
+        CreateTextureImageView(rhidevice);
+        CreateTextureSampler(rhidevice);
     }
 
 
-    void kTexture::cleanupTexture(kRHIContext& contextref) {
-        vkDestroySampler(contextref.logicaldevice, textureSampler, nullptr);
-        vkDestroyImageView(contextref.logicaldevice, textureImageView, nullptr);
+    void kRHITexture2D::ReleaseTexture(kRHIDevice& rhidevice) {
+        vkDestroySampler(rhidevice.logicaldevice, m_TextureSampler, nullptr);
+        vkDestroyImageView(rhidevice.logicaldevice, m_TextureImageView, nullptr);
 
-        vkDestroyImage(contextref.logicaldevice, textureImage, nullptr);
-        vkFreeMemory(contextref.logicaldevice, textureImageMemory, nullptr);
+        vkDestroyImage(rhidevice.logicaldevice, m_TextureImage, nullptr);
+        vkFreeMemory(rhidevice.logicaldevice, m_TextureImageMemory, nullptr);
 
         std::cout << "cleanup cleanupTexture" << std::endl;
     }
-
 
 }

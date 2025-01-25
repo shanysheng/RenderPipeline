@@ -1,5 +1,5 @@
 #include "objModel.h"
-#include "RHIContext.h"
+#include "RHIDevice.h"
 
 #include "tiny_obj_loader.h"
 
@@ -19,23 +19,23 @@ namespace pipeline {
 
 	}
 
-	void Model::Load(kRHIContext& contextref, VkDescriptorSetLayout layout) {
+	void Model::Load(kRHIDevice& rhidevice, VkDescriptorSetLayout layout) {
 
 		std::vector<Vertex>    vertex;
 		std::vector<uint32_t>  indices;
 		LoadModelFromfile(vertex, indices);
 		m_IndexCount = indices.size();
 
-		m_VertexBuffer.createVertexBuffer(contextref, (const char*)vertex.data(), vertex.size() * sizeof(Vertex));
-		m_IndexBuffer.createIndexBuffer(contextref, (const char*)indices.data(), indices.size() * sizeof(uint32_t));
+		m_VertexBuffer.CreateVertexBuffer(rhidevice, (const char*)vertex.data(), vertex.size() * sizeof(Vertex));
+		m_IndexBuffer.CreateIndexBuffer(rhidevice, (const char*)indices.data(), indices.size() * sizeof(uint32_t));
 
-		m_Texture.createTexture(contextref, TEXTURE_PATH);
-		m_UniformBuffer.createUniformBuffers(contextref, sizeof(UniformBufferObject));
+		m_Texture.CreateTexture(rhidevice, TEXTURE_PATH);
+		m_UniformBuffer.CreateUniformBuffer(rhidevice, sizeof(UniformBufferObject));
 
-		CreateDescriptorSets(contextref, sizeof(UniformBufferObject), layout);
+		CreateDescriptorSets(rhidevice, sizeof(UniformBufferObject), layout);
 	}
 
-	void Model::UpdateUniformBuffer(kRHIContext& contextref, uint32_t currentImage) {
+	void Model::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -47,48 +47,47 @@ namespace pipeline {
 		ubo.proj = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
-		m_UniformBuffer.updateBuffer(&ubo, sizeof(ubo));
+		m_UniformBuffer.UpdateBuffer(&ubo, sizeof(ubo));
 	}
 
 	void Model::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
-		VkBuffer vertexBuffers[] = { m_VertexBuffer.getBuffer()};
+		VkBuffer vertexBuffers[] = { m_VertexBuffer.GetBuffer()};
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer.getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
 		vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
 	}
 
-	void Model::Unload(kRHIContext& contextref) {
+	void Model::Unload(kRHIDevice& rhidevice) {
 
-		m_Texture.cleanupTexture(contextref);
-		m_IndexBuffer.cleanupBuffer(contextref);
-		m_VertexBuffer.cleanupBuffer(contextref);
-
-		m_UniformBuffer.cleanupGPUResource(contextref);
+		m_Texture.ReleaseTexture(rhidevice);
+		m_IndexBuffer.ReleaseBuffer(rhidevice);
+		m_VertexBuffer.ReleaseBuffer(rhidevice);
+		m_UniformBuffer.ReleaseBuffer(rhidevice);
 	}
 
-	void Model::CreateDescriptorSets(kRHIContext& contextref, VkDeviceSize bufferSize, VkDescriptorSetLayout layout) {
+	void Model::CreateDescriptorSets(kRHIDevice& rhidevice, VkDeviceSize bufferSize, VkDescriptorSetLayout layout) {
 
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = contextref.descriptorPool;
+		allocInfo.descriptorPool = rhidevice.descriptorPool;
 		allocInfo.descriptorSetCount = 1;
 		allocInfo.pSetLayouts = &layout;
 
-		if (vkAllocateDescriptorSets(contextref.logicaldevice, &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
+		if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate descriptor sets!");
 		}
 
 		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer.getBuffer();
+		bufferInfo.buffer = m_UniformBuffer.GetBuffer();
 		bufferInfo.offset = 0;
 		bufferInfo.range = bufferSize;
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = m_Texture.getImageView();
-		imageInfo.sampler = m_Texture.getImageSampler();
+		imageInfo.imageView = m_Texture.GetImageView();
+		imageInfo.sampler = m_Texture.GetImageSampler();
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -113,7 +112,7 @@ namespace pipeline {
 		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
 		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
 		// used to update these binding relationships.
-		vkUpdateDescriptorSets(contextref.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(rhidevice.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Model::LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array) {

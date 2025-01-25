@@ -10,7 +10,7 @@
 namespace pipeline {
 
 
-	class kRHIContext;
+	class kRHIDevice;
 
 	struct kGraphicsPipelineCreateInfo {
 		VkRenderPass render_pass = VK_NULL_HANDLE;
@@ -20,26 +20,26 @@ namespace pipeline {
 		std::array<VkVertexInputAttributeDescription, 3> input_attributes;
 	};
 
-	class kGraphicPipeline
+	class kRHIGraphicPipeline
 	{
 	public:
-		kGraphicPipeline();
-		virtual ~kGraphicPipeline();
+		kRHIGraphicPipeline();
+		virtual ~kRHIGraphicPipeline();
 
-		void CreateGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& info);
-		void ReleaseGraphicsPipeline(kRHIContext& contextref);
+		void CreateGraphicsPipeline(kRHIDevice& rhidevice, kGraphicsPipelineCreateInfo& info);
+		void ReleaseGraphicsPipeline(kRHIDevice& rhidevice);
 
-		VkPipeline GetPipeline() { return m_GraphicsPipeline; }
+		VkPipeline GetPipeline() { return m_Pipeline; }
 		VkPipelineLayout GetPipelineLayout() { return m_PipelineLayout; }
 		VkDescriptorSetLayout GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
 
 	protected:
-		void CreateDescriptorSetLayout(kRHIContext& contextref);
+		void CreateDescriptorSetLayout(kRHIDevice& rhidevice);
 
 	protected:
 		VkPipelineLayout				m_PipelineLayout;
 		VkDescriptorSetLayout			m_DescriptorSetLayout;
-		VkPipeline						m_GraphicsPipeline;
+		VkPipeline						m_Pipeline;
 	};
 }
 

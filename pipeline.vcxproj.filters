@@ -117,13 +117,13 @@
     <ClCompile Include="engine\Vector4.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\BufferGPUResource.cpp">
+    <ClCompile Include="engine\RHIBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\ImageTextureGPUResource.cpp">
+    <ClCompile Include="engine\RHITexture2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\RHIContext.cpp">
+    <ClCompile Include="engine\RHIDevice.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\FileManager.cpp">
@@ -132,7 +132,7 @@
     <ClCompile Include="engine\RHISwapchain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\GraphicPipeline.cpp">
+    <ClCompile Include="engine\RHIGraphicPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\tiny_obj_loader.cc">
@@ -245,13 +245,13 @@
     <ClInclude Include="engine\Vector4.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\BufferGPUResource.h">
+    <ClInclude Include="engine\RHIBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\ImageTextureGPUResource.h">
+    <ClInclude Include="engine\RHITexture2D.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\RHIContext.h">
+    <ClInclude Include="engine\RHIDevice.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\FileManager.h">
@@ -260,7 +260,7 @@
     <ClInclude Include="engine\RHISwapchain.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\GraphicPipeline.h">
+    <ClInclude Include="engine\RHIGraphicPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\tiny_obj_loader.h">

@@ -21,8 +21,10 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 * [vulkan](https://github.com/SaschaWillems/Vulkan): C++ examples for the Vulkan graphics API.
 * [vulkan tutorial](https://github.com/Overv/VulkanTutorial): Tutorial for the Vulkan graphics and compute API.
 * [vulkan 3dgs](https://github.com/jaesung-cs/vkgs): Vulkan-based Gaussian Splatting viewer.
+* [tinygltf](https://github.com/syoyo/tinygltf): Header only C++11 tiny glTF 2.0 library
+* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader): Tiny but powerful single file wavefront obj loader
 
-# Implementations
+# Todo
 
 ### vulkan
 - [x] Device: VkInstance, VkPhysicalDevice, VkDevice, VkQueue
@@ -38,13 +40,12 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [ ] GPUManager
 ### io
 - [x] obj
-- [ ] 3dgs
 - [ ] gltf
+- [ ] 3dgs
 ### samples
 - [x] model
 - [ ] 3dgs
-
-
+- [ ] ray tracer
 
 # Architecture
 

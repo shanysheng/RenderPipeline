@@ -4,7 +4,7 @@
 
 namespace pipeline {
 
-	class kRHIContext;
+	class kRHIDevice;
 
 	class kRHISwapchain
 	{
@@ -12,9 +12,9 @@ namespace pipeline {
 		kRHISwapchain();
 		virtual ~kRHISwapchain();
 
-		void CreateSwapchain(kRHIContext& contextref, VkExtent2D extent);
-		void RecreateSwapchain(kRHIContext& contextref, VkExtent2D extent);
-		void ReleaseSwapchain(kRHIContext& contextref);
+		void CreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent);
+		void RecreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent);
+		void ReleaseSwapchain(kRHIDevice& rhidevice);
 
 		VkSwapchainKHR GetSwapchain() { return m_Swapchain; }
 		VkRenderPass GetRenderPass() { return m_RenderPass; }
@@ -22,11 +22,16 @@ namespace pipeline {
 
 	protected:
 
-		void CreateRenderpass(kRHIContext& contextref);
-		void CreateSwapchainColorImageViews(kRHIContext& contextref);
-		void CreateSwapchainDepthImageView(kRHIContext& contextref);
-		void CreateFramebuffers(kRHIContext& contextref);
+		void CreateRenderpass(kRHIDevice& rhidevice);
+		void CreateSwapchainColorImageViews(kRHIDevice& rhidevice);
+		void CreateSwapchainDepthImageView(kRHIDevice& rhidevice);
+		void CreateFramebuffers(kRHIDevice& rhidevice);
 
+		void ChooseSwapchainFormat(kRHIDevice& rhidevice);
+		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(kRHIDevice& rhidevice, const std::vector<VkSurfaceFormatKHR>& availableFormats);
+		VkPresentModeKHR ChooseSwapPresentMode(kRHIDevice& rhidevice, const std::vector<VkPresentModeKHR>& availablePresentModes);
+		VkFormat FindSupportedFormat(kRHIDevice& rhidevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+		VkFormat ChooseDepthFormat(kRHIDevice& rhidevice);
 
 	protected:
 		VkRenderPass				m_RenderPass;
@@ -34,7 +39,10 @@ namespace pipeline {
 		VkSwapchainKHR				m_Swapchain;
 		VkExtent2D					m_SwapchainExtent;
 
-		VkFormat					m_SwapchainColorImageFormat;
+		VkPresentModeKHR			m_PresentMode;
+
+		uint32_t					m_SwapchainImageCount;
+		VkSurfaceFormatKHR			m_SwapchainSurfaceFormat;
 		std::vector<VkImage>		m_SwapchainColorImages;
 		std::vector<VkImageView>	m_SwapchainColorImageViews;
 
