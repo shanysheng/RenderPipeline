@@ -13,6 +13,14 @@ namespace pipeline{
         double	 timems;
     };
     
+    //------------------------------------------------------------------------------
+    //	Desc:		The base class for both pre-renders and render pipelines is 
+    //				IRenderControlUnit. By connecting IRenderControlUnit instances 
+    //				in different ways, we configure various control flows inside a 
+    //				rendering engine. The object represented by IRenderControlUnit 
+    //				instance is called Render Control Unit, or RCU for short.
+    //
+    //------------------------------------------------------------------------------
     class IRenderControlUnit
     {
     public:
@@ -35,6 +43,14 @@ namespace pipeline{
         
     protected:
         
+        //------------------------------------------------------------------------------
+        //	Desc:	At runtime, they are invoked by the rendering engine (or say 
+        //			CRenderingEngine instance) for three times. _DoPerFrame is 
+        //			invoked before each frame starts; _DoBeforeFirstFrame is invoked 
+        //			before the first frame for a scene model starts; _DoAfterLastFrame 
+        //			is invoked after the last frame for a scene model ends.
+        //
+        //------------------------------------------------------------------------------
         virtual void _DoPerFrame( CFrameInfo * pFI);
         virtual void _DoBeforeFirstFrame( CFrameInfo * pFI);
         virtual void _DoAfterLastFrame( CFrameInfo * pFI);

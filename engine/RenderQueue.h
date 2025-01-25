@@ -6,24 +6,23 @@
 
 namespace pipeline{
     
-    class IRenderQueueExtension
-    {
-    public:
-        virtual ~IRenderQueueExtension(){};
-    };
-    
+    //------------------------------------------------------------------------------
+    //	Desc:		The class CRenderQueue specifies a render queue which 
+    //				consists of entities. In most cases, these entities are 
+    //				supposed to be rendered in the following render pipelines. 
+    //
+    //------------------------------------------------------------------------------
     class kRenderQueue
     {
     public:
         kRenderQueue();
         virtual ~kRenderQueue();
-        
+
         bool IsMatrixAggregated();
+        void SetMatrixAggregated();
+
         int GetRenderQueueTag();
-        IRenderQueueExtension*	GetRenderQueueExtension();
-        
         void SetRenderQueueTag(int tag);
-        void SetRenderQueeuExtension(IRenderQueueExtension* pExtension);
         
         void PushBack( kSGNode* pEntity);
         void PushFront( kSGNode* pEntity);
@@ -33,14 +32,12 @@ namespace pipeline{
         
         int Size() const;
         void Clear();
-        
-        void SetMatrixAggregated();
-        
+
+
     protected:
-        std::deque<kSGNode*> 	m_Queue;
-        
         int                     m_Tag;
-        IRenderQueueExtension*  m_pExtension;
+        bool                    m_bMatrixAggregated;
+        std::deque<kSGNode*> 	m_Queue;
         
         friend class kRenderQueueManager;
     };

@@ -24,9 +24,6 @@
     <ClCompile Include="engine\Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\CameraManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="engine\Color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -135,9 +132,6 @@
     <ClCompile Include="engine\RHIGraphicPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\tiny_obj_loader.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="engine\objModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -150,9 +144,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\Camera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\CameraManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\Color.h">
@@ -171,9 +162,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\IRenderControlUnit.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\IRenderModule.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\IRenderPipeline.h">
@@ -261,9 +249,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\RHIGraphicPipeline.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\tiny_obj_loader.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\objModel.h">

@@ -6,8 +6,7 @@ namespace pipeline{
     kRenderQueue::kRenderQueue()
     {
         m_Tag = 0;
-        //m_bMatrixAggregated = false;
-        m_pExtension = NULL;
+        m_bMatrixAggregated = false;
     }
     
     kRenderQueue::~kRenderQueue()
@@ -20,19 +19,9 @@ namespace pipeline{
         return m_Tag;
     }
     
-    IRenderQueueExtension* kRenderQueue::GetRenderQueueExtension()
-    {
-        return m_pExtension;
-    }
-    
     void kRenderQueue::SetRenderQueueTag(int tag)
     {
         m_Tag = tag;
-    }
-    
-    void kRenderQueue::SetRenderQueeuExtension(IRenderQueueExtension* pExtension)
-    {
-        m_pExtension = pExtension;
     }
     
     void kRenderQueue::PushBack(kSGNode* pEntity)

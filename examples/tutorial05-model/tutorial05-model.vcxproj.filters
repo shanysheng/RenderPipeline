@@ -24,9 +24,6 @@
     <ClCompile Include="objModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="tiny_obj_loader.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="kBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -57,9 +54,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="objModel.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="tiny_obj_loader.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="kBuffer.h">

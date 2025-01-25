@@ -56,7 +56,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;../../deps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;../../deps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -97,7 +97,6 @@
     <ClCompile Include="kTexture.cpp" />
     <ClCompile Include="kUniformBuffer.cpp" />
     <ClCompile Include="objModel.cpp" />
-    <ClCompile Include="tiny_obj_loader.cc" />
     <ClCompile Include="tutorial05-model.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,7 +110,6 @@
     <ClInclude Include="kTexture.h" />
     <ClInclude Include="kUniformBuffer.h" />
     <ClInclude Include="objModel.h" />
-    <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\bin\x64\shaders\27_shader_depth.frag" />

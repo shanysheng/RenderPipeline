@@ -77,7 +77,6 @@ namespace pipeline {
 
 
     class kRenderQueueManager;
-    class kCameraManager;
     class kRenderTargetManager;
     class kPreRenderManager;
     class kGPUResourceManager;
@@ -193,7 +192,6 @@ namespace pipeline {
     protected:
 
         kRenderQueueManager*					GetRenderQueueManager()		{return m_pRenderQueueMgr;}
-        kCameraManager*							GetCameraManager()			{return m_pCameraMgr;}
         kRenderTargetManager*					GetRenderTargetManager()	{return m_pRenderTargetMgr;}
         kPreRenderManager*						GetPreRenderManager()		{return m_pPreRenderMgr;}
         kGPUResourceManager*				    GetGPUResourceManager()	    {return m_pGPUResourceMpr;}
@@ -264,7 +262,6 @@ namespace pipeline {
         
         kGPUResourceManager*				    m_pGPUResourceMpr;
         kRenderQueueManager*   					m_pRenderQueueMgr;
-        kCameraManager*							m_pCameraMgr;
         kRenderTargetManager*					m_pRenderTargetMgr;
         kPreRenderManager*						m_pPreRenderMgr;
         kRenderPipelineManager*					m_pRenderPipelineMgr;

@@ -1,7 +1,9 @@
 #include "objModel.h"
 #include "kContext.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+
 
 
 void Model::loadModelFromfile() {

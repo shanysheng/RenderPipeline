@@ -8,6 +8,22 @@
 
 namespace pipeline{
     
+
+    //------------------------------------------------------------------------------
+    //	Desc:		Similar to CPreRenderManager, the class CRenderPipelineManager
+    //				manages the life periods of a set of render pipelines.
+    //
+    //				There is only one thing that should be pointed out. The class 
+    //				CRenderPipelineManager aggregates one CRenderModuleManager 
+    //				instance to provide the capability to manage render modules.
+    //
+    //				There are two reasons why we place a render module manager 
+    //				here. One is that we hope any render module instance can be 
+    //				shared among multiple render pipelines. The other is that we 
+    //				want to lower the coupling of render modules with other 
+    //				components in the rendering engine.
+    //
+    //------------------------------------------------------------------------------
     class kRenderPipelineManager
     {
     public:

@@ -1,6 +1,7 @@
 #include "objModel.h"
 #include "RHIDevice.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
 template<> struct std::hash<pipeline::Vertex> {

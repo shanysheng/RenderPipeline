@@ -9,6 +9,11 @@ namespace pipeline{
     class IPreRender;
     class kRenderingEngine;
     
+    //------------------------------------------------------------------------------
+    //	Desc:		The main function of CPreRenderManager is to manage pre-render's 
+    //				life periods as well as to provide searching services.
+    //
+    //------------------------------------------------------------------------------
     class kPreRenderManager
     {
     public:

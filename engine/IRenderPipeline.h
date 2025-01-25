@@ -17,6 +17,10 @@ namespace pipeline{
     class SceneManager;
     class kRenderingEngine;
     
+    //------------------------------------------------------------------------------
+    //	Desc:
+    //
+    //------------------------------------------------------------------------------
     class IRenderPipeline: public IRenderControlUnit
     {
     public:

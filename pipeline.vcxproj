@@ -56,7 +56,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;./deps</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VulkanSDK\1.3.296.0\Include;D:\VulkanSDK\glfw-3.4.bin.WIN64\include;./deps</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -94,7 +94,6 @@
     <ClCompile Include="engine\Material.cpp" />
     <ClCompile Include="engine\Bound.cpp" />
     <ClCompile Include="engine\Camera.cpp" />
-    <ClCompile Include="engine\CameraManager.cpp" />
     <ClCompile Include="engine\Color.cpp" />
     <ClCompile Include="engine\Common.cpp" />
     <ClCompile Include="engine\GPUResourceManager.cpp" />
@@ -125,7 +124,6 @@
     <ClCompile Include="engine\Shader.cpp" />
     <ClCompile Include="engine\Mesh.cpp" />
     <ClCompile Include="engine\Texture.cpp" />
-    <ClCompile Include="engine\tiny_obj_loader.cc" />
     <ClCompile Include="engine\Vector2.cpp" />
     <ClCompile Include="engine\Vector3.cpp" />
     <ClCompile Include="engine\Vector4.cpp" />
@@ -138,14 +136,12 @@
     <ClInclude Include="engine\Material.h" />
     <ClInclude Include="engine\Bound.h" />
     <ClInclude Include="engine\Camera.h" />
-    <ClInclude Include="engine\CameraManager.h" />
     <ClInclude Include="engine\Color.h" />
     <ClInclude Include="engine\Common.h" />
     <ClInclude Include="engine\GPUResourceManager.h" />
     <ClInclude Include="engine\IGPUResource.h" />
     <ClInclude Include="engine\IPreRender.h" />
     <ClInclude Include="engine\IRenderControlUnit.h" />
-    <ClInclude Include="engine\IRenderModule.h" />
     <ClInclude Include="engine\IRenderPipeline.h" />
     <ClInclude Include="engine\Light.h" />
     <ClInclude Include="engine\Mathf.h" />
@@ -169,7 +165,6 @@
     <ClInclude Include="engine\Shader.h" />
     <ClInclude Include="engine\Mesh.h" />
     <ClInclude Include="engine\Texture.h" />
-    <ClInclude Include="engine\tiny_obj_loader.h" />
     <ClInclude Include="engine\Vector2.h" />
     <ClInclude Include="engine\Vector3.h" />
     <ClInclude Include="engine\Vector4.h" />

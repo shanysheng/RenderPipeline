@@ -7,6 +7,12 @@
 namespace pipeline{
     
     class IRenderModule;
+
+    //------------------------------------------------------------------------------
+    //	Desc:	The class CRenderModuleManager manages the life periods of a set of 
+    //			render modules.
+    //
+    //------------------------------------------------------------------------------
     class kRenderModuleManager
     {
     public:

@@ -16,6 +16,19 @@ namespace pipeline{
     class kPreRenderManager;
     class kRenderingEngine;
     
+    //------------------------------------------------------------------------------
+    //	Desc:		A CPreRenderManager manages one or multiple pre-renders. Every
+    //				pre-render has the same interface of IPreRender. Pre-renders 
+    //				provide pre rendering, which is,
+    //				1.modifying scene model, i.e., updating scene graph/spatial 
+    //				  index nodes or features, adding new attributes to some 
+    //				  nodes or features.
+    //				2.generating new render queues, in which there are 
+    //				  to-be-rendered entities. 
+    //				3.performing a certain computation, and the results can be 
+    //				  accessed by other parts inside the render engine.
+    //
+    //------------------------------------------------------------------------------
     class IPreRender : public IRenderControlUnit
     {
     public:
