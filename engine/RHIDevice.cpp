@@ -326,12 +326,12 @@ namespace pipeline {
         return imageView;
     }
 
-    void kRHIDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+    void kRHIDevice::CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer& buffer, VkDeviceMemory& memory) {
 
         VkBufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size = size;
-        bufferInfo.usage = usage;
+        bufferInfo.usage = usageFlags;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
         if (vkCreateBuffer(logicaldevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
@@ -344,13 +344,68 @@ namespace pipeline {
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+        allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
 
-        if (vkAllocateMemory(logicaldevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+        if (vkAllocateMemory(logicaldevice, &allocInfo, nullptr, &memory) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate buffer memory!");
         }
 
-        vkBindBufferMemory(logicaldevice, buffer, bufferMemory, 0);
+        vkBindBufferMemory(logicaldevice, buffer, memory, 0);
+    }
+
+    VkResult kRHIDevice::CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer* buffer, VkDeviceMemory* memory, void* data) {
+
+        // Create the buffer handle
+        VkBufferCreateInfo bufferCreateInfo{};
+        bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferCreateInfo.size = size;
+        bufferCreateInfo.usage = usageFlags;
+        bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        (vkCreateBuffer(logicaldevice, &bufferCreateInfo, nullptr, buffer));
+
+        // Create the memory backing up the buffer handle
+        VkMemoryRequirements memReqs;
+        vkGetBufferMemoryRequirements(logicaldevice, *buffer, &memReqs);
+
+        VkMemoryAllocateInfo memAlloc{};
+        memAlloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        memAlloc.allocationSize = memReqs.size;
+        memAlloc.memoryTypeIndex = FindMemoryType(memReqs.memoryTypeBits, memoryPropertyFlags);
+
+
+        // If the buffer has VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT set we also need to enable the appropriate flag during allocation
+        VkMemoryAllocateFlagsInfoKHR allocFlagsInfo{};
+        if (usageFlags & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT) {
+            allocFlagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO_KHR;
+            allocFlagsInfo.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+            memAlloc.pNext = &allocFlagsInfo;
+        }
+        (vkAllocateMemory(logicaldevice, &memAlloc, nullptr, memory));
+
+        // If a pointer to the buffer data has been passed, map the buffer and copy over the data
+        if (data != nullptr)
+        {
+            void* mapped;
+            (vkMapMemory(logicaldevice, *memory, 0, size, 0, &mapped));
+            memcpy(mapped, data, size);
+            // If host coherency hasn't been requested, do a manual flush to make writes visible
+            if ((memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
+            {
+                VkMappedMemoryRange mappedRange{};
+                mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+                mappedRange.memory = *memory;
+                mappedRange.offset = 0;
+                mappedRange.size = size;
+                vkFlushMappedMemoryRanges(logicaldevice, 1, &mappedRange);
+            }
+            vkUnmapMemory(logicaldevice, *memory);
+        }
+
+        // Attach the memory to the buffer object
+        (vkBindBufferMemory(logicaldevice, *buffer, *memory, 0));
+
+        return VK_SUCCESS;
     }
 
 

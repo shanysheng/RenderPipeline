@@ -40,8 +40,8 @@ namespace pipeline{
     
     void IRenderPipeline::DrawAllRenderQueues( CFrameInfo * pFI )
     {
-        uint32_t count = m_InRenderQueues.size();
-        for(uint32_t i = 0;i<count;++i)
+        size_t count = m_InRenderQueues.size();
+        for(size_t i = 0;i<count;++i)
         {
             DrawRenderQueue(pFI,i);
         }

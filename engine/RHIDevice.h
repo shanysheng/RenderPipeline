@@ -30,10 +30,61 @@ namespace pipeline {
 		void CreateDevice(GLFWwindow* pwindow);
 		void ReleaseDevice();
 
+		/**
+		* Create a image view
+		*
+		* @param image
+		* @param format
+		* @param aspectFlags
+		*
+		* @return VK_SUCCESS if
+		*/
+		void CreateBuffer( VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer& buffer, VkDeviceMemory& memory);
+
+
+		/**
+		* Create a image view
+		*
+		* @param image
+		* @param format
+		* @param aspectFlags
+		*
+		* @return VK_SUCCESS if
+		*/
+		VkResult CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer* buffer, VkDeviceMemory* memory, void* data = nullptr);
+
+
+		/**
+		* Create a image view
+		*
+		* @param image 
+		* @param format 
+		* @param aspectFlags 
+		*
+		* @return VK_SUCCESS if
+		*/
 		VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+		/**
+		* Create a image view
+		*
+		* @param image
+		* @param format
+		* @param aspectFlags
+		*
+		* @return VK_SUCCESS if
+		*/
 		VkShaderModule CreateShaderModule(const std::string& filename);
 
+		/**
+		* Create a image view
+		*
+		* @param image
+		* @param format
+		* @param aspectFlags
+		*
+		* @return VK_SUCCESS if
+		*/
 		void CreateImage(uint32_t width, uint32_t height, VkFormat format,
 							VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
 							VkImage& image, VkDeviceMemory& imageMemory);

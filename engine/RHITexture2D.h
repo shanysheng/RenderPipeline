@@ -22,6 +22,8 @@ namespace pipeline {
 		virtual ~kRHITexture2D() {};
 
 		void CreateTexture(kRHIDevice& rhidevice, const std::string& filename);
+		void CreateTextureFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight);
+
 		void ReleaseTexture(kRHIDevice& rhidevice);
 
 		VkImage GetImage() { return m_TextureImage; };
@@ -31,6 +33,8 @@ namespace pipeline {
 
 	protected:
 		void CreateTextureImage(kRHIDevice& rhidevice, const std::string& filename);
+		void CreateTextureImageFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight);
+
 		void CreateTextureImageView(kRHIDevice& rhidevice);
 		void CreateTextureSampler(kRHIDevice& rhidevice);
 

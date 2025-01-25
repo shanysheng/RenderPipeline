@@ -28,8 +28,8 @@ namespace pipeline{
         if (pPreRender)
             pPreRender->SetInTraverseRoot(roots);
         
-        uint32_t count = m_ChildrenRCU.size();
-        for (uint32_t i = 0; i < count; ++i)
+        size_t count = m_ChildrenRCU.size();
+        for (size_t i = 0; i < count; ++i)
         {
             pPreRender = dynamic_cast<IPreRender*>(m_ChildrenRCU[i]);
             if (pPreRender)

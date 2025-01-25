@@ -8,9 +8,8 @@ namespace pipeline {
     class kBufferInfo;
     class kImageInfo;
 
-    class kShader;
-    class kBufferGPUResource;
-    class kImageTextureGPUResource;
+    class kRHIBuffer;
+    class kRHITexture2D;
 
     class kGPUResourceManager
     {
@@ -18,8 +17,8 @@ namespace pipeline {
         kGPUResourceManager(void);
         virtual ~kGPUResourceManager(void);
         
-        kBufferGPUResource* GiveResource(kBufferInfo*);
-        kImageTextureGPUResource* GiveResource(kImageInfo*);
+        kRHIBuffer* GiveResource(kBufferInfo*);
+        kRHITexture2D* GiveResource(kImageInfo*);
     };
 }
 

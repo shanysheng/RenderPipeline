@@ -88,7 +88,7 @@ namespace pipeline {
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        rhidevice.CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+        rhidevice.CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, imageSize, stagingBuffer, stagingBufferMemory);
 
         void* data;
         vkMapMemory(rhidevice.logicaldevice, stagingBufferMemory, 0, imageSize, 0, &data);
@@ -109,6 +109,28 @@ namespace pipeline {
         vkFreeMemory(rhidevice.logicaldevice, stagingBufferMemory, nullptr);
     }
 
+    void kRHITexture2D::CreateTextureImageFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight) {
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        rhidevice.CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, bufferSize, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(rhidevice.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, buffer, static_cast<size_t>(bufferSize));
+        vkUnmapMemory(rhidevice.logicaldevice, stagingBufferMemory);
+
+        rhidevice.CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
+            VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            m_TextureImage, m_TextureImageMemory);
+
+        TransitionImageLayout(rhidevice, m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        CopyBufferToImage(rhidevice, stagingBuffer, m_TextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        TransitionImageLayout(rhidevice, m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+        vkDestroyBuffer(rhidevice.logicaldevice, stagingBuffer, nullptr);
+        vkFreeMemory(rhidevice.logicaldevice, stagingBufferMemory, nullptr);
+    }
 
 
     void kRHITexture2D::CreateTextureImageView(kRHIDevice& rhidevice) {
@@ -146,6 +168,13 @@ namespace pipeline {
         CreateTextureSampler(rhidevice);
     }
 
+    void kRHITexture2D::CreateTextureFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight) {
+
+        CreateTextureImageFromBuffer(rhidevice, buffer, bufferSize, format, texWidth, texHeight);
+        CreateTextureImageView(rhidevice);
+        CreateTextureSampler(rhidevice);
+
+    }
 
     void kRHITexture2D::ReleaseTexture(kRHIDevice& rhidevice) {
         vkDestroySampler(rhidevice.logicaldevice, m_TextureSampler, nullptr);

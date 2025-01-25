@@ -13,12 +13,8 @@ namespace pipeline {
 
     void kRHIGraphicPipeline::CreateGraphicsPipeline(kRHIDevice& rhidevice, kGraphicsPipelineCreateInfo& createinfo) {
 
-        CreateDescriptorSetLayout(rhidevice);
+        //CreateDescriptorSetLayout(rhidevice);
 
-        //auto vertShaderCode = readFile("shaders/ubo_vert.spv");
-        //auto fragShaderCode = readFile("shaders/ubo_frag.spv");
-        //auto vertShaderCode = readFile("shaders/texture_vert.spv");
-        //auto fragShaderCode = readFile("shaders/texture_frag.spv");
 
         VkShaderModule vertShaderModule = rhidevice.CreateShaderModule(createinfo.vertex_shader_file);
         VkShaderModule fragShaderModule = rhidevice.CreateShaderModule(createinfo.frag_shader_file);
@@ -44,8 +40,8 @@ namespace pipeline {
         //auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
-        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(createinfo.input_attributes.size());
         vertexInputInfo.pVertexBindingDescriptions = &createinfo.input_binding;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(createinfo.input_attributes.size());
         vertexInputInfo.pVertexAttributeDescriptions = createinfo.input_attributes.data();
 
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -108,7 +104,7 @@ namespace pipeline {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &m_DescriptorSetLayout;
+        pipelineLayoutInfo.pSetLayouts = &createinfo.descriptor_set_layout;
 
         if (vkCreatePipelineLayout(rhidevice.logicaldevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
@@ -140,39 +136,39 @@ namespace pipeline {
     }
 
 
-    void kRHIGraphicPipeline::CreateDescriptorSetLayout(kRHIDevice& rhidevice) {
+    //void kRHIGraphicPipeline::CreateDescriptorSetLayout(kRHIDevice& rhidevice) {
 
-        VkDescriptorSetLayoutBinding uboLayoutBinding{};
-        uboLayoutBinding.binding = 0;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.pImmutableSamplers = nullptr;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    //    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    //    uboLayoutBinding.binding = 0;
+    //    uboLayoutBinding.descriptorCount = 1;
+    //    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    //    uboLayoutBinding.pImmutableSamplers = nullptr;
+    //    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-        VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-        samplerLayoutBinding.binding = 1;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.pImmutableSamplers = nullptr;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    //    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    //    samplerLayoutBinding.binding = 1;
+    //    samplerLayoutBinding.descriptorCount = 1;
+    //    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    //    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    //    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+    //    std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo{};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
+    //    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    //    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    //    layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+    //    layoutInfo.pBindings = bindings.data();
 
-        if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
-    }
+    //    if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
+    //        throw std::runtime_error("failed to create descriptor set layout!");
+    //    }
+    //}
 
     void kRHIGraphicPipeline::ReleaseGraphicsPipeline(kRHIDevice& rhidevice) {
 
         vkDestroyPipeline(rhidevice.logicaldevice, m_Pipeline, nullptr);
         vkDestroyPipelineLayout(rhidevice.logicaldevice, m_PipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_DescriptorSetLayout, nullptr);
+        //vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_DescriptorSetLayout, nullptr);
 
         std::cout << "cleanup cleanupGraphicsPipeline" << std::endl;
     }

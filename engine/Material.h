@@ -10,7 +10,7 @@
 
 namespace pipeline {
     
-    class kShader;
+    class kRHIDescriptorSet;
     class kTexture;
     
     class kMaterial
@@ -18,7 +18,7 @@ namespace pipeline {
     public:
         
         kMaterial(const kMaterial& source);
-        kMaterial(kShader*shader);
+        kMaterial(kRHIDescriptorSet*shader);
         
         const kColor& GetColor (const std::string& name);
         const kColor& GetColor (int nameID);
@@ -89,12 +89,11 @@ namespace pipeline {
         void EnableKeyword (const std::string& keyword);
         
         void CopyPropertiesFromMaterial (const kMaterial& mat);
-        //int FindPass (const string& passName);
     protected:
         kColor color ;
         bool enableInstancing ;
         
-        kShader*  shader;
+        kRHIDescriptorSet*  shader;
         kTexture* mainTexture;
         kVector2f mainTextureOffset ;
         kVector2f mainTextureScale ;

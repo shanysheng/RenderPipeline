@@ -11,7 +11,7 @@
 #include "RHIGraphicPipeline.h"
 
 
-#include "objModel.h"
+#include "ModelObj.h"
 
 namespace pipeline {
 
@@ -274,7 +274,7 @@ namespace pipeline {
     protected:
 
         kRHIGraphicPipeline				        m_GraphicPipeline;
-        Model							        m_Model;
+        ModelObj							    m_Model;
     };
 
 }

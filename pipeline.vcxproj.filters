@@ -96,13 +96,13 @@
     <ClCompile Include="engine\SGNodeIterator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Shader.cpp">
+    <ClCompile Include="engine\RHIDescriptorSet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Texture.cpp">
+    <ClCompile Include="engine\RHITexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\Vector2.cpp">
@@ -132,7 +132,10 @@
     <ClCompile Include="engine\RHIGraphicPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\objModel.cpp">
+    <ClCompile Include="engine\ModelObj.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\ModelGltf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -215,13 +218,13 @@
     <ClInclude Include="engine\SGNodeIterator.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Shader.h">
+    <ClInclude Include="engine\RHIDescriptorSet.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\Mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Texture.h">
+    <ClInclude Include="engine\RHITexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\Vector2.h">
@@ -251,7 +254,10 @@
     <ClInclude Include="engine\RHIGraphicPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\objModel.h">
+    <ClInclude Include="engine\ModelObj.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ModelGltf.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

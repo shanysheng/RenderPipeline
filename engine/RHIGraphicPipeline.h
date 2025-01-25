@@ -4,7 +4,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <array>
+#include <vector>
 #include <string>
 
 namespace pipeline {
@@ -14,10 +14,13 @@ namespace pipeline {
 
 	struct kGraphicsPipelineCreateInfo {
 		VkRenderPass render_pass = VK_NULL_HANDLE;
+		VkDescriptorSetLayout descriptor_set_layout;
+
 		std::string vertex_shader_file;
 		std::string frag_shader_file;
+		
 		VkVertexInputBindingDescription  input_binding;
-		std::array<VkVertexInputAttributeDescription, 3> input_attributes;
+		std::vector<VkVertexInputAttributeDescription> input_attributes;
 	};
 
 	class kRHIGraphicPipeline
@@ -31,14 +34,14 @@ namespace pipeline {
 
 		VkPipeline GetPipeline() { return m_Pipeline; }
 		VkPipelineLayout GetPipelineLayout() { return m_PipelineLayout; }
-		VkDescriptorSetLayout GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
+		//VkDescriptorSetLayout GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
 
 	protected:
-		void CreateDescriptorSetLayout(kRHIDevice& rhidevice);
+		//void CreateDescriptorSetLayout(kRHIDevice& rhidevice);
 
 	protected:
 		VkPipelineLayout				m_PipelineLayout;
-		VkDescriptorSetLayout			m_DescriptorSetLayout;
+		//VkDescriptorSetLayout			m_DescriptorSetLayout;
 		VkPipeline						m_Pipeline;
 	};
 }

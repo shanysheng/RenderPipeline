@@ -7,7 +7,7 @@ namespace pipeline {
         
     }
     
-    kMaterial::kMaterial(kShader*shader)
+    kMaterial::kMaterial(kRHIDescriptorSet*shader)
     {
         
     }
