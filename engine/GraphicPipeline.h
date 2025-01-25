@@ -23,24 +23,23 @@ namespace pipeline {
 	class kGraphicPipeline
 	{
 	public:
-		kGraphicPipeline() {};
-		virtual ~kGraphicPipeline() {};
+		kGraphicPipeline();
+		virtual ~kGraphicPipeline();
 
-		void createGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& info);
-		void cleanupGraphicsPipeline(kRHIContext& contextref);
+		void CreateGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& info);
+		void ReleaseGraphicsPipeline(kRHIContext& contextref);
 
-		VkPipeline getPipeline() { return graphicsPipeline; }
-		VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
-		VkDescriptorSetLayout getDescriptorSetLayout() { return descriptorSetLayout; }
-
-	protected:
-		void createDescriptorSetLayout(kRHIContext& contextref);
-
+		VkPipeline GetPipeline() { return m_GraphicsPipeline; }
+		VkPipelineLayout GetPipelineLayout() { return m_PipelineLayout; }
+		VkDescriptorSetLayout GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
 
 	protected:
-		VkPipelineLayout				pipelineLayout;
-		VkDescriptorSetLayout			descriptorSetLayout;
-		VkPipeline						graphicsPipeline;
+		void CreateDescriptorSetLayout(kRHIContext& contextref);
+
+	protected:
+		VkPipelineLayout				m_PipelineLayout;
+		VkDescriptorSetLayout			m_DescriptorSetLayout;
+		VkPipeline						m_GraphicsPipeline;
 	};
 }
 

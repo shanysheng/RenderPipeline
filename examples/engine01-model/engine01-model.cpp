@@ -61,7 +61,7 @@ namespace pipeline {
 
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
             auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
-            app->m_Engine.frameChanged();
+            app->m_Engine.FrameChanged();
         }
 
         void mainLoop() {

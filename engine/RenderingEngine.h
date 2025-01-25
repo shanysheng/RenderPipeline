@@ -175,23 +175,16 @@ namespace pipeline {
         void DoRendering();
         void SwapBuffers();
 
-        void frameChanged() { framebufferResized = true; }
+        void FrameChanged() { m_FramebufferResized = true; }
 
     protected:
 
-        void drawFrame();
-
         void CreateSyncObjects();
         void CreateCommandBuffers();
+        void BuildCommandBuffer(uint32_t imageIndex);
 
-        void recreateSwapChain();
+        void RecreateSwapChain();
 
-
-
-        void recordCommandBuffer(uint32_t imageIndex);
-
-
-        
         void SetRenderTraverseRoot( const std::vector<kSGNode*>& roots );
         void SetCamera(kCamera& Camera );
         void GetCamera(kCamera& Camera );
@@ -223,6 +216,7 @@ namespace pipeline {
 
         kRHIContext						        m_Context;
         kRHISwapchain					        m_Swapchain;
+        bool							        m_FramebufferResized = false;
 
 
         // Acquire an image from the swap chain
@@ -282,10 +276,8 @@ namespace pipeline {
 
     protected:
 
-
         kGraphicPipeline				        m_GraphicPipeline;
         Model							        m_Model;
-        bool							        framebufferResized = false;
     };
 
 }

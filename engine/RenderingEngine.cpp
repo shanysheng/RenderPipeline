@@ -33,9 +33,9 @@ namespace pipeline {
 		createinfo.frag_shader_file = "shaders/model_depth_frag.spv";
 		createinfo.input_binding = Vertex::getBindingDescription();
 		createinfo.input_attributes = Vertex::getAttributeDescriptions();
-		m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);
+		m_GraphicPipeline.CreateGraphicsPipeline(m_Context, createinfo);
 
-		m_Model.Load(m_Context, m_GraphicPipeline.getDescriptorSetLayout());
+		m_Model.Load(m_Context, m_GraphicPipeline.GetDescriptorSetLayout());
 
 		CreateCommandBuffers();
 		CreateSyncObjects();
@@ -55,7 +55,7 @@ namespace pipeline {
 
 
 		m_Swapchain.ReleaseSwapchain(m_Context);
-		m_GraphicPipeline.cleanupGraphicsPipeline(m_Context);
+		m_GraphicPipeline.ReleaseGraphicsPipeline(m_Context);
 		m_Context.cleanupContext();
 
     }
@@ -87,7 +87,64 @@ namespace pipeline {
 
 	void kRenderingEngine::DoRendering() {
 
-		drawFrame();
+		vkWaitForFences(m_Context.logicaldevice, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+
+		uint32_t imageIndex;
+		VkResult result = vkAcquireNextImageKHR(m_Context.logicaldevice, m_Swapchain.GetSwapchain(),
+												UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame],
+												VK_NULL_HANDLE, &imageIndex);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_FramebufferResized) {
+			m_FramebufferResized = false;
+			RecreateSwapChain();
+		}
+		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+			throw std::runtime_error("failed to acquire swap chain image!");
+		}
+
+		// submit command wait image available semaphore and signal render finished semaphore
+		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[m_CurrentFrame] };
+		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
+
+		{
+			vkResetFences(m_Context.logicaldevice, 1, &m_InFlightFences[m_CurrentFrame]);
+			vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+
+			BuildCommandBuffer(imageIndex);
+
+			VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+			VkSubmitInfo submitInfo{};
+			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submitInfo.waitSemaphoreCount = 1;
+			submitInfo.pWaitSemaphores = waitSemaphores;
+			submitInfo.pWaitDstStageMask = waitStages;
+			submitInfo.commandBufferCount = 1;
+			submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentFrame];
+			submitInfo.signalSemaphoreCount = 1;
+			submitInfo.pSignalSemaphores = signalSemaphores;
+
+			if (vkQueueSubmit(m_Context.graphicsQueue, 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
+				throw std::runtime_error("failed to submit draw command buffer!");
+			}
+		}
+
+
+		{
+			// present command wait render finished semaphore 
+			VkSwapchainKHR swapChains[] = { m_Swapchain.GetSwapchain() };
+
+			VkPresentInfoKHR presentInfo{};
+			presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			presentInfo.waitSemaphoreCount = 1;
+			presentInfo.pWaitSemaphores = signalSemaphores;
+			presentInfo.swapchainCount = 1;
+			presentInfo.pSwapchains = swapChains;
+			presentInfo.pImageIndices = &imageIndex;
+
+			result = vkQueuePresentKHR(m_Context.presentQueue, &presentInfo);
+		}
+
+		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
 	}
 
@@ -111,6 +168,7 @@ namespace pipeline {
 
 
 	void kRenderingEngine::CreateSyncObjects() {
+
 		m_ImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_RenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_InFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -145,7 +203,7 @@ namespace pipeline {
 		}
 	}
 
-	void kRenderingEngine::recordCommandBuffer(uint32_t imageIndex) {
+	void kRenderingEngine::BuildCommandBuffer(uint32_t imageIndex) {
 		VkCommandBuffer commandBuffer = m_CommandBuffers[m_CurrentFrame];
 
 		VkCommandBufferBeginInfo beginInfo{};
@@ -174,7 +232,7 @@ namespace pipeline {
 			vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			{
-				vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipeline());
+				vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
 
 				VkViewport viewport{};
 				viewport.x = 0.0f;
@@ -191,12 +249,8 @@ namespace pipeline {
 				scissor.extent.height = m_WinInfo.height;
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-				VkBuffer vertexBuffers[] = { m_Model.getVertexBuffer() };
-				VkDeviceSize offsets[] = { 0 };
-				vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-				vkCmdBindIndexBuffer(commandBuffer, m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipelineLayout(), 0, 1, &(m_Model.descriptorSet), 0, nullptr);
-				vkCmdDrawIndexed(commandBuffer, m_Model.getIndiesCount(), 1, 0, 0, 0);
+				m_Model.UpdateUniformBuffer(m_Context, m_CurrentFrame);
+				m_Model.BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
 			}
 
 			vkCmdEndRenderPass(commandBuffer);
@@ -207,77 +261,7 @@ namespace pipeline {
 		}
 	}
 
-
-	void kRenderingEngine::drawFrame() {
-
-		vkWaitForFences(m_Context.logicaldevice, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
-
-		uint32_t imageIndex;
-		VkResult result = vkAcquireNextImageKHR(m_Context.logicaldevice, m_Swapchain.GetSwapchain(), UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, &imageIndex);
-
-		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-			recreateSwapChain();
-			return;
-		}
-		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-			throw std::runtime_error("failed to acquire swap chain image!");
-		}
-
-		// submit command wait image available semaphore and signal render finished semaphore
-		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[m_CurrentFrame] };
-		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
-
-		{
-			vkResetFences(m_Context.logicaldevice, 1, &m_InFlightFences[m_CurrentFrame]);
-			vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-
-			m_Model.updateUniformBuffer(m_Context, m_CurrentFrame);
-			recordCommandBuffer(imageIndex);
-
-			VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-
-			VkSubmitInfo submitInfo{};
-			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			submitInfo.waitSemaphoreCount = 1;
-			submitInfo.pWaitSemaphores = waitSemaphores;
-			submitInfo.pWaitDstStageMask = waitStages;
-			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentFrame];
-			submitInfo.signalSemaphoreCount = 1;
-			submitInfo.pSignalSemaphores = signalSemaphores;
-
-			if (vkQueueSubmit(m_Context.graphicsQueue, 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
-				throw std::runtime_error("failed to submit draw command buffer!");
-			}
-		}
-
-
-		{
-			// present command wait render finished semaphore 
-			VkSwapchainKHR swapChains[] = { m_Swapchain.GetSwapchain() };
-
-			VkPresentInfoKHR presentInfo{};
-			presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-			presentInfo.waitSemaphoreCount = 1;
-			presentInfo.pWaitSemaphores = signalSemaphores;
-			presentInfo.swapchainCount = 1;
-			presentInfo.pSwapchains = swapChains;
-			presentInfo.pImageIndices = &imageIndex;
-
-			result = vkQueuePresentKHR(m_Context.presentQueue, &presentInfo);
-			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-				framebufferResized = false;
-				recreateSwapChain();
-			}
-			else if (result != VK_SUCCESS) {
-				throw std::runtime_error("failed to present swap chain image!");
-			}
-		}
-
-		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-	}
-
-	void kRenderingEngine::recreateSwapChain() {
+	void kRenderingEngine::RecreateSwapChain() {
 		int width = 0, height = 0;
 		glfwGetFramebufferSize(m_WinInfo.pwindow, &width, &height);
 		while (width == 0 || height == 0) {
@@ -296,6 +280,5 @@ namespace pipeline {
 
 		m_Swapchain.RecreateSwapchain(m_Context, actualExtent);
 	}
-
 
 }

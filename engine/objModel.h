@@ -61,9 +61,6 @@ namespace pipeline {
         }
     };
 
-
-
-
     struct UniformBufferObject {
         alignas(16) glm::mat4 model;
         alignas(16) glm::mat4 view;
@@ -73,39 +70,29 @@ namespace pipeline {
     class Model
     {
     public:
-        Model() {
-        };
+        Model();
+        virtual ~Model();
 
         void Load(kRHIContext& contextref, VkDescriptorSetLayout layout);
         void Unload(kRHIContext& contextref);
 
-        void updateUniformBuffer(kRHIContext& contextref, uint32_t currentImage);
-
-        VkBuffer getVertexBuffer() { return m_VertexBuffer.getBuffer(); }
-        VkBuffer getIndexBuffer() { return m_IndexBuffer.getBuffer(); }
-        uint32_t getIndiesCount() { return (uint32_t)m_Indices.size(); }
-
-        kTexture& getTexture() { return m_Texture; }
-        const kTexture& getTexture()const { return m_Texture; }
+        void UpdateUniformBuffer(kRHIContext& contextref, uint32_t currentImage);
+        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
 
     protected:
-        void loadModelFromfile();
+        void LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array);
+        void CreateDescriptorSets(kRHIContext& contextref, VkDeviceSize bufferSize, VkDescriptorSetLayout layout);
 
-        void createUniformBuffers(kRHIContext& contextref, VkDeviceSize bufferSize);
-        void createDescriptorSets(kRHIContext& contextref, VkDeviceSize bufferSize, VkDescriptorSetLayout layout);
+    protected:
 
-    public:
-        std::vector<Vertex>     m_Vertex;
-        std::vector<uint32_t>   m_Indices;
+        kBuffer                 m_VertexBuffer;
+        kBuffer                 m_IndexBuffer;
+        uint32_t                m_IndexCount;
 
+        kUniformBuffer          m_UniformBuffer;
+        kTexture	            m_Texture;
 
-        kBuffer     m_VertexBuffer;
-        kBuffer     m_IndexBuffer;
-
-        kTexture	m_Texture;
-
-        VkDescriptorSet	    descriptorSet;
-        kUniformBuffer      m_UniformBuffer;
+        VkDescriptorSet	        m_DescriptorSet;
     };
 
 }

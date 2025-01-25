@@ -8,10 +8,12 @@
 
 namespace pipeline {
 
+    kGraphicPipeline::kGraphicPipeline() {};
+    kGraphicPipeline::~kGraphicPipeline() {};
 
-    void kGraphicPipeline::createGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& createinfo) {
+    void kGraphicPipeline::CreateGraphicsPipeline(kRHIContext& contextref, kGraphicsPipelineCreateInfo& createinfo) {
 
-        createDescriptorSetLayout(contextref);
+        CreateDescriptorSetLayout(contextref);
 
         //auto vertShaderCode = readFile("shaders/ubo_vert.spv");
         //auto fragShaderCode = readFile("shaders/ubo_frag.spv");
@@ -106,9 +108,9 @@ namespace pipeline {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+        pipelineLayoutInfo.pSetLayouts = &m_DescriptorSetLayout;
 
-        if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(contextref.logicaldevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -124,12 +126,12 @@ namespace pipeline {
         pipelineInfo.pDepthStencilState = &depthStencil;
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = &dynamicState;
-        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.layout = m_PipelineLayout;
         pipelineInfo.renderPass = createinfo.render_pass;
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+        if (vkCreateGraphicsPipelines(contextref.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
@@ -138,7 +140,8 @@ namespace pipeline {
     }
 
 
-    void kGraphicPipeline::createDescriptorSetLayout(kRHIContext& contextref) {
+    void kGraphicPipeline::CreateDescriptorSetLayout(kRHIContext& contextref) {
+
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
         uboLayoutBinding.binding = 0;
         uboLayoutBinding.descriptorCount = 1;
@@ -154,21 +157,22 @@ namespace pipeline {
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
         std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+
         VkDescriptorSetLayoutCreateInfo layoutInfo{};
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
         layoutInfo.pBindings = bindings.data();
 
-        if (vkCreateDescriptorSetLayout(contextref.logicaldevice, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+        if (vkCreateDescriptorSetLayout(contextref.logicaldevice, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor set layout!");
         }
     }
 
-    void kGraphicPipeline::cleanupGraphicsPipeline(kRHIContext& contextref) {
+    void kGraphicPipeline::ReleaseGraphicsPipeline(kRHIContext& contextref) {
 
-        vkDestroyPipeline(contextref.logicaldevice, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(contextref.logicaldevice, pipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(contextref.logicaldevice, descriptorSetLayout, nullptr);
+        vkDestroyPipeline(contextref.logicaldevice, m_GraphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(contextref.logicaldevice, m_PipelineLayout, nullptr);
+        vkDestroyDescriptorSetLayout(contextref.logicaldevice, m_DescriptorSetLayout, nullptr);
 
         std::cout << "cleanup cleanupGraphicsPipeline" << std::endl;
     }
