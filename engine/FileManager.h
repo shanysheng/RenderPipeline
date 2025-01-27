@@ -8,7 +8,7 @@ namespace pipeline{
 	{
 	public:
 
-		static std::vector<char> LoadFile(const std::string& filePath, bool bbinary = true);
+		static std::vector<char> LoadShaderFile(const std::string& filePath);
 	};
 
 }

@@ -411,7 +411,7 @@ namespace pipeline {
 
     VkShaderModule kRHIDevice::CreateShaderModule(const std::string& filename) {
 
-        auto vertShaderCode = kFileManager::LoadFile(filename);
+        auto vertShaderCode = kFileManager::LoadShaderFile(filename);
 
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

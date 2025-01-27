@@ -4,17 +4,17 @@ namespace pipeline {
 
 
 
-    std::vector<char> kFileManager::LoadFile(const std::string& filePath, bool bbinary) {
+    std::vector<char> kFileManager::LoadShaderFile(const std::string& filePath) {
 
-        std::ios::openmode mode = std::ios::in | std::ios::ate;
-        if (bbinary) {
-            mode = std::ios::binary | std::ios::ate;
-        }
+        std::ios::openmode mode = std::ios::binary | std::ios::in | std::ios::ate;
 
         std::ifstream file(filePath, mode);
         if (!file.is_open()) {
+            std::cout << "Failed to load shader file:" << filePath << std::endl;
             throw std::runtime_error("Failed to open file: " + filePath);
         }
+
+        std::cout << "Successfully loaded shader file:" << filePath << std::endl;
 
         size_t fileSize = (size_t)file.tellg();
         std::vector<char> buffer(fileSize);

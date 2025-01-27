@@ -468,6 +468,9 @@ void kContext::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemor
 
 
 std::vector<char> readFile(const std::string& filename) {
+
+    std::cout << "read file:" << filename << "\n";
+
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {

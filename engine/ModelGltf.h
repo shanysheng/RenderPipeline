@@ -34,41 +34,8 @@ namespace pipeline {
             glm::vec2 uv;
             glm::vec3 color;
 
-
-            static VkVertexInputBindingDescription getBindingDescription() {
-                VkVertexInputBindingDescription bindingDescription{};
-                bindingDescription.binding = 0;
-                bindingDescription.stride = sizeof(Vertex);
-                bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-                return bindingDescription;
-            }
-
-            static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() {
-                std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
-
-                attributeDescriptions[0].binding = 0;
-                attributeDescriptions[0].location = 0;
-                attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-                attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-                attributeDescriptions[1].binding = 0;
-                attributeDescriptions[1].location = 1;
-                attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-                attributeDescriptions[1].offset = offsetof(Vertex, normal);
-
-                attributeDescriptions[2].binding = 0;
-                attributeDescriptions[2].location = 2;
-                attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-                attributeDescriptions[2].offset = offsetof(Vertex, uv);
-
-                attributeDescriptions[3].binding = 0;
-                attributeDescriptions[3].location = 2;
-                attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
-                attributeDescriptions[3].offset = offsetof(Vertex, color);
-
-                return attributeDescriptions;
-            }
+            static VkVertexInputBindingDescription getBindingDescription();
+            static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
         };
 
         // Single vertex buffer for all primitives
@@ -129,12 +96,18 @@ namespace pipeline {
             int32_t imageIndex;
         };
 
+        struct ModelGltfShaderData {
+                glm::mat4 projection;
+                glm::mat4 model;
+                glm::vec4 lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
+                glm::vec4 viewPos;
+        };
 
     public:
         ModelGltf();
         virtual ~ModelGltf();
 
-        VkDescriptorSetLayout PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
+        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
 
         void Load(kRHIDevice& rhidevice, VkDescriptorSetLayout layout);
         void Unload(kRHIDevice& rhidevice);
@@ -144,6 +117,8 @@ namespace pipeline {
 
     protected:
         void SetupDescriptorSets(kRHIDevice& rhidevice);
+        void SetupMatrixDescriptorSets(kRHIDevice& rhidevice);
+        void SetupMaterialDescriptorSets(kRHIDevice& rhidevice);
 
         void loadImages(kRHIDevice& rhidevice, tinygltf::Model& input);
         void loadTextures(kRHIDevice& rhidevice, tinygltf::Model& input);
@@ -165,11 +140,14 @@ namespace pipeline {
         kRHIBuffer              m_IndexBuffer;
         uint32_t                m_IndexCount;
 
-        kRHIBuffer              m_UniformBuffer;
         kRHITexture2D           m_Texture;
 
-        VkDescriptorSetLayout	m_DescriptorSetLayout;
-        VkDescriptorSet	        m_DescriptorSet;
+        VkDescriptorSetLayout	m_MatrixDSLayout;
+        VkDescriptorSet	        m_MatrixDSet;
+        kRHIBuffer              m_MatrixBuffer;
+
+        VkDescriptorSetLayout	m_SamplerDSLayout;
+
     };
 
 

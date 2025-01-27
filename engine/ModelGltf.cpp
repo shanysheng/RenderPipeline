@@ -6,6 +6,41 @@
 
 namespace pipeline {
 
+	VkVertexInputBindingDescription ModelGltf::Vertex::getBindingDescription() {
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = sizeof(Vertex);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return bindingDescription;
+	}
+
+	std::vector<VkVertexInputAttributeDescription> ModelGltf::Vertex::getAttributeDescriptions() {
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
+
+		attributeDescriptions[0].binding = 0;
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+		attributeDescriptions[1].binding = 0;
+		attributeDescriptions[1].location = 1;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(Vertex, normal);
+
+		attributeDescriptions[2].binding = 0;
+		attributeDescriptions[2].location = 2;
+		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(Vertex, uv);
+
+		attributeDescriptions[3].binding = 0;
+		attributeDescriptions[3].location = 2;
+		attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[3].offset = offsetof(Vertex, color);
+
+		return attributeDescriptions;
+	}
+
 	const std::string GLTF_MODEL_PATH = "models/FlightHelmet/glTF/FlightHelmet.gltf";
 
 
@@ -131,11 +166,146 @@ namespace pipeline {
 	}
 
 
-	VkDescriptorSetLayout ModelGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
-		return m_DescriptorSetLayout;
+	std::vector<VkDescriptorSetLayout> ModelGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
+
+		VkDescriptorSetLayoutBinding matrixLayoutBinding{};
+		matrixLayoutBinding.binding = 0;
+		matrixLayoutBinding.descriptorCount = 1;
+		matrixLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		matrixLayoutBinding.pImmutableSamplers = nullptr;
+		matrixLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+		VkDescriptorSetLayoutCreateInfo matrixLayoutInfo{};
+		matrixLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		matrixLayoutInfo.bindingCount = 1;
+		matrixLayoutInfo.pBindings = &matrixLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &matrixLayoutInfo, nullptr, &m_MatrixDSLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+
+		VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+		samplerLayoutBinding.binding = 0;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		VkDescriptorSetLayoutCreateInfo samplerLayoutInfo{};
+		samplerLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		samplerLayoutInfo.bindingCount = 1;
+		samplerLayoutInfo.pBindings = &samplerLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &samplerLayoutInfo, nullptr, &m_SamplerDSLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+
+		///*
+		//	This sample uses separate descriptor sets (and layouts) for the matrices and materials (textures)
+		//*/
+
+		//// Descriptor set layout for passing matrices
+		//VkDescriptorSetLayoutBinding setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
+		//VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(&setLayoutBinding, 1);
+		//VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.matrices));
+
+		//// Descriptor set layout for passing material textures
+		//setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+		//VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.textures));
+
+		return std::vector<VkDescriptorSetLayout>{m_MatrixDSLayout, m_SamplerDSLayout};
 	}
 
 	void ModelGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {
+
+		SetupMatrixDescriptorSets(rhidevice);
+		SetupMaterialDescriptorSets(rhidevice);
+	}
+
+	void ModelGltf::SetupMatrixDescriptorSets(kRHIDevice& rhidevice) {
+		//// Descriptor set for scene matrices
+		//VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.matrices, 1);
+		//VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
+		//VkWriteDescriptorSet writeDescriptorSet = vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &shaderData.buffer.descriptor);
+		//vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
+
+
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = rhidevice.descriptorPool;
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = &m_MatrixDSLayout;
+
+		if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &m_MatrixDSet) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
+
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = m_MatrixBuffer.GetBuffer();
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(ModelGltfShaderData);
+
+
+		VkWriteDescriptorSet descriptorWrite;
+		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite.dstSet = m_MatrixDSet;
+		descriptorWrite.dstBinding = 0;
+		descriptorWrite.dstArrayElement = 0;
+		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrite.descriptorCount = 1;
+		descriptorWrite.pBufferInfo = &bufferInfo;
+
+		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
+		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
+		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
+		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
+		// used to update these binding relationships.
+		vkUpdateDescriptorSets(rhidevice.logicaldevice, 1, &descriptorWrite, 0, nullptr);
+
+	}
+
+	void ModelGltf::SetupMaterialDescriptorSets(kRHIDevice& rhidevice) {
+		//// Descriptor sets for materials
+		//for (auto& image : glTFModel.images) {
+		//	const VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.textures, 1);
+		//	VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &image.descriptorSet));
+		//	VkWriteDescriptorSet writeDescriptorSet = vks::initializers::writeDescriptorSet(image.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &image.texture.descriptor);
+		//	vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
+		//}
+
+
+		for (auto& image : images) {
+			VkDescriptorSetAllocateInfo allocInfo{};
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = rhidevice.descriptorPool;
+			allocInfo.descriptorSetCount = 1;
+			allocInfo.pSetLayouts = &m_SamplerDSLayout;
+
+			if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &image.descriptorSet) != VK_SUCCESS) {
+				throw std::runtime_error("failed to allocate descriptor sets!");
+			}
+
+			VkDescriptorImageInfo imageInfo{};
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = m_Texture.GetImageView();
+			imageInfo.sampler = m_Texture.GetImageSampler();
+
+			VkWriteDescriptorSet descriptorWrite;
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = image.descriptorSet;
+			descriptorWrite.dstBinding = 1;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pImageInfo = &imageInfo;
+
+			// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
+			// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
+			// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
+			// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
+			// used to update these binding relationships.
+			vkUpdateDescriptorSets(rhidevice.logicaldevice, 1, &descriptorWrite, 0, nullptr);
+		}
 
 	}
 

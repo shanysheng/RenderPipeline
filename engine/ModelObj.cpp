@@ -12,6 +12,38 @@ template<> struct std::hash<pipeline::ModelObj::Vertex> {
 
 namespace pipeline {
 
+
+	VkVertexInputBindingDescription ModelObj::Vertex::getBindingDescription() {
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = sizeof(Vertex);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return bindingDescription;
+	}
+
+	std::vector<VkVertexInputAttributeDescription> ModelObj::Vertex::getAttributeDescriptions() {
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
+
+		attributeDescriptions[0].binding = 0;
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+		attributeDescriptions[1].binding = 0;
+		attributeDescriptions[1].location = 1;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+		attributeDescriptions[2].binding = 0;
+		attributeDescriptions[2].location = 2;
+		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+		return attributeDescriptions;
+	}
+
+
 	const std::string OBJ_MODEL_PATH = "resources/viking_room.obj";
 	const std::string OBJ_TEXTURE_PATH = "resources/viking_room.png";
 
@@ -34,7 +66,7 @@ namespace pipeline {
 		m_IndexBuffer.CreateIndexBuffer(rhidevice, (const char*)indices.data(), indices.size() * sizeof(uint32_t));
 
 		m_Texture.CreateTexture(rhidevice, OBJ_TEXTURE_PATH);
-		m_UniformBuffer.CreateUniformBuffer(rhidevice, sizeof(UniformBufferObject));
+		m_UniformBuffer.CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
 
 		SetupDescriptorSets(rhidevice);
 	}
@@ -45,13 +77,13 @@ namespace pipeline {
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.proj = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
-		ubo.proj[1][1] *= -1;
+		ModelObjShaderData temp_shaderdat{};
+		temp_shaderdat.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.proj = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
+		temp_shaderdat.proj[1][1] *= -1;
 
-		m_UniformBuffer.UpdateBuffer(&ubo, sizeof(ubo));
+		m_UniformBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 	}
 
 	void ModelObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
@@ -71,7 +103,7 @@ namespace pipeline {
 		m_UniformBuffer.ReleaseBuffer(rhidevice);
 	}
 
-	VkDescriptorSetLayout ModelObj::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
+	std::vector<VkDescriptorSetLayout> ModelObj::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
 		uboLayoutBinding.binding = 0;
@@ -98,7 +130,7 @@ namespace pipeline {
 			throw std::runtime_error("failed to create descriptor set layout!");
 		}
 
-		return m_DescriptorSetLayout;
+		return std::vector<VkDescriptorSetLayout> {m_DescriptorSetLayout};
 	}
 
 
@@ -117,14 +149,14 @@ namespace pipeline {
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = m_UniformBuffer.GetBuffer();
 		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBufferObject);
+		bufferInfo.range = sizeof(ModelObjShaderData);
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = m_Texture.GetImageView();
 		imageInfo.sampler = m_Texture.GetImageSampler();
 
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+		std::vector<VkWriteDescriptorSet> descriptorWrites(2);
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_DescriptorSet;

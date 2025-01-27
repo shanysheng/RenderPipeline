@@ -14,7 +14,7 @@ namespace pipeline {
 
 	struct kGraphicsPipelineCreateInfo {
 		VkRenderPass render_pass = VK_NULL_HANDLE;
-		VkDescriptorSetLayout descriptor_set_layout;
+		std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
 
 		std::string vertex_shader_file;
 		std::string frag_shader_file;

@@ -28,12 +28,12 @@ namespace pipeline {
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
-		VkDescriptorSetLayout descr_set_layout = m_Model.PrepareDescriptorSetLayout(m_Context);
+		std::vector<VkDescriptorSetLayout> dsLayouts = m_Model.PrepareDescriptorSetLayout(m_Context);
 
 		kGraphicsPipelineCreateInfo createinfo;
-		createinfo.descriptor_set_layout = descr_set_layout;
-		createinfo.vertex_shader_file = "shaders/model_depth_vert.spv";
-		createinfo.frag_shader_file = "shaders/model_depth_frag.spv";
+		createinfo.descriptor_set_layouts = dsLayouts;
+		createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
+		createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
 		createinfo.input_binding = ModelObj::Vertex::getBindingDescription();
 		createinfo.input_attributes = ModelObj::Vertex::getAttributeDescriptions();
 
