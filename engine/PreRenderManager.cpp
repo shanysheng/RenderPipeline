@@ -1,6 +1,7 @@
 #include "PreRenderManager.h"
 #include "IPreRender.h"
 
+
 namespace pipeline
 {
     kPreRenderManager::kPreRenderManager()

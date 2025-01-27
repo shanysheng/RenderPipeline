@@ -15,12 +15,13 @@
 #include "RHIBuffer.h"
 #include "RHITexture2D.h"
 
+#include "Mesh.h"
 
 namespace pipeline {
 
 
 
-    class ModelObj
+    class ModelObj : public IModel
     {
     public:
         struct Vertex {
@@ -28,8 +29,7 @@ namespace pipeline {
             glm::vec3 color;
             glm::vec2 texCoord;
 
-            static VkVertexInputBindingDescription getBindingDescription();
-            static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+
 
             bool operator==(const Vertex& other) const {
                 return pos == other.pos && color == other.color && texCoord == other.texCoord;
@@ -46,7 +46,11 @@ namespace pipeline {
         ModelObj();
         virtual ~ModelObj();
 
+        VkVertexInputBindingDescription getBindingDescription();
+        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+
         std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
+        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
 
         void Load(kRHIDevice& rhidevicet);
         void Unload(kRHIDevice& rhidevice);

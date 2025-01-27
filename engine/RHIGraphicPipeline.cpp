@@ -105,6 +105,8 @@ namespace pipeline {
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = createinfo.descriptor_set_layouts.size();
         pipelineLayoutInfo.pSetLayouts = createinfo.descriptor_set_layouts.data();
+        pipelineLayoutInfo.pushConstantRangeCount = createinfo.push_constant_ranges.size();
+        pipelineLayoutInfo.pPushConstantRanges = createinfo.push_constant_ranges.data();;
 
         if (vkCreatePipelineLayout(rhidevice.logicaldevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");

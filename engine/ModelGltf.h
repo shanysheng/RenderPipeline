@@ -16,15 +16,20 @@
 #include "RHIBuffer.h"
 #include "RHITexture2D.h"
 
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "Mesh.h"
 
-#include "tiny_gltf.h"
+
+namespace tinygltf {
+    class Node;
+    class Model;
+}
+
+
 
 namespace pipeline {
 
 
-    class ModelGltf
+    class ModelGltf : public IModel
     {
     public:
         // The vertex layout for the samples' model
@@ -34,8 +39,6 @@ namespace pipeline {
             glm::vec2 uv;
             glm::vec3 color;
 
-            static VkVertexInputBindingDescription getBindingDescription();
-            static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
         };
 
         // Single vertex buffer for all primitives
@@ -98,7 +101,7 @@ namespace pipeline {
 
         struct ModelGltfShaderData {
                 glm::mat4 projection;
-                glm::mat4 model;
+                glm::mat4 view;
                 glm::vec4 lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
                 glm::vec4 viewPos;
         };
@@ -107,9 +110,14 @@ namespace pipeline {
         ModelGltf();
         virtual ~ModelGltf();
 
-        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
 
-        void Load(kRHIDevice& rhidevice, VkDescriptorSetLayout layout);
+        VkVertexInputBindingDescription getBindingDescription();
+        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+
+        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
+        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
+
+        void Load(kRHIDevice& rhidevice);
         void Unload(kRHIDevice& rhidevice);
 
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
@@ -125,7 +133,8 @@ namespace pipeline {
         void loadMaterials(kRHIDevice& rhidevice, tinygltf::Model& input);
         void loadNode(kRHIDevice& rhidevice, const tinygltf::Node& inputNode, const tinygltf::Model& input, Node* parent, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer);
 
-        VkResult createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer* buffer, VkDeviceMemory* memory, void* data);
+        void drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Node* node);
+        void draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
 
     protected:
 
@@ -135,21 +144,14 @@ namespace pipeline {
         std::vector<Material> materials;
         std::vector<Node*> nodes;
 
-        // RHI resources
-        kRHIBuffer              m_VertexBuffer;
-        kRHIBuffer              m_IndexBuffer;
-        uint32_t                m_IndexCount;
-
-        kRHITexture2D           m_Texture;
-
+        // camera uniform
         VkDescriptorSetLayout	m_MatrixDSLayout;
         VkDescriptorSet	        m_MatrixDSet;
         kRHIBuffer              m_MatrixBuffer;
 
+        // sampler dslayout
         VkDescriptorSetLayout	m_SamplerDSLayout;
-
     };
-
 
 }
 

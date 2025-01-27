@@ -14,13 +14,15 @@ namespace pipeline {
 
 	struct kGraphicsPipelineCreateInfo {
 		VkRenderPass render_pass = VK_NULL_HANDLE;
-		std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
 
 		std::string vertex_shader_file;
 		std::string frag_shader_file;
 		
 		VkVertexInputBindingDescription  input_binding;
 		std::vector<VkVertexInputAttributeDescription> input_attributes;
+
+		std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
+		std::vector< VkPushConstantRange>  push_constant_ranges;
 	};
 
 	class kRHIGraphicPipeline

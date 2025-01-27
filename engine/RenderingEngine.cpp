@@ -1,11 +1,18 @@
 #include "RenderingEngine.h"
 
+#include "Mesh.h"
+#include "ModelGltf.h"
+#include "ModelObj.h"
+
+
 namespace pipeline {
 
 	const int MAX_FRAMES_IN_FLIGHT = 2;
     
     kRenderingEngine::kRenderingEngine(void) {
 		m_CurrentFrame = 0;
+		//m_pModel = new ModelGltf();
+		m_pModel = new ModelObj();
     }
 
     kRenderingEngine::~kRenderingEngine(void) {
@@ -28,18 +35,23 @@ namespace pipeline {
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
-		std::vector<VkDescriptorSetLayout> dsLayouts = m_Model.PrepareDescriptorSetLayout(m_Context);
-
 		kGraphicsPipelineCreateInfo createinfo;
-		createinfo.descriptor_set_layouts = dsLayouts;
+		createinfo.descriptor_set_layouts = m_pModel->PrepareDescriptorSetLayout(m_Context);
+		createinfo.push_constant_ranges = m_pModel->PreparePushConstantRange(m_Context);
+		createinfo.input_binding = m_pModel->getBindingDescription();
+		createinfo.input_attributes = m_pModel->getAttributeDescriptions();
+
+		// obj model
 		createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
 		createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
-		createinfo.input_binding = ModelObj::Vertex::getBindingDescription();
-		createinfo.input_attributes = ModelObj::Vertex::getAttributeDescriptions();
+
+		// gltf model
+		//createinfo.vertex_shader_file = "shaders/mesh.vert.spv";
+		//createinfo.frag_shader_file = "shaders/mesh.frag.spv";
 
 		m_GraphicPipeline.CreateGraphicsPipeline(m_Context, createinfo);
 
-		m_Model.Load(m_Context);
+		m_pModel->Load(m_Context);
 
 		CreateCommandBuffers();
 		CreateSyncObjects();
@@ -49,7 +61,7 @@ namespace pipeline {
 
     void  kRenderingEngine::Finalize() {
 
-		m_Model.Unload(m_Context);
+		m_pModel->Unload(m_Context);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(m_Context.logicaldevice, m_RenderFinishedSemaphores[i], nullptr);
@@ -253,8 +265,8 @@ namespace pipeline {
 				scissor.extent.height = m_WinInfo.height;
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-				m_Model.UpdateUniformBuffer(m_Context, m_CurrentFrame);
-				m_Model.BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
+				m_pModel->UpdateUniformBuffer(m_Context, m_CurrentFrame);
+				m_pModel->BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
 			}
 
 			vkCmdEndRenderPass(commandBuffer);

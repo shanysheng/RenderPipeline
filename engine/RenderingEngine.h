@@ -11,10 +11,7 @@
 #include "RHIGraphicPipeline.h"
 
 
-#include "ModelObj.h"
-
 namespace pipeline {
-
 
 
 
@@ -70,7 +67,8 @@ namespace pipeline {
     
     class IPreRender;
     class IRenderTarget;
-    
+    class IModel;
+
     class kSGNode;
     class kScene;
     class kCamera;
@@ -274,7 +272,7 @@ namespace pipeline {
     protected:
 
         kRHIGraphicPipeline				        m_GraphicPipeline;
-        ModelObj							    m_Model;
+        IModel*						            m_pModel;
     };
 
 }

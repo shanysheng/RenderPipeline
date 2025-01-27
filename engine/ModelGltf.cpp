@@ -3,10 +3,26 @@
 
 
 
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define TINYGLTF_NO_STB_IMAGE_WRITE
+
+#include "tiny_gltf.h"
 
 namespace pipeline {
 
-	VkVertexInputBindingDescription ModelGltf::Vertex::getBindingDescription() {
+	const std::string GLTF_MODEL_PATH = "models/FlightHelmet/glTF/FlightHelmet.gltf";
+
+
+	ModelGltf::ModelGltf() {
+
+	}
+
+	ModelGltf::~ModelGltf() {
+
+	}
+
+	VkVertexInputBindingDescription ModelGltf::getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = 0;
 		bindingDescription.stride = sizeof(Vertex);
@@ -15,7 +31,7 @@ namespace pipeline {
 		return bindingDescription;
 	}
 
-	std::vector<VkVertexInputAttributeDescription> ModelGltf::Vertex::getAttributeDescriptions() {
+	std::vector<VkVertexInputAttributeDescription> ModelGltf::getAttributeDescriptions() {
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
 
 		attributeDescriptions[0].binding = 0;
@@ -41,18 +57,69 @@ namespace pipeline {
 		return attributeDescriptions;
 	}
 
-	const std::string GLTF_MODEL_PATH = "models/FlightHelmet/glTF/FlightHelmet.gltf";
 
+	std::vector<VkDescriptorSetLayout> ModelGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
-	ModelGltf::ModelGltf() {
+		VkDescriptorSetLayoutBinding matrixLayoutBinding{};
+		matrixLayoutBinding.binding = 0;
+		matrixLayoutBinding.descriptorCount = 1;
+		matrixLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		matrixLayoutBinding.pImmutableSamplers = nullptr;
+		matrixLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+		VkDescriptorSetLayoutCreateInfo matrixLayoutInfo{};
+		matrixLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		matrixLayoutInfo.bindingCount = 1;
+		matrixLayoutInfo.pBindings = &matrixLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &matrixLayoutInfo, nullptr, &m_MatrixDSLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+
+		VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+		samplerLayoutBinding.binding = 0;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		VkDescriptorSetLayoutCreateInfo samplerLayoutInfo{};
+		samplerLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		samplerLayoutInfo.bindingCount = 1;
+		samplerLayoutInfo.pBindings = &samplerLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &samplerLayoutInfo, nullptr, &m_SamplerDSLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+
+		///*
+		//	This sample uses separate descriptor sets (and layouts) for the matrices and materials (textures)
+		//*/
+
+		//// Descriptor set layout for passing matrices
+		//VkDescriptorSetLayoutBinding setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
+		//VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(&setLayoutBinding, 1);
+		//VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.matrices));
+
+		//// Descriptor set layout for passing material textures
+		//setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+		//VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.textures));
+
+		return std::vector<VkDescriptorSetLayout>{m_MatrixDSLayout, m_SamplerDSLayout};
 	}
 
-	ModelGltf::~ModelGltf() {
 
+	std::vector<VkPushConstantRange> ModelGltf::PreparePushConstantRange(kRHIDevice& rhidevice) {
+
+		VkPushConstantRange pushConstantRange{};
+		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		pushConstantRange.offset = 0;
+		pushConstantRange.size = sizeof(glm::mat4);
+
+		return std::vector<VkPushConstantRange>{pushConstantRange};
 	}
 
-	void ModelGltf::Load(kRHIDevice& rhidevice, VkDescriptorSetLayout layout) {
+	void ModelGltf::Load(kRHIDevice& rhidevice) {
 
 		tinygltf::Model glTFInput;
 		tinygltf::TinyGLTF gltfContext;
@@ -154,72 +221,54 @@ namespace pipeline {
 		vkDestroyBuffer(rhidevice.logicaldevice, indexStaging.buffer, nullptr);
 		vkFreeMemory(rhidevice.logicaldevice, indexStaging.memory, nullptr);
 
+		m_MatrixBuffer.CreateUniformBuffer(rhidevice, sizeof(ModelGltfShaderData));
+
 		SetupDescriptorSets(rhidevice);
+	}
+
+	void ModelGltf::Unload(kRHIDevice& rhidevice) {
+
+		for (auto node : nodes) {
+			delete node;
+		}
+
+		// Release all Vulkan resources allocated for the model
+		vkDestroyBuffer(rhidevice.logicaldevice, vertices.buffer, nullptr);
+		vkFreeMemory(rhidevice.logicaldevice, vertices.memory, nullptr);
+		vkDestroyBuffer(rhidevice.logicaldevice, indices.buffer, nullptr);
+		vkFreeMemory(rhidevice.logicaldevice, indices.memory, nullptr);
+
+		for (Image image : images) {
+			image.texture.ReleaseTexture(rhidevice);
+		}
+
 	}
 
 	void ModelGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
 
+		static auto startTime = std::chrono::high_resolution_clock::now();
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+		ModelGltfShaderData temp_shaderdat{};
+		//temp_shaderdat.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
+		temp_shaderdat.projection[1][1] *= -1;
+
+		m_MatrixBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 	}
 
 	void ModelGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
 
-	}
-
-
-	std::vector<VkDescriptorSetLayout> ModelGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
-
-		VkDescriptorSetLayoutBinding matrixLayoutBinding{};
-		matrixLayoutBinding.binding = 0;
-		matrixLayoutBinding.descriptorCount = 1;
-		matrixLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		matrixLayoutBinding.pImmutableSamplers = nullptr;
-		matrixLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-		VkDescriptorSetLayoutCreateInfo matrixLayoutInfo{};
-		matrixLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		matrixLayoutInfo.bindingCount = 1;
-		matrixLayoutInfo.pBindings = &matrixLayoutBinding;
-
-		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &matrixLayoutInfo, nullptr, &m_MatrixDSLayout) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor set layout!");
-		}
-
-		VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-		samplerLayoutBinding.binding = 0;
-		samplerLayoutBinding.descriptorCount = 1;
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.pImmutableSamplers = nullptr;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-		VkDescriptorSetLayoutCreateInfo samplerLayoutInfo{};
-		samplerLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		samplerLayoutInfo.bindingCount = 1;
-		samplerLayoutInfo.pBindings = &samplerLayoutBinding;
-
-		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &samplerLayoutInfo, nullptr, &m_SamplerDSLayout) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor set layout!");
-		}
-
-		///*
-		//	This sample uses separate descriptor sets (and layouts) for the matrices and materials (textures)
-		//*/
-
-		//// Descriptor set layout for passing matrices
-		//VkDescriptorSetLayoutBinding setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0);
-		//VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCI = vks::initializers::descriptorSetLayoutCreateInfo(&setLayoutBinding, 1);
-		//VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.matrices));
-
-		//// Descriptor set layout for passing material textures
-		//setLayoutBinding = vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
-		//VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCI, nullptr, &descriptorSetLayouts.textures));
-
-		return std::vector<VkDescriptorSetLayout>{m_MatrixDSLayout, m_SamplerDSLayout};
+		draw(commandBuffer, pipelineLayout);
 	}
 
 	void ModelGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {
 
-		SetupMatrixDescriptorSets(rhidevice);
 		SetupMaterialDescriptorSets(rhidevice);
+		SetupMatrixDescriptorSets(rhidevice);
 	}
 
 	void ModelGltf::SetupMatrixDescriptorSets(kRHIDevice& rhidevice) {
@@ -287,13 +336,13 @@ namespace pipeline {
 
 			VkDescriptorImageInfo imageInfo{};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = m_Texture.GetImageView();
-			imageInfo.sampler = m_Texture.GetImageSampler();
+			imageInfo.imageView = image.texture.GetImageView();
+			imageInfo.sampler = image.texture.GetImageSampler();
 
 			VkWriteDescriptorSet descriptorWrite;
 			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrite.dstSet = image.descriptorSet;
-			descriptorWrite.dstBinding = 1;
+			descriptorWrite.dstBinding = 0;
 			descriptorWrite.dstArrayElement = 0;
 			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			descriptorWrite.descriptorCount = 1;
@@ -500,21 +549,45 @@ namespace pipeline {
 		}
 	}
 
-	void ModelGltf::Unload(kRHIDevice& rhidevice) {
+	// Draw a single node including child nodes (if present)
+	void ModelGltf::drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Node* node) {
 
-		for (auto node : nodes) {
-			delete node;
+		if (node->mesh.primitives.size() > 0) {
+			// Pass the node's matrix via push constants
+			// Traverse the node hierarchy to the top-most parent to get the final matrix of the current node
+			glm::mat4 nodeMatrix = node->matrix;
+			Node* currentParent = node->parent;
+			while (currentParent) {
+				nodeMatrix = currentParent->matrix * nodeMatrix;
+				currentParent = currentParent->parent;
+			}
+			// Pass the final matrix to the vertex shader using push constants
+			vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4), &nodeMatrix);
+			for (Primitive& primitive : node->mesh.primitives) {
+				if (primitive.indexCount > 0) {
+					// Get the texture index for this primitive
+					Texture texture = textures[materials[primitive.materialIndex].baseColorTextureIndex];
+					// Bind the descriptor for the current primitive's texture
+					vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &images[texture.imageIndex].descriptorSet, 0, nullptr);
+					vkCmdDrawIndexed(commandBuffer, primitive.indexCount, 1, primitive.firstIndex, 0, 0);
+				}
+			}
 		}
-
-		// Release all Vulkan resources allocated for the model
-		vkDestroyBuffer(rhidevice.logicaldevice, vertices.buffer, nullptr);
-		vkFreeMemory(rhidevice.logicaldevice, vertices.memory, nullptr);
-		vkDestroyBuffer(rhidevice.logicaldevice, indices.buffer, nullptr);
-		vkFreeMemory(rhidevice.logicaldevice, indices.memory, nullptr);
-
-		for (Image image : images) {
-			image.texture.ReleaseTexture(rhidevice);
+		for (auto& child : node->children) {
+			drawNode(commandBuffer, pipelineLayout, child);
 		}
+	}
 
+	// Draw the glTF scene starting at the top-level-nodes
+	void ModelGltf::draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
+
+		// All vertices and indices are stored in single buffers, so we only need to bind once
+		VkDeviceSize offsets[1] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
+		// Render all nodes at top-level
+		for (auto& node : nodes) {
+			drawNode(commandBuffer, pipelineLayout, node);
+		}
 	}
 }

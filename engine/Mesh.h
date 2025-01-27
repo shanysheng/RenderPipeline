@@ -10,54 +10,73 @@
 #include "Bound.h"
 
 namespace pipeline {
+
+    class kRHIDevice;
     
-    class kMaterial;
+    //class kMaterial;
 
-    class kGPUChunkInfo
-    {
+    //class kGPUChunkInfo
+    //{
+    //public:
+    //    kGPUChunkInfo();
+
+    //public:
+
+    //};
+    //
+    //class kMesh
+    //{
+    //public:
+    //    kMesh();
+    //    virtual ~kMesh();
+
+    //    kGPUChunkInfo& GetColorGPUChunkInfo();
+    //    kGPUChunkInfo& GetNormalGPUChunkInfo();
+    //    kGPUChunkInfo& GetCoordGPUChunkInfo();
+    //    std::vector<kGPUChunkInfo>& GetTexCoodrsGPUChunkInfo();
+
+    //    void RenderNow(int material);
+
+    //protected:
+
+    //    kMaterial* material ;
+    //    bool receiveShadows ;
+    //    
+    //    kBound bounds ;
+    //    
+    //    kMatrix4x4f localToWorldMatrix ;
+    //    kMatrix4x4f worldToLocalMatrix;
+    //    
+    //    kGPUChunkInfo		m_Color;
+    //    kGPUChunkInfo		m_Normal;
+    //    kGPUChunkInfo		m_Coord;
+
+    //    std::vector<kGPUChunkInfo>	m_TexCoords;
+    //   
+    //    int32_t         m_Stride;
+    //    int32_t         m_VertexBufferID;
+    //    uint32_t        m_VertexCount;
+
+    //    int32_t         m_IndexComponentType;
+    //    int32_t         m_IndexBufferID;
+    //    uint32_t        m_IndexCount;
+    //};
+
+    class IModel {
     public:
-        kGPUChunkInfo();
+        virtual ~IModel() {};
 
-    public:
+        virtual VkVertexInputBindingDescription getBindingDescription() = 0;
+        virtual std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() = 0;
 
-    };
-    
-    class kMesh
-    {
-    public:
-        kMesh();
-        virtual ~kMesh();
+        virtual std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice) = 0;
+        virtual std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice) = 0;
 
-        kGPUChunkInfo& GetColorGPUChunkInfo();
-        kGPUChunkInfo& GetNormalGPUChunkInfo();
-        kGPUChunkInfo& GetCoordGPUChunkInfo();
-        std::vector<kGPUChunkInfo>& GetTexCoodrsGPUChunkInfo();
+        virtual void Load(kRHIDevice& rhidevicet) = 0;
+        virtual void Unload(kRHIDevice& rhidevice) = 0;
 
-        void RenderNow(int material);
-
-    protected:
-
-        kMaterial* material ;
-        bool receiveShadows ;
-        
-        kBound bounds ;
-        
-        kMatrix4x4f localToWorldMatrix ;
-        kMatrix4x4f worldToLocalMatrix;
-        
-        kGPUChunkInfo		m_Color;
-        kGPUChunkInfo		m_Normal;
-        kGPUChunkInfo		m_Coord;
-
-        std::vector<kGPUChunkInfo>	m_TexCoords;
-       
-        int32_t         m_Stride;
-        int32_t         m_VertexBufferID;
-        uint32_t        m_VertexCount;
-
-        int32_t         m_IndexComponentType;
-        int32_t         m_IndexBufferID;
-        uint32_t        m_IndexCount;
+        virtual void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) = 0;
+        virtual void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) = 0;
     };
 }
 

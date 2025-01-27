@@ -1,11 +1,9 @@
 #include "RHITexture2D.h"
 #include "RHIDevice.h"
 
-namespace pipeline {
-
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+namespace pipeline {
 
     void kRHITexture2D::CopyBufferToImage(kRHIDevice& rhidevice, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 
