@@ -129,7 +129,8 @@ namespace pipeline {
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(rhidevice.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline) != VK_SUCCESS) {
+        VkResult vkresult = vkCreateGraphicsPipelines(rhidevice.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline);
+        if (vkresult != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 

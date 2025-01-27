@@ -267,17 +267,43 @@ namespace pipeline {
 
 	void ModelGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {
 
-		SetupMaterialDescriptorSets(rhidevice);
 		SetupMatrixDescriptorSets(rhidevice);
+		SetupMaterialDescriptorSets(rhidevice);
 	}
 
 	void ModelGltf::SetupMatrixDescriptorSets(kRHIDevice& rhidevice) {
-		//// Descriptor set for scene matrices
-		//VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.matrices, 1);
-		//VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
-		//VkWriteDescriptorSet writeDescriptorSet = vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &shaderData.buffer.descriptor);
-		//vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
 
+		//VkDescriptorSetAllocateInfo allocInfo{};
+		//allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		//allocInfo.descriptorPool = rhidevice.descriptorPool;
+		//allocInfo.descriptorSetCount = 1;
+		//allocInfo.pSetLayouts = &m_MatrixDSLayout;
+
+		//if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &m_MatrixDSet) != VK_SUCCESS) {
+		//	throw std::runtime_error("failed to allocate descriptor sets!");
+		//}
+
+		//VkDescriptorBufferInfo bufferInfo{};
+		//bufferInfo.buffer = m_MatrixBuffer.GetBuffer();
+		//bufferInfo.offset = 0;
+		//bufferInfo.range = sizeof(ModelGltfShaderData);
+
+
+		//VkWriteDescriptorSet descriptorWrite;
+		//descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		//descriptorWrite.dstSet = m_MatrixDSet;
+		//descriptorWrite.dstBinding = 0;
+		//descriptorWrite.dstArrayElement = 0;
+		//descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		//descriptorWrite.descriptorCount = 1;
+		//descriptorWrite.pBufferInfo = &bufferInfo;
+
+		//// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
+		//// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
+		//// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
+		//// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
+		//// used to update these binding relationships.
+		//vkUpdateDescriptorSets(rhidevice.logicaldevice, 1, &descriptorWrite, 0, nullptr);
 
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -295,33 +321,27 @@ namespace pipeline {
 		bufferInfo.range = sizeof(ModelGltfShaderData);
 
 
-		VkWriteDescriptorSet descriptorWrite;
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = m_MatrixDSet;
-		descriptorWrite.dstBinding = 0;
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pBufferInfo = &bufferInfo;
+		std::vector<VkWriteDescriptorSet> descriptorWrites(1);
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = m_MatrixDSet;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+
 
 		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
 		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
 		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
 		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
 		// used to update these binding relationships.
-		vkUpdateDescriptorSets(rhidevice.logicaldevice, 1, &descriptorWrite, 0, nullptr);
+		vkUpdateDescriptorSets(rhidevice.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 
 	}
 
 	void ModelGltf::SetupMaterialDescriptorSets(kRHIDevice& rhidevice) {
-		//// Descriptor sets for materials
-		//for (auto& image : glTFModel.images) {
-		//	const VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.textures, 1);
-		//	VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &image.descriptorSet));
-		//	VkWriteDescriptorSet writeDescriptorSet = vks::initializers::writeDescriptorSet(image.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &image.texture.descriptor);
-		//	vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
-		//}
-
 
 		for (auto& image : images) {
 			VkDescriptorSetAllocateInfo allocInfo{};
@@ -339,21 +359,23 @@ namespace pipeline {
 			imageInfo.imageView = image.texture.GetImageView();
 			imageInfo.sampler = image.texture.GetImageSampler();
 
-			VkWriteDescriptorSet descriptorWrite;
-			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrite.dstSet = image.descriptorSet;
-			descriptorWrite.dstBinding = 0;
-			descriptorWrite.dstArrayElement = 0;
-			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorWrite.descriptorCount = 1;
-			descriptorWrite.pImageInfo = &imageInfo;
+			std::vector<VkWriteDescriptorSet> descriptorWrites(1);
+
+			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrites[0].dstSet = image.descriptorSet;
+			descriptorWrites[0].dstBinding = 0;
+			descriptorWrites[0].dstArrayElement = 0;
+			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorWrites[0].descriptorCount = 1;
+			descriptorWrites[0].pImageInfo = &imageInfo;
+
 
 			// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
 			// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
 			// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
 			// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
 			// used to update these binding relationships.
-			vkUpdateDescriptorSets(rhidevice.logicaldevice, 1, &descriptorWrite, 0, nullptr);
+			vkUpdateDescriptorSets(rhidevice.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
 
 	}

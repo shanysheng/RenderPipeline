@@ -11,8 +11,7 @@ namespace pipeline {
     
     kRenderingEngine::kRenderingEngine(void) {
 		m_CurrentFrame = 0;
-		//m_pModel = new ModelGltf();
-		m_pModel = new ModelObj();
+
     }
 
     kRenderingEngine::~kRenderingEngine(void) {
@@ -36,18 +35,27 @@ namespace pipeline {
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
 		kGraphicsPipelineCreateInfo createinfo;
+
+		bool bload_obj_file = true;
+		if (bload_obj_file) {
+			// obj model
+			m_pModel = new ModelObj();
+			createinfo.vertex_shader_file = "shaders/model_depth.vert";
+			createinfo.frag_shader_file = "shaders/model_depth.frag";
+		}
+		else {
+			// gltf model
+			m_pModel = new ModelGltf();
+			createinfo.vertex_shader_file = "shaders/mesh.vert";
+			createinfo.frag_shader_file = "shaders/mesh.frag";
+		}
+
+		createinfo.render_pass = m_Swapchain.GetRenderPass();
 		createinfo.descriptor_set_layouts = m_pModel->PrepareDescriptorSetLayout(m_Context);
 		createinfo.push_constant_ranges = m_pModel->PreparePushConstantRange(m_Context);
 		createinfo.input_binding = m_pModel->getBindingDescription();
 		createinfo.input_attributes = m_pModel->getAttributeDescriptions();
 
-		// obj model
-		createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
-		createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
-
-		// gltf model
-		//createinfo.vertex_shader_file = "shaders/mesh.vert.spv";
-		//createinfo.frag_shader_file = "shaders/mesh.frag.spv";
 
 		m_GraphicPipeline.CreateGraphicsPipeline(m_Context, createinfo);
 
