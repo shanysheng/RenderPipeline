@@ -149,6 +149,9 @@ namespace pipeline {
         VkDescriptorSet	        m_MatrixDSet;
         kRHIBuffer              m_MatrixBuffer;
 
+        // model matrix
+        glm::mat4               m_ModelMat;
+
         // sampler dslayout
         VkDescriptorSetLayout	m_SamplerDSLayout;
     };

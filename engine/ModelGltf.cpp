@@ -50,7 +50,7 @@ namespace pipeline {
 		attributeDescriptions[2].offset = offsetof(Vertex, uv);
 
 		attributeDescriptions[3].binding = 0;
-		attributeDescriptions[3].location = 2;
+		attributeDescriptions[3].location = 3;
 		attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
 		attributeDescriptions[3].offset = offsetof(Vertex, color);
 
@@ -250,17 +250,22 @@ namespace pipeline {
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		m_ModelMat = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		ModelGltfShaderData temp_shaderdat{};
-		//temp_shaderdat.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		temp_shaderdat.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.viewPos = glm::vec4(-1.0f, 1.0f, 1.0f, 1.0);
+		temp_shaderdat.view = glm::lookAt(glm::vec3(temp_shaderdat.viewPos), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 		temp_shaderdat.projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
-		temp_shaderdat.projection[1][1] *= -1;
+
+		glm::mat4 tempMat = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		temp_shaderdat.lightPos = m_ModelMat*glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
 
 		m_MatrixBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 	}
 
 	void ModelGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
+
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_MatrixDSet, 0, nullptr);
 
 		draw(commandBuffer, pipelineLayout);
 	}
@@ -583,6 +588,8 @@ namespace pipeline {
 				nodeMatrix = currentParent->matrix * nodeMatrix;
 				currentParent = currentParent->parent;
 			}
+
+			nodeMatrix = m_ModelMat * nodeMatrix;
 			// Pass the final matrix to the vertex shader using push constants
 			vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4), &nodeMatrix);
 			for (Primitive& primitive : node->mesh.primitives) {
