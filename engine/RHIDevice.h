@@ -111,6 +111,12 @@ namespace pipeline {
 		void EnumerateVulkanExtension();
 		std::vector<const char*> GetRequiredExtensions();
 
+		void CreateDebugMessenger(VkInstance pinst);
+		void ReleaseDebugMessenger(VkInstance pinst);
+		void InitDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+		bool CheckValidationLayerSupport();
+
+
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice pphysicaldevice);
@@ -138,6 +144,5 @@ namespace pipeline {
 		QueueFamilyIndices			m_QueueFamilyIndices;
 		SwapChainSupportDetails		m_SwapchainDetails;
 	};
-
 
 }

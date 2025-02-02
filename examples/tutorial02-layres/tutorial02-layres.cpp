@@ -87,8 +87,6 @@ void createInstance() {
         createInfo.pNext = nullptr;
     }
 
-    createInfo.enabledLayerCount = 0;
-
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("failed to create instance!");
     }

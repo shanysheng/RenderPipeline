@@ -36,18 +36,18 @@ namespace pipeline {
 
 		kGraphicsPipelineCreateInfo createinfo;
 
-		bool bload_obj_file = true;
+		bool bload_obj_file = false;
 		if (bload_obj_file) {
 			// obj model
 			m_pModel = new ModelObj();
-			createinfo.vertex_shader_file = "shaders/model_depth.vert";
-			createinfo.frag_shader_file = "shaders/model_depth.frag";
+			createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
+			createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
 		}
 		else {
 			// gltf model
 			m_pModel = new ModelGltf();
-			createinfo.vertex_shader_file = "shaders/mesh.vert";
-			createinfo.frag_shader_file = "shaders/mesh.frag";
+			createinfo.vertex_shader_file = "shaders/mesh.vert.spv";
+			createinfo.frag_shader_file = "shaders/mesh.frag.spv";
 		}
 
 		createinfo.render_pass = m_Swapchain.GetRenderPass();

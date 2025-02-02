@@ -7,6 +7,49 @@ namespace pipeline {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
+    const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+    };
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
+
+
+
+    VkDebugUtilsMessengerEXT debugMessenger;
+
+
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                                                        VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                                        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                                        void* pUserData) {
+
+        std::cerr << "Validation layer -- " << pCallbackData->pMessage << std::endl;
+
+        return VK_FALSE;
+    }
+
+    VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
+        auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+        if (func != nullptr) {
+            return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+        }
+        else {
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+        }
+    }
+
+    void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+        auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+        if (func != nullptr) {
+            func(instance, debugMessenger, pAllocator);
+        }
+    }
+
+
     kRHIDevice::kRHIDevice() {
         instance = nullptr;
         physicalDevice = VK_NULL_HANDLE;
@@ -42,12 +85,18 @@ namespace pipeline {
 
         std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
+        // add validation layer extension
+        if (enableValidationLayers) {
+            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        }
+
         return extensions;
     }
 
     void kRHIDevice::CreateDevice(GLFWwindow* pwindow) {
 
         CreateInstance(pwindow);
+        CreateDebugMessenger(instance);
 
         PickPhysicalDevice();
         CreateLogicalDevice();
@@ -63,6 +112,8 @@ namespace pipeline {
         vkDestroyCommandPool(logicaldevice, commandPool, nullptr);
         vkDestroyDevice(logicaldevice, nullptr);
 
+        ReleaseDebugMessenger(instance);
+
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
 
@@ -72,6 +123,11 @@ namespace pipeline {
     void kRHIDevice::CreateInstance(GLFWwindow* pwindow) {
 
         EnumerateVulkanExtension();
+
+        // check validation layers
+        if (enableValidationLayers && !CheckValidationLayerSupport()) {
+            throw std::runtime_error("validation layers requested, but not available!");
+        }
 
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -88,10 +144,21 @@ namespace pipeline {
         auto extensions = GetRequiredExtensions();
         createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
-        createInfo.enabledLayerCount = 0;
-        createInfo.pNext = nullptr;
 
-        createInfo.enabledLayerCount = 0;
+        // add debug layer when create instance
+        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+        if (enableValidationLayers) {
+            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+            createInfo.ppEnabledLayerNames = validationLayers.data();
+
+            InitDebugMessengerCreateInfo(debugCreateInfo);
+            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+        }
+        else {
+            createInfo.enabledLayerCount = 0;
+            createInfo.pNext = nullptr;
+        }
+
 
         if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create instance!");
@@ -99,6 +166,64 @@ namespace pipeline {
 
         if (glfwCreateWindowSurface(instance, pwindow, nullptr, &surface) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
+        }
+    }
+
+
+    void kRHIDevice::InitDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
+        createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        createInfo.pfnUserCallback = debugCallback;
+    }
+
+    bool kRHIDevice::CheckValidationLayerSupport() {
+        uint32_t layerCount;
+        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+        std::vector<VkLayerProperties> availableLayers(layerCount);
+        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+        std::cout << "available layers:" << layerCount << "\n";
+        for (size_t i = 0; i < layerCount; ++i)
+            std::cout << '\t' << availableLayers[i].layerName << "\n";
+        std::cout << std::endl;
+
+        for (const char* layerName : validationLayers) {
+            bool layerFound = false;
+
+            for (const auto& layerProperties : availableLayers) {
+                if (strcmp(layerName, layerProperties.layerName) == 0) {
+                    layerFound = true;
+                    break;
+                }
+            }
+
+            if (!layerFound) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
+    void kRHIDevice::CreateDebugMessenger(VkInstance pinst) {
+        if (!enableValidationLayers) return;
+
+        VkDebugUtilsMessengerCreateInfoEXT createInfo;
+        InitDebugMessengerCreateInfo(createInfo);
+
+        if (CreateDebugUtilsMessengerEXT(pinst, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
+            throw std::runtime_error("failed to set up debug messenger!");
+        }
+    }
+
+    void kRHIDevice::ReleaseDebugMessenger(VkInstance pinst) {
+        if (enableValidationLayers) {
+            DestroyDebugUtilsMessengerEXT(pinst, debugMessenger, nullptr);
         }
     }
 

@@ -17,6 +17,7 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 	m_Swapchain.createSwapchain(m_Context, m_Extent, m_Renderpass);
 
 	GraphicsPipelineCreateInfo createinfo;
+	createinfo.render_pass = m_Renderpass;
 	createinfo.vertex_shader_file = "shaders/texture_vert.spv";
 	createinfo.frag_shader_file = "shaders/texture_frag.spv";
 	createinfo.input_binding = Vertex::getBindingDescription();

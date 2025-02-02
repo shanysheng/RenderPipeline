@@ -62,7 +62,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void* pUserData) {
-    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+    std::cerr << "Validation layer -- " << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
 }
@@ -193,8 +193,6 @@ void kContext::createInstance() {
         createInfo.pNext = nullptr;
     }
 
-    createInfo.enabledLayerCount = 0;
-
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("failed to create instance!");
     }
@@ -287,11 +285,11 @@ void kContext::createLogicalDevice() {
     createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
     createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-    //if (enableValidationLayers) {
-    //    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-    //    createInfo.ppEnabledLayerNames = validationLayers.data();
-    //}
-    //else 
+    if (enableValidationLayers) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames = validationLayers.data();
+    }
+    else 
     {
         createInfo.enabledLayerCount = 0;
     }

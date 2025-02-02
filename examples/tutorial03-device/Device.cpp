@@ -102,11 +102,11 @@ void createLogicalDevice() {
 
     createInfo.enabledExtensionCount = 0;
 
-    //if (enableValidationLayers) {
-    //    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-    //    createInfo.ppEnabledLayerNames = validationLayers.data();
-    //}
-    //else 
+    if (enableValidationLayers) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames = validationLayers.data();
+    }
+    else 
     {
         createInfo.enabledLayerCount = 0;
     }

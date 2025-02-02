@@ -46,7 +46,9 @@ namespace pipeline {
             createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         }
 
-        //createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+        SwapChainSupportDetails swapChainSupport = rhidevice.GetSwapchainSupportDetails();
+
+        createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
         createInfo.presentMode = m_PresentMode;
         createInfo.clipped = VK_TRUE;
