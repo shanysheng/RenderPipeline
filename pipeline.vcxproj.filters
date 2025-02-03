@@ -105,15 +105,6 @@
     <ClCompile Include="engine\RHITexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Vector2.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\Vector3.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\Vector4.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="engine\RHIBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -136,6 +127,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\ModelObj.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Vector2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Vector3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Vector4.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -227,15 +227,6 @@
     <ClInclude Include="engine\RHITexture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Vector2.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\Vector3.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\Vector4.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="engine\RHIBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -258,6 +249,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\ModelObj.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Vector2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Vector3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Vector4.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

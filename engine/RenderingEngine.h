@@ -4,7 +4,7 @@
 
 #include "Common.h"
 
-
+#include "Camera.h"
 #include "RHIBuffer.h"
 #include "RHISwapchain.h"
 #include "RHIDevice.h"
@@ -172,7 +172,11 @@ namespace pipeline {
         void DoRendering();
         void SwapBuffers();
 
+
         void FrameChanged() { m_FramebufferResized = true; }
+
+        kCamera& GetCamera() { return m_Camera; };
+        const kCamera& GetCamera()const { return m_Camera; };
 
     protected:
 
@@ -183,8 +187,6 @@ namespace pipeline {
         void RecreateSwapChain();
 
         void SetRenderTraverseRoot( const std::vector<kSGNode*>& roots );
-        void SetCamera(kCamera& Camera );
-        void GetCamera(kCamera& Camera );
         
         
     protected:
@@ -214,6 +216,8 @@ namespace pipeline {
         kRHISwapchain					        m_Swapchain;
         bool							        m_FramebufferResized = false;
 
+
+        kCamera                                 m_Camera;
 
         // Acquire an image from the swap chain
         // Execute commands that draw onto the acquired image

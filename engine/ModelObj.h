@@ -3,15 +3,6 @@
 #include "Common.h"
 
 
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/hash.hpp>
-
-
 #include "RHIBuffer.h"
 #include "RHITexture2D.h"
 
@@ -56,7 +47,7 @@ namespace pipeline {
         void Unload(kRHIDevice& rhidevice);
 
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
-        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera);
 
     protected:
         void LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array);

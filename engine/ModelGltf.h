@@ -121,7 +121,7 @@ namespace pipeline {
         void Unload(kRHIDevice& rhidevice);
 
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
-        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera);
 
     protected:
         void SetupDescriptorSets(kRHIDevice& rhidevice);

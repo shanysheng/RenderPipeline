@@ -20,13 +20,26 @@
 #include "RenderingEngine.h"
 
 
-const uint32_t WIDTH = 1280;
-const uint32_t HEIGHT = 720;
+const uint32_t WINDOW_WIDTH = 1280;
+const uint32_t WINDOW_HEIGHT = 720;
+
+bool firstMouse = true;
+float lastX = WINDOW_WIDTH / 2.0f;
+float lastY = WINDOW_HEIGHT / 2.0f;
 
 namespace pipeline {
 
+    struct {
+        struct {
+            bool left = false;
+            bool right = false;
+            bool middle = false;
+        } buttons;
+        glm::vec2 position;
+    } mouseState;
 
-    class baseApplication {
+    class baseApplication 
+    {
     public:
         void run() {
             initWindow();
@@ -43,10 +56,13 @@ namespace pipeline {
 
             glfwInit();
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-            window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+            window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Vulkan", nullptr, nullptr);
 
             glfwSetWindowUserPointer(window, this);
             glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+            glfwSetCursorPosCallback(window, mouse_pos_callback);
+            glfwSetMouseButtonCallback(window, mouse_button_callback);
+            glfwSetScrollCallback(window, scroll_callback);
 
             int width, height;
             glfwGetFramebufferSize(window, &width, &height);
@@ -60,8 +76,87 @@ namespace pipeline {
         }
 
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+
             auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
             app->m_Engine.FrameChanged();
+        }
+
+        static void mouse_pos_callback(GLFWwindow* window, double x, double y) {
+
+            auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
+
+            kCamera& camera = app->m_Engine.GetCamera();
+
+            int32_t dx = (int32_t)mouseState.position.x - (int32_t)x;
+            int32_t dy = (int32_t)mouseState.position.y - (int32_t)y;
+
+            bool handled = false;
+
+            if (handled) {
+                mouseState.position = glm::vec2((float)x, (float)y);
+                return;
+            }
+
+            if (mouseState.buttons.left) {
+                camera.rotate(glm::vec3(dy * camera.rotationSpeed, -dx * camera.rotationSpeed, 0.0f));
+            }
+            if (mouseState.buttons.right) {
+                camera.translate(glm::vec3(-0.0f, 0.0f, dy * .005f));
+            }
+            if (mouseState.buttons.middle) {
+                camera.translate(glm::vec3(-dx * 0.005f, -dy * 0.005f, 0.0f));
+            }
+            mouseState.position = glm::vec2((float)x, (float)y);
+        }
+
+        static void mouse_button_callback(GLFWwindow* window, int button, int pressed, int flags) {
+
+            auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
+
+            switch (button)
+            {
+            case GLFW_MOUSE_BUTTON_LEFT: {
+                if (pressed == GLFW_PRESS)
+                    mouseState.buttons.left = true;
+                else
+                    mouseState.buttons.left = false;
+
+                printf("鼠标左键按下！！");
+                break;
+            }
+            case GLFW_MOUSE_BUTTON_MIDDLE: {
+                if (pressed == GLFW_PRESS)
+                    mouseState.buttons.middle = true;
+                else
+                    mouseState.buttons.middle = false;
+
+                printf("鼠标中间按下！！");
+                break;
+            }
+            case GLFW_MOUSE_BUTTON_RIGHT: {
+                if (pressed == GLFW_PRESS)
+                    mouseState.buttons.right = true;
+                else
+                    mouseState.buttons.right = false;
+
+                printf("鼠标右键按下！！");
+                break;
+            }
+            default:
+                return;
+            }
+
+            std::cout << "button:" << button << ", pressed:" << pressed << ", flags:" << flags << std::endl;
+        }
+
+        static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+
+            auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
+            
+
+            app->m_Engine.GetCamera().translate(glm::vec3(0.0f, 0.0f, (float)yoffset * 0.05f));
+
+            std::cout << "xoffset:" << xoffset << ", yoffset:" << yoffset << std::endl;
         }
 
         void mainLoop() {
@@ -71,8 +166,6 @@ namespace pipeline {
                 m_Engine.DoRendering();
                 m_Engine.SwapBuffers();
             }
-
-            //vkDeviceWaitIdle(kEngine.logicaldevice);
         }
 
         void cleanup() {

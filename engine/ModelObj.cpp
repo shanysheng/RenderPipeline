@@ -123,7 +123,7 @@ namespace pipeline {
 		m_UniformBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 	}
 
-	void ModelObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
+	void ModelObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 		VkBuffer vertexBuffers[] = { m_VertexBuffer.GetBuffer()};
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);

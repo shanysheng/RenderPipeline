@@ -62,6 +62,8 @@ namespace pipeline {
     //    uint32_t        m_IndexCount;
     //};
 
+    class kCamera;
+
     class IModel {
     public:
         virtual ~IModel() {};
@@ -76,7 +78,7 @@ namespace pipeline {
         virtual void Unload(kRHIDevice& rhidevice) = 0;
 
         virtual void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) = 0;
-        virtual void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) = 0;
+        virtual void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) = 0;
     };
 }
 

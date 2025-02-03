@@ -3,8 +3,12 @@
 
 #include "Common.h"
 
+
 namespace pipeline
 {
+
+    
+
     const float C_PI = 3.1415926f;
     class kMathf
     {

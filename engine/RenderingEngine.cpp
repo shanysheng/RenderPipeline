@@ -22,6 +22,8 @@ namespace pipeline {
     int kRenderingEngine::Configure(const std::string& ConfigFileName) {
 		OnConfigure();
 
+
+
         return 1;
     }
 
@@ -30,6 +32,12 @@ namespace pipeline {
 		m_WinInfo = wininfo;
 
 		VkExtent2D extent = { m_WinInfo.width, m_WinInfo.height };
+
+		m_Camera.type = kCamera::CameraType::lookat;
+		m_Camera.flipY = true;
+		m_Camera.setPosition(glm::vec3(0.0f, -0.1f, -1.0f));
+		m_Camera.setRotation(glm::vec3(0.0f, 45.0f, 0.0f));
+		m_Camera.setPerspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
@@ -95,15 +103,6 @@ namespace pipeline {
     void kRenderingEngine::SetRenderTraverseRoot(const std::vector<kSGNode*>& roots) {
 
     }
-
-    void kRenderingEngine::SetCamera(kCamera& Camera) {
-
-    }
-
-    void kRenderingEngine::GetCamera(kCamera& Camera) {
-
-    }
-
 
 	void kRenderingEngine::ClearScreen(float r, float g, float b, float a) {
 
@@ -273,7 +272,7 @@ namespace pipeline {
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 				m_pModel->UpdateUniformBuffer(m_Context, m_CurrentFrame);
-				m_pModel->BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
+				m_pModel->BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout(), m_Camera);
 			}
 
 			vkCmdEndRenderPass(commandBuffer);
