@@ -173,9 +173,8 @@ namespace pipeline {
 	}
 
 	void kRenderingEngine::SwapBuffers() {
-
+		vkDeviceWaitIdle(m_Context.logicaldevice);
 	}
-
 
     int kRenderingEngine::RegisterPreRenderPrototypes() {
         return 1;

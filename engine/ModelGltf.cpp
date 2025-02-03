@@ -231,6 +231,11 @@ namespace pipeline {
 		for (auto node : nodes) {
 			delete node;
 		}
+		
+		m_MatrixBuffer.ReleaseBuffer(rhidevice);
+
+		vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_MatrixDSLayout, nullptr);
+		vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_SamplerDSLayout, nullptr);
 
 		// Release all Vulkan resources allocated for the model
 		vkDestroyBuffer(rhidevice.logicaldevice, vertices.buffer, nullptr);

@@ -134,6 +134,8 @@ namespace pipeline {
 
 	void ModelObj::Unload(kRHIDevice& rhidevice) {
 
+		vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_DescriptorSetLayout, nullptr);
+
 		m_Texture.ReleaseTexture(rhidevice);
 		m_IndexBuffer.ReleaseBuffer(rhidevice);
 		m_VertexBuffer.ReleaseBuffer(rhidevice);
