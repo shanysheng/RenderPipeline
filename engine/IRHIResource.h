@@ -5,11 +5,11 @@
 
 namespace pipeline{
     
-    class IGPUResource
+    class IRHIResource
     {
     public:
-        friend class kGPUResourceManager;
-        IGPUResource();
+        friend class kRHIResourceManager;
+        IRHIResource();
         
         uint32_t GetRefenceCount()const{return m_ReferenceCount;}
         int32_t	GetGPUMemoryCost() const{return m_GPUMemoryCost;}
@@ -18,9 +18,9 @@ namespace pipeline{
         virtual void Unbind()const{};
         
     protected:
-        IGPUResource*	Reference(){ ++m_ReferenceCount; return this;}
+        IRHIResource*	Reference(){ ++m_ReferenceCount; return this;}
         void			Unreference(){ --m_ReferenceCount;}
-        virtual	~IGPUResource ();
+        virtual	~IRHIResource();
         
     protected: 
         int32_t			m_ReferenceCount;

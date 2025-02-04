@@ -3,13 +3,13 @@
 namespace pipeline {
     
     
-    IGPUResource::IGPUResource()
+    IRHIResource::IRHIResource()
     :m_ReferenceCount(1),m_GPUMemoryCost(0)
     {
         
     }
     
-    IGPUResource::~IGPUResource()
+    IRHIResource::~IRHIResource()
     {
         
     }

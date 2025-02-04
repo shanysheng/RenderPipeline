@@ -10,7 +10,7 @@ namespace pipeline{
     class IRenderingAttribute;
     class CFrameInfo;
     class CRenderQueueElement;
-    class IGPUResource;
+    class IRHIResource;
     
     class IRenderModule
     {
@@ -27,7 +27,7 @@ namespace pipeline{
                                              IRenderingAttribute * pAttrib, std::vector<kSGNode*>& GPUResourceApplicants) = 0;
         
         virtual	bool PrepareResources(const CFrameInfo*, const CCamera *, const CRenderQueueElement *,
-                                       IRenderingAttribute * pAttrib, const  std::vector<IGPUResource*>& GPUResources ) =0;
+                                       IRenderingAttribute * pAttrib, const  std::vector<IRHIResource*>& GPUResources ) =0;
         
         
         virtual void Draw( CFrameInfo*pFI, CCamera * pCamera, CRenderQueueElement * pElement, IRenderingAttribute * pAttrib ) = 0;

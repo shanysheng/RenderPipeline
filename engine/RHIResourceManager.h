@@ -11,11 +11,11 @@ namespace pipeline {
     class kRHIBuffer;
     class kRHITexture2D;
 
-    class kGPUResourceManager
+    class kRHIResourceManager
     {
     public:
-        kGPUResourceManager(void);
-        virtual ~kGPUResourceManager(void);
+        kRHIResourceManager(void);
+        virtual ~kRHIResourceManager(void);
         
         kRHIBuffer* GiveResource(kBufferInfo*);
         kRHITexture2D* GiveResource(kImageInfo*);

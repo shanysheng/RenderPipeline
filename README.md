@@ -36,9 +36,13 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 ### framework
 - [ ] RenderPipeline
 - [ ] PreRender
+- - [ ] NodeClassify
 - [ ] RenderModule
 - [ ] RenderQueue
-### io
+- [ ] RenderTarget
+- [ ] RHIResource, RHIResourceManager
+- [ ] Scene, SGNode, MeshBuilder, Mesh, Material
+### model files
 - [x] obj
 - [x] gltf
 - [ ] 3dgs

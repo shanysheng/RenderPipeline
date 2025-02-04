@@ -2,11 +2,11 @@
 
 namespace pipeline {
     
-    kGPUResourceManager::kGPUResourceManager(void) {
+    kRHIResourceManager::kRHIResourceManager(void) {
 
     }
 
-    kGPUResourceManager::~kGPUResourceManager(void) {
+    kRHIResourceManager::~kRHIResourceManager(void) {
 
     }
     

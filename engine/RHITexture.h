@@ -6,7 +6,7 @@
 namespace pipeline {
     
 
-    class kRHITexture : public IGPUResource
+    class kRHITexture : public IRHIResource
     {
     public:
         kRHITexture();
