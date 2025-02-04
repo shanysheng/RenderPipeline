@@ -33,8 +33,6 @@ namespace pipeline {
 
 		VkExtent2D extent = { m_WinInfo.width, m_WinInfo.height };
 
-
-
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
@@ -51,7 +49,7 @@ namespace pipeline {
 			createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
 		}
 		else {
-			m_Camera.LookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			m_Camera.LookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
 			// gltf model

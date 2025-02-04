@@ -26,6 +26,7 @@ namespace pipeline {
         float GetNear() const { return m_Near; }
         float GetFar() const { return m_Far; }
 
+        const glm::vec3& GetViewPos() const { return m_Position; }
         const glm::mat4& GetModelMat() const { return m_ModelMat; }
         const glm::mat4& GetViewMat() const { return m_ViewMat; }
         const glm::mat4& GetProjMat() const { return m_ProjMat; }

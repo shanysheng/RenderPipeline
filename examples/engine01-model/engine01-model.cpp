@@ -98,7 +98,7 @@ namespace pipeline {
             }
 
             if (mouseState.buttons.left) {
-                camera.RotateModel(dx, dy);
+                camera.RotateModel(-dx, -dy);
             }
 
             if (mouseState.buttons.right) {

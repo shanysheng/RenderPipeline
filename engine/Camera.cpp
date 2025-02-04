@@ -62,7 +62,7 @@ namespace pipeline {
 
     void kCamera::RotateModel(float xoffset, float yoffset)
     {
-        glm::vec3 sidedir = glm::cross(m_Updir, m_Forward);
+        glm::vec3 sidedir = glm::cross(m_Forward, m_Updir);
 
         m_ModelMat = glm::rotate(m_ModelMat, glm::radians(yoffset), sidedir);
         m_ModelMat = glm::rotate(m_ModelMat, glm::radians(xoffset), m_Updir);
