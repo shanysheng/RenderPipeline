@@ -1,19 +1,18 @@
 #include "ModelObj.h"
 #include "RHIDevice.h"
+#include "Camera.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
 
 template<> struct std::hash<pipeline::ModelObj::Vertex> {
-    size_t operator()(pipeline::ModelObj::Vertex const& vertex) const {
-        return ((std::hash<glm::vec3>()(vertex.pos) ^ (std::hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
-    }
+	size_t operator()(pipeline::ModelObj::Vertex const& vertex) const {
+		return ((std::hash<glm::vec3>()(vertex.pos) ^ (std::hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
+	}
 };
 
 namespace pipeline {
-
-
 
 	const std::string OBJ_MODEL_PATH = "resources/viking_room.obj";
 	const std::string OBJ_TEXTURE_PATH = "resources/viking_room.png";
@@ -25,7 +24,6 @@ namespace pipeline {
 	ModelObj::~ModelObj() {
 
 	}
-
 
 	VkVertexInputBindingDescription ModelObj::getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
@@ -73,7 +71,7 @@ namespace pipeline {
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+		std::vector<VkDescriptorSetLayoutBinding> bindings = { uboLayoutBinding, samplerLayoutBinding };
 
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -110,20 +108,24 @@ namespace pipeline {
 	}
 
 	void ModelObj::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
+
+	}
+
+	void ModelObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		ModelObjShaderData temp_shaderdat{};
-		temp_shaderdat.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		temp_shaderdat.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-		temp_shaderdat.proj = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
+		temp_shaderdat.model = glm::mat4(1.0f);
+		//temp_shaderdat.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.view = camera.GetViewMat();
+		//temp_shaderdat.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		temp_shaderdat.proj = camera.GetProjMat();
 
 		m_UniformBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
-	}
 
-	void ModelObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 		VkBuffer vertexBuffers[] = { m_VertexBuffer.GetBuffer()};
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);

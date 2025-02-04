@@ -10,6 +10,9 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
+#include <glm/glm.hpp>       // 基本的GLM功能，包括向量和矩阵类型
+#include <glm/gtc/matrix_transform.hpp>  // 包含平移、旋转、缩放等变换功能
+#include <glm/gtc/quaternion.hpp>       // 如果需要用到四元数转换
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
 

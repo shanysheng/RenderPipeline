@@ -10,29 +10,8 @@
 
 namespace pipeline {
 
-
-
     class ModelObj : public IModel
     {
-    public:
-        struct Vertex {
-            glm::vec3 pos;
-            glm::vec3 color;
-            glm::vec2 texCoord;
-
-
-
-            bool operator==(const Vertex& other) const {
-                return pos == other.pos && color == other.color && texCoord == other.texCoord;
-            }
-        };
-
-        struct ModelObjShaderData {
-            alignas(16) glm::mat4 model;
-            alignas(16) glm::mat4 view;
-            alignas(16) glm::mat4 proj;
-        };
-
     public:
         ModelObj();
         virtual ~ModelObj();
@@ -49,10 +28,25 @@ namespace pipeline {
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
         void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera);
 
+        struct Vertex {
+            glm::vec3 pos;
+            glm::vec3 color;
+            glm::vec2 texCoord;
+
+            bool operator==(const Vertex& other) const {
+                return pos == other.pos && color == other.color && texCoord == other.texCoord;
+            }
+        };
     protected:
+
+        struct ModelObjShaderData {
+            alignas(16) glm::mat4 model;
+            alignas(16) glm::mat4 view;
+            alignas(16) glm::mat4 proj;
+        };
+
         void LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array);
         void SetupDescriptorSets(kRHIDevice& rhidevice);
-
 
     protected:
 

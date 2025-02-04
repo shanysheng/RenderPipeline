@@ -32,6 +32,28 @@ namespace pipeline {
     class ModelGltf : public IModel
     {
     public:
+        ModelGltf();
+        virtual ~ModelGltf();
+
+        VkVertexInputBindingDescription getBindingDescription();
+        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+
+        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
+        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
+
+        void Load(kRHIDevice& rhidevice);
+        void Unload(kRHIDevice& rhidevice);
+
+        void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
+        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera);
+
+    protected:
+        void SetupDescriptorSets(kRHIDevice& rhidevice);
+        void SetupMatrixDescriptorSets(kRHIDevice& rhidevice);
+        void SetupMaterialDescriptorSets(kRHIDevice& rhidevice);
+
+
+    protected:
         // The vertex layout for the samples' model
         struct Vertex {
             glm::vec3 pos;
@@ -100,33 +122,12 @@ namespace pipeline {
         };
 
         struct ModelGltfShaderData {
-                glm::mat4 projection;
-                glm::mat4 view;
-                glm::vec4 lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
-                glm::vec4 viewPos;
+            glm::mat4 projection;
+            glm::mat4 view;
+            glm::vec4 lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
+            glm::vec4 viewPos;
         };
 
-    public:
-        ModelGltf();
-        virtual ~ModelGltf();
-
-
-        VkVertexInputBindingDescription getBindingDescription();
-        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
-
-        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
-        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
-
-        void Load(kRHIDevice& rhidevice);
-        void Unload(kRHIDevice& rhidevice);
-
-        void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
-        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera);
-
-    protected:
-        void SetupDescriptorSets(kRHIDevice& rhidevice);
-        void SetupMatrixDescriptorSets(kRHIDevice& rhidevice);
-        void SetupMaterialDescriptorSets(kRHIDevice& rhidevice);
 
         void loadImages(kRHIDevice& rhidevice, tinygltf::Model& input);
         void loadTextures(kRHIDevice& rhidevice, tinygltf::Model& input);
@@ -135,7 +136,6 @@ namespace pipeline {
 
         void drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Node* node);
         void draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
-
     protected:
 
         //Model data

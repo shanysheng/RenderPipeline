@@ -258,16 +258,16 @@ namespace pipeline {
 	void ModelGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 
 		static auto startTime = std::chrono::high_resolution_clock::now();
-
 		auto currentTime = std::chrono::high_resolution_clock::now();
+
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		m_ModelMat = glm::rotate(glm::mat4(1.0f), time * glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		ModelGltfShaderData temp_shaderdat{};
 		temp_shaderdat.viewPos = glm::vec4(-1.0f, 1.0f, 1.0f, 1.0);
 		//temp_shaderdat.view = glm::lookAt(glm::vec3(temp_shaderdat.viewPos), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-		temp_shaderdat.view = camera.matrices.view;
-		temp_shaderdat.projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.f, 0.1f, 10.0f);
+		temp_shaderdat.view = camera.GetViewMat();
+		temp_shaderdat.projection = camera.GetProjMat();
 
 		glm::mat4 tempMat = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		temp_shaderdat.lightPos = m_ModelMat * glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);

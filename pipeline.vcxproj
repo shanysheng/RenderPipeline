@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Model3DGS.cpp" />
     <ClCompile Include="engine\ModelGltf.cpp" />
     <ClCompile Include="engine\ModelObj.cpp" />
     <ClCompile Include="engine\RHIBuffer.cpp" />
@@ -130,6 +131,8 @@
     <ClCompile Include="engine\Vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\IRenderModule.h" />
+    <ClInclude Include="engine\Model3DGS.h" />
     <ClInclude Include="engine\ModelGltf.h" />
     <ClInclude Include="engine\ModelObj.h" />
     <ClInclude Include="engine\RHIBuffer.h" />

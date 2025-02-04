@@ -33,11 +33,7 @@ namespace pipeline {
 
 		VkExtent2D extent = { m_WinInfo.width, m_WinInfo.height };
 
-		m_Camera.type = kCamera::CameraType::lookat;
-		m_Camera.flipY = true;
-		m_Camera.setPosition(glm::vec3(0.0f, -0.1f, -1.0f));
-		m_Camera.setRotation(glm::vec3(0.0f, 45.0f, 0.0f));
-		m_Camera.setPerspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
+
 
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
@@ -46,12 +42,18 @@ namespace pipeline {
 
 		bool bload_obj_file = false;
 		if (bload_obj_file) {
+			m_Camera.LookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
+
 			// obj model
 			m_pModel = new ModelObj();
 			createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
 			createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
 		}
 		else {
+			m_Camera.LookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
+
 			// gltf model
 			m_pModel = new ModelGltf();
 			createinfo.vertex_shader_file = "shaders/mesh.vert.spv";

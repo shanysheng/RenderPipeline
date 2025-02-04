@@ -87,8 +87,8 @@ namespace pipeline {
 
             kCamera& camera = app->m_Engine.GetCamera();
 
-            int32_t dx = (int32_t)mouseState.position.x - (int32_t)x;
-            int32_t dy = (int32_t)mouseState.position.y - (int32_t)y;
+            float dx = (float)mouseState.position.x - (float)x;
+            float dy = (float)mouseState.position.y - (float)y;
 
             bool handled = false;
 
@@ -98,14 +98,17 @@ namespace pipeline {
             }
 
             if (mouseState.buttons.left) {
-                camera.rotate(glm::vec3(dy * camera.rotationSpeed, -dx * camera.rotationSpeed, 0.0f));
+                camera.RotateModel(dx, dy);
             }
+
             if (mouseState.buttons.right) {
-                camera.translate(glm::vec3(-0.0f, 0.0f, dy * .005f));
+                camera.Zoom(dy*0.005f);
             }
+
             if (mouseState.buttons.middle) {
-                camera.translate(glm::vec3(-dx * 0.005f, -dy * 0.005f, 0.0f));
+                camera.Pan(dx * 0.005f, dy * 0.005f);
             }
+
             mouseState.position = glm::vec2((float)x, (float)y);
         }
 
@@ -121,7 +124,6 @@ namespace pipeline {
                 else
                     mouseState.buttons.left = false;
 
-                printf("鼠标左键按下！！");
                 break;
             }
             case GLFW_MOUSE_BUTTON_MIDDLE: {
@@ -130,7 +132,6 @@ namespace pipeline {
                 else
                     mouseState.buttons.middle = false;
 
-                printf("鼠标中间按下！！");
                 break;
             }
             case GLFW_MOUSE_BUTTON_RIGHT: {
@@ -139,24 +140,18 @@ namespace pipeline {
                 else
                     mouseState.buttons.right = false;
 
-                printf("鼠标右键按下！！");
                 break;
             }
             default:
                 return;
             }
 
-            std::cout << "button:" << button << ", pressed:" << pressed << ", flags:" << flags << std::endl;
         }
 
         static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
             auto app = reinterpret_cast<baseApplication*>(glfwGetWindowUserPointer(window));
-            
-
-            app->m_Engine.GetCamera().translate(glm::vec3(0.0f, 0.0f, (float)yoffset * 0.05f));
-
-            std::cout << "xoffset:" << xoffset << ", yoffset:" << yoffset << std::endl;
+            app->m_Engine.GetCamera().Zoom( yoffset * 0.5f);
         }
 
         void mainLoop() {

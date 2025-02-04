@@ -21,113 +21,27 @@ namespace pipeline {
         kCamera();
         ~kCamera();
 
-        void setPerspective(float fov, float aspect, float znear, float zfar)
-        {
-            glm::mat4 currentMatrix = matrices.perspective;
-            this->fov = fov;
-            this->znear = znear;
-            this->zfar = zfar;
-            matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-            if (flipY) {
-                matrices.perspective[1][1] *= -1.0f;
-            }
-            if (matrices.view != currentMatrix) {
-                updated = true;
-            }
-        };
+        float GetFov() const { return m_Fov; }
+        float GetAspect() const { return m_Aspect; }
+        float GetNear() const { return m_Near; }
+        float GetFar() const { return m_Far; }
 
-        float getNearClip() const {
-            return znear;
-        }
+        const glm::mat4& GetModelMat() const { return m_ModelMat; }
+        const glm::mat4& GetViewMat() const { return m_ViewMat; }
+        const glm::mat4& GetProjMat() const { return m_ProjMat; }
 
-        float getFarClip() const {
-            return zfar;
-        }
+        void LookAt(glm::vec3 eye, glm::vec3 target, glm::vec3 up);
+        void Perspective(float fov, float aspect, float znear, float zfar);
 
-        void updateAspectRatio(float aspect)
-        {
-            glm::mat4 currentMatrix = matrices.perspective;
-            matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-            if (flipY) {
-                matrices.perspective[1][1] *= -1.0f;
-            }
-            if (matrices.view != currentMatrix) {
-                updated = true;
-            }
-        }
+        void SetAspect(float aspect);
 
-        void setPosition(glm::vec3 position)
-        {
-            this->position = position;
-            updateViewMatrix();
-        }
+        void Zoom(float speed);
+        void Pan(float xoffset, float yoffset);
 
-        void setRotation(glm::vec3 rotation)
-        {
-            this->rotation = rotation;
-            updateViewMatrix();
-        }
+        void RotateModel(float xoffset, float yoffset);
 
-        void rotate(glm::vec3 delta)
-        {
-            this->rotation += delta;
-            updateViewMatrix();
-        }
-
-        void setTranslation(glm::vec3 translation)
-        {
-            this->position = translation;
-            updateViewMatrix();
-        };
-
-        void translate(glm::vec3 delta)
-        {
-            this->position += delta;
-            updateViewMatrix();
-        }
-
-        void setRotationSpeed(float rotationSpeed)
-        {
-            this->rotationSpeed = rotationSpeed;
-        }
-
-        void setMovementSpeed(float movementSpeed)
-        {
-            this->movementSpeed = movementSpeed;
-        }
-
-        void updateViewMatrix()
-        {
-            glm::mat4 currentMatrix = matrices.view;
-
-            glm::mat4 rotM = glm::mat4(1.0f);
-            glm::mat4 transM;
-
-            rotM = glm::rotate(rotM, glm::radians(rotation.x * (flipY ? -1.0f : 1.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
-            rotM = glm::rotate(rotM, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-            rotM = glm::rotate(rotM, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::vec3 translation = position;
-            if (flipY) {
-                translation.y *= -1.0f;
-            }
-            transM = glm::translate(glm::mat4(1.0f), translation);
-
-            if (type == CameraType::firstperson)
-            {
-                matrices.view = rotM * transM;
-            }
-            else
-            {
-                matrices.view = transM * rotM;
-            }
-
-            viewPos = glm::vec4(position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
-
-            if (matrices.view != currentMatrix) {
-                updated = true;
-            }
-        };
+    protected:
+        void UpdateViewMatrix();
 
         //const kMatrix4x4f& LookAt(const kVector3f& eye, const kVector3f& center, const kVector3f& up);
         //const kMatrix4x4f& Perspective(float fovy, float aspect, float zNear, float zFar);
@@ -159,50 +73,30 @@ namespace pipeline {
         //bool RenderToCubemap (kTexture* cubemap);
         
 
-    public:
+    protected:
         
         //bool            m_Orthographic;
-        //
-        //float           m_Aspect ;
-        //float           m_FieldOfView ;
-        //float           m_NearClipPlane ;
-        //float           m_FarClipPlane ;
         //
         //float           m_DefaultDepth ;
         //kColor          m_BackGroundColor;
         //
-        //kVector3f       m_Position;
-        //kVector3f       m_Target;
-        //kVector3f       m_Updir;
-        //
-        //kMatrix4x4f     m_CameraToWorldMatrix;
-        //kMatrix4x4f     m_ProjectionMatrix ;
         //kMatrix4x4f     m_WorldToCameraMatrix ;
         //kMatrix4x4f     m_CullingMatrix ;
         //
         //kVector4f       m_ViewportRect ;
 
-        enum CameraType { lookat, firstperson };
-        CameraType type = CameraType::lookat;
 
-        float fov;
-        float znear, zfar;
+        float m_Fov, m_Aspect;
+        float m_Near, m_Far;
 
-        bool updated = true;
-        bool flipY = true;
+        glm::vec3 m_Position;
+        glm::vec3 m_Target;
+        glm::vec3 m_Forward;
+        glm::vec3 m_Updir;
 
-        glm::vec3 rotation = glm::vec3();
-        glm::vec3 position = glm::vec3();
-        glm::vec4 viewPos = glm::vec4();
-
-        float rotationSpeed = 1.0f;
-        float movementSpeed = 1.0f;
-
-        struct
-        {
-            glm::mat4 perspective;
-            glm::mat4 view;
-        } matrices;
+        glm::mat4 m_ModelMat;
+        glm::mat4 m_ViewMat;
+        glm::mat4 m_ProjMat;
     };
 }
 #endif
