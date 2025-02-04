@@ -1,4 +1,4 @@
-#include "GPUResourceManager.h"
+#include "RHIResourceManager.h"
 
 namespace pipeline {
     

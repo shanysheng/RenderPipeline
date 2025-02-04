@@ -30,10 +30,10 @@
     <ClCompile Include="engine\Common.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\GPUResourceManager.cpp">
+    <ClCompile Include="engine\RHIResourceManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\IGPUResource.cpp">
+    <ClCompile Include="engine\IRHIResource.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\IPreRender.cpp">
@@ -158,10 +158,10 @@
     <ClInclude Include="engine\Common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\GPUResourceManager.h">
+    <ClInclude Include="engine\RHIResourceManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\IGPUResource.h">
+    <ClInclude Include="engine\IRHIResource.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\IPreRender.h">

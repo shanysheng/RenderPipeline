@@ -1,7 +1,7 @@
 #ifndef PIPELINE_TEXTURE_H_GUARD
 #define PIPELINE_TEXTURE_H_GUARD
 
-#include "IGPUResource.h"
+#include "IRHIResource.h"
 
 namespace pipeline {
     

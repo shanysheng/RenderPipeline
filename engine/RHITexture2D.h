@@ -1,5 +1,5 @@
 #pragma once
-#include "IGPUResource.h"
+#include "IRHIResource.h"
 
 #include "Common.h"
 

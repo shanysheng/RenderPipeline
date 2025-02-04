@@ -99,8 +99,8 @@
     <ClCompile Include="engine\Camera.cpp" />
     <ClCompile Include="engine\Color.cpp" />
     <ClCompile Include="engine\Common.cpp" />
-    <ClCompile Include="engine\GPUResourceManager.cpp" />
-    <ClCompile Include="engine\IGPUResource.cpp" />
+    <ClCompile Include="engine\RHIResourceManager.cpp" />
+    <ClCompile Include="engine\IRHIResource.cpp" />
     <ClCompile Include="engine\IPreRender.cpp" />
     <ClCompile Include="engine\IRenderControlUnit.cpp" />
     <ClCompile Include="engine\IRenderModule.cpp" />
@@ -144,8 +144,8 @@
     <ClInclude Include="engine\Camera.h" />
     <ClInclude Include="engine\Color.h" />
     <ClInclude Include="engine\Common.h" />
-    <ClInclude Include="engine\GPUResourceManager.h" />
-    <ClInclude Include="engine\IGPUResource.h" />
+    <ClInclude Include="engine\RHIResourceManager.h" />
+    <ClInclude Include="engine\IRHIResource.h" />
     <ClInclude Include="engine\IPreRender.h" />
     <ClInclude Include="engine\IRenderControlUnit.h" />
     <ClInclude Include="engine\IRenderPipeline.h" />

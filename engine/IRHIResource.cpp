@@ -1,4 +1,4 @@
-#include "IGPUResource.h"
+#include "IRHIResource.h"
 
 namespace pipeline {
     
