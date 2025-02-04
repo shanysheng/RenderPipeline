@@ -73,7 +73,7 @@ namespace pipeline {
 		matrixLayoutInfo.bindingCount = 1;
 		matrixLayoutInfo.pBindings = &matrixLayoutBinding;
 
-		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &matrixLayoutInfo, nullptr, &m_MatrixDSLayout) != VK_SUCCESS) {
+		if (vkCreateDescriptorSetLayout(rhidevice.GetLogicDevice(), &matrixLayoutInfo, nullptr, &m_MatrixDSLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create descriptor set layout!");
 		}
 
@@ -89,7 +89,7 @@ namespace pipeline {
 		samplerLayoutInfo.bindingCount = 1;
 		samplerLayoutInfo.pBindings = &samplerLayoutBinding;
 
-		if (vkCreateDescriptorSetLayout(rhidevice.logicaldevice, &samplerLayoutInfo, nullptr, &m_SamplerDSLayout) != VK_SUCCESS) {
+		if (vkCreateDescriptorSetLayout(rhidevice.GetLogicDevice(), &samplerLayoutInfo, nullptr, &m_SamplerDSLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create descriptor set layout!");
 		}
 
@@ -217,10 +217,10 @@ namespace pipeline {
 		rhidevice.EndSingleTimeCommands(commandBuffer);
 
 		// Free staging resources
-		vkDestroyBuffer(rhidevice.logicaldevice, vertexStaging.buffer, nullptr);
-		vkFreeMemory(rhidevice.logicaldevice, vertexStaging.memory, nullptr);
-		vkDestroyBuffer(rhidevice.logicaldevice, indexStaging.buffer, nullptr);
-		vkFreeMemory(rhidevice.logicaldevice, indexStaging.memory, nullptr);
+		vkDestroyBuffer(rhidevice.GetLogicDevice(), vertexStaging.buffer, nullptr);
+		vkFreeMemory(rhidevice.GetLogicDevice(), vertexStaging.memory, nullptr);
+		vkDestroyBuffer(rhidevice.GetLogicDevice(), indexStaging.buffer, nullptr);
+		vkFreeMemory(rhidevice.GetLogicDevice(), indexStaging.memory, nullptr);
 
 		m_MatrixBuffer.CreateUniformBuffer(rhidevice, sizeof(ModelGltfShaderData));
 
@@ -235,14 +235,14 @@ namespace pipeline {
 		
 		m_MatrixBuffer.ReleaseBuffer(rhidevice);
 
-		vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_MatrixDSLayout, nullptr);
-		vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_SamplerDSLayout, nullptr);
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_MatrixDSLayout, nullptr);
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_SamplerDSLayout, nullptr);
 
 		// Release all Vulkan resources allocated for the model
-		vkDestroyBuffer(rhidevice.logicaldevice, vertices.buffer, nullptr);
-		vkFreeMemory(rhidevice.logicaldevice, vertices.memory, nullptr);
-		vkDestroyBuffer(rhidevice.logicaldevice, indices.buffer, nullptr);
-		vkFreeMemory(rhidevice.logicaldevice, indices.memory, nullptr);
+		vkDestroyBuffer(rhidevice.GetLogicDevice(), vertices.buffer, nullptr);
+		vkFreeMemory(rhidevice.GetLogicDevice(), vertices.memory, nullptr);
+		vkDestroyBuffer(rhidevice.GetLogicDevice(), indices.buffer, nullptr);
+		vkFreeMemory(rhidevice.GetLogicDevice(), indices.memory, nullptr);
 
 		for (Image image : images) {
 			image.texture.ReleaseTexture(rhidevice);
@@ -313,11 +313,11 @@ namespace pipeline {
 
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = rhidevice.descriptorPool;
+		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
 		allocInfo.descriptorSetCount = 1;
 		allocInfo.pSetLayouts = &m_MatrixDSLayout;
 
-		if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &m_MatrixDSet) != VK_SUCCESS) {
+		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_MatrixDSet) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate descriptor sets!");
 		}
 
@@ -343,7 +343,7 @@ namespace pipeline {
 		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
 		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
 		// used to update these binding relationships.
-		vkUpdateDescriptorSets(rhidevice.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 
 	}
 
@@ -352,11 +352,11 @@ namespace pipeline {
 		for (auto& image : images) {
 			VkDescriptorSetAllocateInfo allocInfo{};
 			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-			allocInfo.descriptorPool = rhidevice.descriptorPool;
+			allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
 			allocInfo.descriptorSetCount = 1;
 			allocInfo.pSetLayouts = &m_SamplerDSLayout;
 
-			if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &image.descriptorSet) != VK_SUCCESS) {
+			if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &image.descriptorSet) != VK_SUCCESS) {
 				throw std::runtime_error("failed to allocate descriptor sets!");
 			}
 
@@ -381,7 +381,7 @@ namespace pipeline {
 			// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
 			// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
 			// used to update these binding relationships.
-			vkUpdateDescriptorSets(rhidevice.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+			vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
 
 	}

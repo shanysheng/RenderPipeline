@@ -108,7 +108,7 @@ namespace pipeline {
         pipelineLayoutInfo.pushConstantRangeCount = createinfo.push_constant_ranges.size();
         pipelineLayoutInfo.pPushConstantRanges = createinfo.push_constant_ranges.data();;
 
-        if (vkCreatePipelineLayout(rhidevice.logicaldevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(rhidevice.GetLogicDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -129,13 +129,13 @@ namespace pipeline {
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        VkResult vkresult = vkCreateGraphicsPipelines(rhidevice.logicaldevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline);
+        VkResult vkresult = vkCreateGraphicsPipelines(rhidevice.GetLogicDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline);
         if (vkresult != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
-        vkDestroyShaderModule(rhidevice.logicaldevice, fragShaderModule, nullptr);
-        vkDestroyShaderModule(rhidevice.logicaldevice, vertShaderModule, nullptr);
+        vkDestroyShaderModule(rhidevice.GetLogicDevice(), fragShaderModule, nullptr);
+        vkDestroyShaderModule(rhidevice.GetLogicDevice(), vertShaderModule, nullptr);
     }
 
 
@@ -169,8 +169,8 @@ namespace pipeline {
 
     void kRHIGraphicPipeline::ReleaseGraphicsPipeline(kRHIDevice& rhidevice) {
 
-        vkDestroyPipeline(rhidevice.logicaldevice, m_Pipeline, nullptr);
-        vkDestroyPipelineLayout(rhidevice.logicaldevice, m_PipelineLayout, nullptr);
+        vkDestroyPipeline(rhidevice.GetLogicDevice(), m_Pipeline, nullptr);
+        vkDestroyPipelineLayout(rhidevice.GetLogicDevice(), m_PipelineLayout, nullptr);
         //vkDestroyDescriptorSetLayout(rhidevice.logicaldevice, m_DescriptorSetLayout, nullptr);
 
         std::cout << "cleanup cleanupGraphicsPipeline" << std::endl;

@@ -26,7 +26,7 @@ namespace pipeline {
 
         VkSwapchainCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = rhidevice.surface;
+        createInfo.surface = rhidevice.GetSurface();
         createInfo.minImageCount = m_SwapchainImageCount;
         createInfo.imageFormat = m_SwapchainSurfaceFormat.format;
         createInfo.imageColorSpace = m_SwapchainSurfaceFormat.colorSpace;
@@ -53,14 +53,14 @@ namespace pipeline {
         createInfo.presentMode = m_PresentMode;
         createInfo.clipped = VK_TRUE;
 
-        if (vkCreateSwapchainKHR(rhidevice.logicaldevice, &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS) {
+        if (vkCreateSwapchainKHR(rhidevice.GetLogicDevice(), &createInfo, nullptr, &m_Swapchain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");
         }
 
         uint32_t imageCount;
-        vkGetSwapchainImagesKHR(rhidevice.logicaldevice, m_Swapchain, &imageCount, nullptr);
+        vkGetSwapchainImagesKHR(rhidevice.GetLogicDevice(), m_Swapchain, &imageCount, nullptr);
         m_SwapchainColorImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(rhidevice.logicaldevice, m_Swapchain, &imageCount, m_SwapchainColorImages.data());
+        vkGetSwapchainImagesKHR(rhidevice.GetLogicDevice(), m_Swapchain, &imageCount, m_SwapchainColorImages.data());
 
         CreateSwapchainColorImageViews(rhidevice);
         CreateSwapchainDepthImageView(rhidevice);
@@ -120,7 +120,7 @@ namespace pipeline {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if (vkCreateRenderPass(rhidevice.logicaldevice, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(rhidevice.GetLogicDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
             throw std::runtime_error("failed to create render pass!");
         }
     }
@@ -161,7 +161,7 @@ namespace pipeline {
             framebufferInfo.height = m_SwapchainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(rhidevice.logicaldevice, &framebufferInfo, nullptr, &m_SwapchainFramebuffers[i]) != VK_SUCCESS) {
+            if (vkCreateFramebuffer(rhidevice.GetLogicDevice(), &framebufferInfo, nullptr, &m_SwapchainFramebuffers[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create framebuffer!");
             }
         }
@@ -170,20 +170,20 @@ namespace pipeline {
 
     void kRHISwapchain::ReleaseSwapchain(kRHIDevice& rhidevice) {
 
-        vkDestroyImage(rhidevice.logicaldevice, m_SwapchainDepthImage, nullptr);
-        vkFreeMemory(rhidevice.logicaldevice, m_SwapchainDepthImageMemory, nullptr);
-        vkDestroyImageView(rhidevice.logicaldevice, m_SwapchainDepthImageView, nullptr);
+        vkDestroyImage(rhidevice.GetLogicDevice(), m_SwapchainDepthImage, nullptr);
+        vkFreeMemory(rhidevice.GetLogicDevice(), m_SwapchainDepthImageMemory, nullptr);
+        vkDestroyImageView(rhidevice.GetLogicDevice(), m_SwapchainDepthImageView, nullptr);
 
         for (auto imageView : m_SwapchainColorImageViews) {
-            vkDestroyImageView(rhidevice.logicaldevice, imageView, nullptr);
+            vkDestroyImageView(rhidevice.GetLogicDevice(), imageView, nullptr);
         }
 
         for (auto framebuffer : m_SwapchainFramebuffers) {
-            vkDestroyFramebuffer(rhidevice.logicaldevice, framebuffer, nullptr);
+            vkDestroyFramebuffer(rhidevice.GetLogicDevice(), framebuffer, nullptr);
         }
 
-        vkDestroySwapchainKHR(rhidevice.logicaldevice, m_Swapchain, nullptr);
-        vkDestroyRenderPass(rhidevice.logicaldevice, m_RenderPass, nullptr);
+        vkDestroySwapchainKHR(rhidevice.GetLogicDevice(), m_Swapchain, nullptr);
+        vkDestroyRenderPass(rhidevice.GetLogicDevice(), m_RenderPass, nullptr);
 
         std::cout << "cleanup kSwapchain" << std::endl;
     }
@@ -198,7 +198,7 @@ namespace pipeline {
     VkFormat kRHISwapchain::FindSupportedFormat(kRHIDevice& rhidevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
         for (VkFormat format : candidates) {
             VkFormatProperties props;
-            vkGetPhysicalDeviceFormatProperties(rhidevice.physicalDevice, format, &props);
+            vkGetPhysicalDeviceFormatProperties(rhidevice.GetPhysicalDevice(), format, &props);
 
             if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
                 return format;

@@ -80,9 +80,9 @@ namespace pipeline {
 		m_pModel->Unload(m_Context);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			vkDestroySemaphore(m_Context.logicaldevice, m_RenderFinishedSemaphores[i], nullptr);
-			vkDestroySemaphore(m_Context.logicaldevice, m_ImageAvailableSemaphores[i], nullptr);
-			vkDestroyFence(m_Context.logicaldevice, m_InFlightFences[i], nullptr);
+			vkDestroySemaphore(m_Context.GetLogicDevice(), m_RenderFinishedSemaphores[i], nullptr);
+			vkDestroySemaphore(m_Context.GetLogicDevice(), m_ImageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(m_Context.GetLogicDevice(), m_InFlightFences[i], nullptr);
 		}
 
 
@@ -110,10 +110,10 @@ namespace pipeline {
 
 	void kRenderingEngine::DoRendering() {
 
-		vkWaitForFences(m_Context.logicaldevice, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+		vkWaitForFences(m_Context.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
 		uint32_t imageIndex;
-		VkResult result = vkAcquireNextImageKHR(m_Context.logicaldevice, m_Swapchain.GetSwapchain(),
+		VkResult result = vkAcquireNextImageKHR(m_Context.GetLogicDevice(), m_Swapchain.GetSwapchain(),
 												UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame],
 												VK_NULL_HANDLE, &imageIndex);
 
@@ -130,7 +130,7 @@ namespace pipeline {
 		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
 
 		{
-			vkResetFences(m_Context.logicaldevice, 1, &m_InFlightFences[m_CurrentFrame]);
+			vkResetFences(m_Context.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
 			vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
 			BuildCommandBuffer(imageIndex);
@@ -146,7 +146,7 @@ namespace pipeline {
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = signalSemaphores;
 
-			if (vkQueueSubmit(m_Context.graphicsQueue, 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
+			if (vkQueueSubmit(m_Context.GetGraphicsQueue(), 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to submit draw command buffer!");
 			}
 		}
@@ -164,7 +164,7 @@ namespace pipeline {
 			presentInfo.pSwapchains = swapChains;
 			presentInfo.pImageIndices = &imageIndex;
 
-			result = vkQueuePresentKHR(m_Context.presentQueue, &presentInfo);
+			result = vkQueuePresentKHR(m_Context.GetPresentQueue(), &presentInfo);
 		}
 
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -172,7 +172,7 @@ namespace pipeline {
 	}
 
 	void kRenderingEngine::SwapBuffers() {
-		vkDeviceWaitIdle(m_Context.logicaldevice);
+		vkDeviceWaitIdle(m_Context.GetLogicDevice());
 	}
 
     int kRenderingEngine::RegisterPreRenderPrototypes() {
@@ -203,9 +203,9 @@ namespace pipeline {
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			if (vkCreateSemaphore(m_Context.logicaldevice, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
-				vkCreateSemaphore(m_Context.logicaldevice, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
-				vkCreateFence(m_Context.logicaldevice, &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
+			if (vkCreateSemaphore(m_Context.GetLogicDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
+				vkCreateSemaphore(m_Context.GetLogicDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
+				vkCreateFence(m_Context.GetLogicDevice(), &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to create synchronization objects for a frame!");
 			}
 		}
@@ -216,11 +216,11 @@ namespace pipeline {
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = m_Context.commandPool;
+		allocInfo.commandPool = m_Context.GetCommandPool();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-		if (vkAllocateCommandBuffers(m_Context.logicaldevice, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
+		if (vkAllocateCommandBuffers(m_Context.GetLogicDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate command buffers!");
 		}
 	}
@@ -245,7 +245,7 @@ namespace pipeline {
 			renderPassInfo.renderArea.extent.height = m_WinInfo.height;
 
 			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+			clearValues[0].color = { {0.1f, 0.1f, 0.1f, 1.0f} };
 			clearValues[1].depthStencil = { 1.0f, 0 };
 
 			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -290,7 +290,7 @@ namespace pipeline {
 			glfwGetFramebufferSize(m_WinInfo.pwindow, &width, &height);
 			glfwWaitEvents();
 		}
-		vkDeviceWaitIdle(m_Context.logicaldevice);
+		vkDeviceWaitIdle(m_Context.GetLogicDevice());
 
 		m_WinInfo.width = width;
 		m_WinInfo.height = height;

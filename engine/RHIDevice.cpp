@@ -51,8 +51,8 @@ namespace pipeline {
 
 
     kRHIDevice::kRHIDevice() {
-        instance = nullptr;
-        physicalDevice = VK_NULL_HANDLE;
+        m_Instance = nullptr;
+        m_PhysicalDevice = VK_NULL_HANDLE;
     }
 
     kRHIDevice::~kRHIDevice() {
@@ -96,7 +96,7 @@ namespace pipeline {
     void kRHIDevice::CreateDevice(GLFWwindow* pwindow) {
 
         CreateInstance(pwindow);
-        CreateDebugMessenger(instance);
+        CreateDebugMessenger(m_Instance);
 
         PickPhysicalDevice();
         CreateLogicalDevice();
@@ -108,14 +108,14 @@ namespace pipeline {
 
     void kRHIDevice::ReleaseDevice() {
 
-        vkDestroyDescriptorPool(logicaldevice, descriptorPool, nullptr);
-        vkDestroyCommandPool(logicaldevice, commandPool, nullptr);
-        vkDestroyDevice(logicaldevice, nullptr);
+        vkDestroyDescriptorPool(m_Logicaldevice, m_DescriptorPool, nullptr);
+        vkDestroyCommandPool(m_Logicaldevice, m_CommandPool, nullptr);
+        vkDestroyDevice(m_Logicaldevice, nullptr);
 
-        ReleaseDebugMessenger(instance);
+        ReleaseDebugMessenger(m_Instance);
 
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyInstance(instance, nullptr);
+        vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
+        vkDestroyInstance(m_Instance, nullptr);
 
         std::cout << "cleanup kContext" << std::endl;
     }
@@ -160,11 +160,11 @@ namespace pipeline {
         }
 
 
-        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+        if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create instance!");
         }
 
-        if (glfwCreateWindowSurface(instance, pwindow, nullptr, &surface) != VK_SUCCESS) {
+        if (glfwCreateWindowSurface(m_Instance, pwindow, nullptr, &m_Surface) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
         }
     }
@@ -231,25 +231,25 @@ namespace pipeline {
     void kRHIDevice::PickPhysicalDevice() {
 
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
         std::cout << "device count:" << deviceCount << std::endl;
         if (deviceCount == 0) {
             throw std::runtime_error("failed to find GPUs with Vulkan support!");
         }
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
         for (const auto& device : devices) {
-            if (IsDeviceSuitable(device, surface)) {
+            if (IsDeviceSuitable(device, m_Surface)) {
 
-                physicalDevice = device;
-                m_QueueFamilyIndices = FindQueueFamilies(physicalDevice, surface);
-                m_SwapchainDetails = QuerySwapChainSupport(physicalDevice, surface);
+                m_PhysicalDevice = device;
+                m_QueueFamilyIndices = FindQueueFamilies(m_PhysicalDevice, m_Surface);
+                m_SwapchainDetails = QuerySwapChainSupport(m_PhysicalDevice, m_Surface);
                 break;
             }
         }
 
-        if (physicalDevice == VK_NULL_HANDLE) {
+        if (m_PhysicalDevice == VK_NULL_HANDLE) {
             throw std::runtime_error("failed to find a suitable GPU!");
         }
     }
@@ -285,12 +285,12 @@ namespace pipeline {
         createInfo.ppEnabledExtensionNames = deviceExtensions.data(); 
         createInfo.enabledLayerCount = 0;
 
-        if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicaldevice) != VK_SUCCESS) {
+        if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Logicaldevice) != VK_SUCCESS) {
             throw std::runtime_error("failed to create logical device!");
         }
 
-        vkGetDeviceQueue(logicaldevice, m_QueueFamilyIndices.graphicsAndComputeFamily.value(), 0, &graphicsQueue);
-        vkGetDeviceQueue(logicaldevice, m_QueueFamilyIndices.presentFamily.value(), 0, &presentQueue);
+        vkGetDeviceQueue(m_Logicaldevice, m_QueueFamilyIndices.graphicsAndComputeFamily.value(), 0, &m_GraphicsQueue);
+        vkGetDeviceQueue(m_Logicaldevice, m_QueueFamilyIndices.presentFamily.value(), 0, &m_PresentQueue);
     }
 
     void kRHIDevice::CreateCommandPool() {
@@ -300,7 +300,7 @@ namespace pipeline {
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         poolInfo.queueFamilyIndex = m_QueueFamilyIndices.graphicsAndComputeFamily.value();
 
-        if (vkCreateCommandPool(logicaldevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
+        if (vkCreateCommandPool(m_Logicaldevice, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
             throw std::runtime_error("failed to create command pool!");
         }
     }
@@ -321,7 +321,7 @@ namespace pipeline {
         descriptor_pool_info.poolSizeCount = pool_sizes.size();
         descriptor_pool_info.pPoolSizes = pool_sizes.data();
 
-        if (vkCreateDescriptorPool(logicaldevice, &descriptor_pool_info, nullptr, &descriptorPool) != VK_SUCCESS) {
+        if (vkCreateDescriptorPool(m_Logicaldevice, &descriptor_pool_info, nullptr, &m_DescriptorPool) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor pool!");
         }
     }
@@ -415,7 +415,7 @@ namespace pipeline {
 
     uint32_t  kRHIDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
         VkPhysicalDeviceMemoryProperties memProperties;
-        vkGetPhysicalDeviceMemoryProperties(this->physicalDevice, &memProperties);
+        vkGetPhysicalDeviceMemoryProperties(this->m_PhysicalDevice, &memProperties);
 
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
             if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
@@ -444,7 +444,7 @@ namespace pipeline {
         viewInfo.subresourceRange.layerCount = 1;
 
         VkImageView imageView;
-        if (vkCreateImageView(logicaldevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+        if (vkCreateImageView(m_Logicaldevice, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
             throw std::runtime_error("failed to create image view!");
         }
 
@@ -459,23 +459,23 @@ namespace pipeline {
         bufferInfo.usage = usageFlags;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateBuffer(logicaldevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+        if (vkCreateBuffer(m_Logicaldevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to create buffer!");
         }
 
         VkMemoryRequirements memRequirements;
-        vkGetBufferMemoryRequirements(logicaldevice, buffer, &memRequirements);
+        vkGetBufferMemoryRequirements(m_Logicaldevice, buffer, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, memoryPropertyFlags);
 
-        if (vkAllocateMemory(logicaldevice, &allocInfo, nullptr, &memory) != VK_SUCCESS) {
+        if (vkAllocateMemory(m_Logicaldevice, &allocInfo, nullptr, &memory) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate buffer memory!");
         }
 
-        vkBindBufferMemory(logicaldevice, buffer, memory, 0);
+        vkBindBufferMemory(m_Logicaldevice, buffer, memory, 0);
     }
 
     VkResult kRHIDevice::CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer* buffer, VkDeviceMemory* memory, void* data) {
@@ -487,11 +487,11 @@ namespace pipeline {
         bufferCreateInfo.usage = usageFlags;
         bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        (vkCreateBuffer(logicaldevice, &bufferCreateInfo, nullptr, buffer));
+        (vkCreateBuffer(m_Logicaldevice, &bufferCreateInfo, nullptr, buffer));
 
         // Create the memory backing up the buffer handle
         VkMemoryRequirements memReqs;
-        vkGetBufferMemoryRequirements(logicaldevice, *buffer, &memReqs);
+        vkGetBufferMemoryRequirements(m_Logicaldevice, *buffer, &memReqs);
 
         VkMemoryAllocateInfo memAlloc{};
         memAlloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -506,13 +506,13 @@ namespace pipeline {
             allocFlagsInfo.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
             memAlloc.pNext = &allocFlagsInfo;
         }
-        (vkAllocateMemory(logicaldevice, &memAlloc, nullptr, memory));
+        (vkAllocateMemory(m_Logicaldevice, &memAlloc, nullptr, memory));
 
         // If a pointer to the buffer data has been passed, map the buffer and copy over the data
         if (data != nullptr)
         {
             void* mapped;
-            (vkMapMemory(logicaldevice, *memory, 0, size, 0, &mapped));
+            (vkMapMemory(m_Logicaldevice, *memory, 0, size, 0, &mapped));
             memcpy(mapped, data, size);
             // If host coherency hasn't been requested, do a manual flush to make writes visible
             if ((memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
@@ -522,13 +522,13 @@ namespace pipeline {
                 mappedRange.memory = *memory;
                 mappedRange.offset = 0;
                 mappedRange.size = size;
-                vkFlushMappedMemoryRanges(logicaldevice, 1, &mappedRange);
+                vkFlushMappedMemoryRanges(m_Logicaldevice, 1, &mappedRange);
             }
-            vkUnmapMemory(logicaldevice, *memory);
+            vkUnmapMemory(m_Logicaldevice, *memory);
         }
 
         // Attach the memory to the buffer object
-        (vkBindBufferMemory(logicaldevice, *buffer, *memory, 0));
+        (vkBindBufferMemory(m_Logicaldevice, *buffer, *memory, 0));
 
         return VK_SUCCESS;
     }
@@ -544,7 +544,7 @@ namespace pipeline {
         createInfo.pCode = reinterpret_cast<const uint32_t*>(vertShaderCode.data());
 
         VkShaderModule shaderModule;
-        if (vkCreateShaderModule(logicaldevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+        if (vkCreateShaderModule(m_Logicaldevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
             throw std::runtime_error("failed to create shader module!");
         }
 
@@ -556,11 +556,11 @@ namespace pipeline {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = commandPool;
+        allocInfo.commandPool = m_CommandPool;
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(logicaldevice, &allocInfo, &commandBuffer);
+        vkAllocateCommandBuffers(m_Logicaldevice, &allocInfo, &commandBuffer);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -579,10 +579,10 @@ namespace pipeline {
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &commandBuffer;
 
-        vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(graphicsQueue);
+        vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(m_GraphicsQueue);
 
-        vkFreeCommandBuffers(logicaldevice, commandPool, 1, &commandBuffer);
+        vkFreeCommandBuffers(m_Logicaldevice, m_CommandPool, 1, &commandBuffer);
     }
 
     void kRHIDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
@@ -615,23 +615,23 @@ namespace pipeline {
         imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateImage(logicaldevice, &imageInfo, nullptr, &image) != VK_SUCCESS) {
+        if (vkCreateImage(m_Logicaldevice, &imageInfo, nullptr, &image) != VK_SUCCESS) {
             throw std::runtime_error("failed to create image!");
         }
 
         VkMemoryRequirements memRequirements;
-        vkGetImageMemoryRequirements(logicaldevice, image, &memRequirements);
+        vkGetImageMemoryRequirements(m_Logicaldevice, image, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-        if (vkAllocateMemory(logicaldevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+        if (vkAllocateMemory(m_Logicaldevice, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate image memory!");
         }
 
-        vkBindImageMemory(logicaldevice, image, imageMemory, 0);
+        vkBindImageMemory(m_Logicaldevice, image, imageMemory, 0);
     }
 
 

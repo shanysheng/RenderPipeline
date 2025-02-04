@@ -89,9 +89,9 @@ namespace pipeline {
         rhidevice.CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, imageSize, stagingBuffer, stagingBufferMemory);
 
         void* data;
-        vkMapMemory(rhidevice.logicaldevice, stagingBufferMemory, 0, imageSize, 0, &data);
+        vkMapMemory(rhidevice.GetLogicDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, static_cast<size_t>(imageSize));
-        vkUnmapMemory(rhidevice.logicaldevice, stagingBufferMemory);
+        vkUnmapMemory(rhidevice.GetLogicDevice(), stagingBufferMemory);
 
         stbi_image_free(pixels);
 
@@ -103,8 +103,8 @@ namespace pipeline {
         CopyBufferToImage(rhidevice, stagingBuffer, m_TextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
         TransitionImageLayout(rhidevice, m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        vkDestroyBuffer(rhidevice.logicaldevice, stagingBuffer, nullptr);
-        vkFreeMemory(rhidevice.logicaldevice, stagingBufferMemory, nullptr);
+        vkDestroyBuffer(rhidevice.GetLogicDevice(), stagingBuffer, nullptr);
+        vkFreeMemory(rhidevice.GetLogicDevice(), stagingBufferMemory, nullptr);
     }
 
     void kRHITexture2D::CreateTextureImageFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight) {
@@ -114,9 +114,9 @@ namespace pipeline {
         rhidevice.CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, bufferSize, stagingBuffer, stagingBufferMemory);
 
         void* data;
-        vkMapMemory(rhidevice.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        vkMapMemory(rhidevice.GetLogicDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
         memcpy(data, buffer, static_cast<size_t>(bufferSize));
-        vkUnmapMemory(rhidevice.logicaldevice, stagingBufferMemory);
+        vkUnmapMemory(rhidevice.GetLogicDevice(), stagingBufferMemory);
 
         rhidevice.CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -126,8 +126,8 @@ namespace pipeline {
         CopyBufferToImage(rhidevice, stagingBuffer, m_TextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
         TransitionImageLayout(rhidevice, m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        vkDestroyBuffer(rhidevice.logicaldevice, stagingBuffer, nullptr);
-        vkFreeMemory(rhidevice.logicaldevice, stagingBufferMemory, nullptr);
+        vkDestroyBuffer(rhidevice.GetLogicDevice(), stagingBuffer, nullptr);
+        vkFreeMemory(rhidevice.GetLogicDevice(), stagingBufferMemory, nullptr);
     }
 
 
@@ -137,7 +137,7 @@ namespace pipeline {
 
     void kRHITexture2D::CreateTextureSampler(kRHIDevice& rhidevice) {
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(rhidevice.physicalDevice, &properties);
+        vkGetPhysicalDeviceProperties(rhidevice.GetPhysicalDevice(), &properties);
 
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -154,7 +154,7 @@ namespace pipeline {
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-        if (vkCreateSampler(rhidevice.logicaldevice, &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS) {
+        if (vkCreateSampler(rhidevice.GetLogicDevice(), &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
     }
@@ -175,11 +175,11 @@ namespace pipeline {
     }
 
     void kRHITexture2D::ReleaseTexture(kRHIDevice& rhidevice) {
-        vkDestroySampler(rhidevice.logicaldevice, m_TextureSampler, nullptr);
-        vkDestroyImageView(rhidevice.logicaldevice, m_TextureImageView, nullptr);
+        vkDestroySampler(rhidevice.GetLogicDevice(), m_TextureSampler, nullptr);
+        vkDestroyImageView(rhidevice.GetLogicDevice(), m_TextureImageView, nullptr);
 
-        vkDestroyImage(rhidevice.logicaldevice, m_TextureImage, nullptr);
-        vkFreeMemory(rhidevice.logicaldevice, m_TextureImageMemory, nullptr);
+        vkDestroyImage(rhidevice.GetLogicDevice(), m_TextureImage, nullptr);
+        vkFreeMemory(rhidevice.GetLogicDevice(), m_TextureImageMemory, nullptr);
 
         std::cout << "cleanup cleanupTexture" << std::endl;
     }

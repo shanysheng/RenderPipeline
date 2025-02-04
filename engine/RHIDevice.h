@@ -30,8 +30,16 @@ namespace pipeline {
 		void CreateDevice(GLFWwindow* pwindow);
 		void ReleaseDevice();
 
+		VkSurfaceKHR GetSurface() { return m_Surface; }
+		VkDevice GetLogicDevice() { return m_Logicaldevice; }
+		VkPhysicalDevice GetPhysicalDevice() { return m_PhysicalDevice; }
+		VkDescriptorPool GetDescriptorPool() { return m_DescriptorPool; }
+		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; }
+		VkQueue GetPresentQueue() { return m_PresentQueue; }
+		VkCommandPool GetCommandPool() { return m_CommandPool; }
+
 		/**
-		* Create a image view
+		* Create a buffer
 		*
 		* @param image
 		* @param format
@@ -43,7 +51,7 @@ namespace pipeline {
 
 
 		/**
-		* Create a image view
+		* Create a buffer
 		*
 		* @param image
 		* @param format
@@ -66,7 +74,7 @@ namespace pipeline {
 		VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
 		/**
-		* Create a image view
+		* Create a shader  module
 		*
 		* @param image
 		* @param format
@@ -77,7 +85,7 @@ namespace pipeline {
 		VkShaderModule CreateShaderModule(const std::string& filename);
 
 		/**
-		* Create a image view
+		* Create a image
 		*
 		* @param image
 		* @param format
@@ -126,21 +134,18 @@ namespace pipeline {
 		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice pphysicalDev, VkSurfaceKHR psurface);
 
 
-
-	public:
-		VkSurfaceKHR				surface;
-		VkInstance					instance;
-
-		VkPhysicalDevice			physicalDevice;
-		VkDevice					logicaldevice;
-
-		VkQueue						graphicsQueue;
-		VkQueue						presentQueue;
-
-		VkDescriptorPool			descriptorPool;
-		VkCommandPool				commandPool;
-
 	protected:
+		VkSurfaceKHR				m_Surface;
+		VkInstance					m_Instance;
+		VkPhysicalDevice			m_PhysicalDevice;
+		VkDevice					m_Logicaldevice;
+
+		VkQueue						m_GraphicsQueue;
+		VkQueue						m_PresentQueue;
+
+		VkDescriptorPool			m_DescriptorPool;
+		VkCommandPool				m_CommandPool;
+
 		QueueFamilyIndices			m_QueueFamilyIndices;
 		SwapChainSupportDetails		m_SwapchainDetails;
 	};
