@@ -33,7 +33,10 @@
 #include <limits>
 #include <algorithm>
 #include <array>
-
+#include <thread>
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
 
 enum kGPU_BUFFER_TYPE {
 	kGPU_BUFFER_UNKNOW = -1,

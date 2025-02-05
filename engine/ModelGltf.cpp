@@ -281,11 +281,11 @@ namespace pipeline {
 
 		//VkDescriptorSetAllocateInfo allocInfo{};
 		//allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		//allocInfo.descriptorPool = rhidevice.descriptorPool;
+		//allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
 		//allocInfo.descriptorSetCount = 1;
 		//allocInfo.pSetLayouts = &m_MatrixDSLayout;
 
-		//if (vkAllocateDescriptorSets(rhidevice.logicaldevice, &allocInfo, &m_MatrixDSet) != VK_SUCCESS) {
+		//if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_MatrixDSet) != VK_SUCCESS) {
 		//	throw std::runtime_error("failed to allocate descriptor sets!");
 		//}
 
@@ -309,7 +309,7 @@ namespace pipeline {
 		//// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
 		//// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
 		//// used to update these binding relationships.
-		//vkUpdateDescriptorSets(rhidevice.logicaldevice, 1, &descriptorWrite, 0, nullptr);
+		//vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), 1, &descriptorWrite, 0, nullptr);
 
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

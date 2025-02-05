@@ -3,7 +3,7 @@
 #include "Mesh.h"
 #include "ModelGltf.h"
 #include "ModelObj.h"
-
+#include "Model3DGS.h"
 
 namespace pipeline {
 
@@ -35,6 +35,10 @@ namespace pipeline {
 
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
+
+		Model3DGS tmp_model_3dgs;
+		kSplatScene tmp_3dgs_scene;
+		//tmp_model_3dgs.LoadGSSplatFile("./models/3dgs/dianli.splat", tmp_3dgs_scene);
 
 		kGraphicsPipelineCreateInfo createinfo;
 

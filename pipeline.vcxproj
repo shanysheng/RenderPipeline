@@ -92,6 +92,7 @@
     <ClCompile Include="engine\ModelObj.cpp" />
     <ClCompile Include="engine\RHIBuffer.cpp" />
     <ClCompile Include="engine\FileManager.cpp" />
+    <ClCompile Include="engine\RHIComputePipeline.cpp" />
     <ClCompile Include="engine\RHITexture2D.cpp" />
     <ClCompile Include="engine\RHIGraphicPipeline.cpp" />
     <ClCompile Include="engine\Material.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="engine\ModelObj.h" />
     <ClInclude Include="engine\RHIBuffer.h" />
     <ClInclude Include="engine\FileManager.h" />
+    <ClInclude Include="engine\RHIComputePipeline.h" />
     <ClInclude Include="engine\RHITexture2D.h" />
     <ClInclude Include="engine\RHIGraphicPipeline.h" />
     <ClInclude Include="engine\Material.h" />

@@ -4,6 +4,8 @@
 *.idb
 lib/*.lib
 .vs
+*.splat
+*.ply
 Debug/
 Release/
 *.user
