@@ -5,6 +5,7 @@ namespace pipeline {
 
 
     kRHIBuffer::kRHIBuffer() {
+        m_Device = nullptr;
         m_Buffer = nullptr;
         m_BufferMemory = nullptr;
         m_BufferMapped = nullptr;
@@ -12,10 +13,12 @@ namespace pipeline {
 
     kRHIBuffer::~kRHIBuffer()
     {
-
+        ReleaseBuffer();
     }
 
     void kRHIBuffer::CreateVertexBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize) {
+
+        m_Device = rhidevice.GetLogicDevice();
 
         rhidevice.CreateBuffer( VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffersize, m_Buffer, m_BufferMemory);
@@ -39,7 +42,9 @@ namespace pipeline {
 
     void kRHIBuffer::CreateIndexBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize) {
 
-        rhidevice.CreateBuffer( VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 
+        m_Device = rhidevice.GetLogicDevice();
+
+        rhidevice.CreateBuffer( VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffersize, m_Buffer, m_BufferMemory);
 
         VkBuffer stagingBuffer;
@@ -62,6 +67,8 @@ namespace pipeline {
 
     void kRHIBuffer::CreateUniformBuffer(kRHIDevice& rhidevice, VkDeviceSize bufferSize) {
 
+        m_Device = rhidevice.GetLogicDevice();
+
         rhidevice.CreateBuffer( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                 bufferSize, m_Buffer, m_BufferMemory);
@@ -70,14 +77,23 @@ namespace pipeline {
     }
 
 
-    void  kRHIBuffer::ReleaseBuffer(kRHIDevice& rhidevice) {
-        vkDestroyBuffer(rhidevice.GetLogicDevice(), m_Buffer, nullptr);
-        vkFreeMemory(rhidevice.GetLogicDevice(), m_BufferMemory, nullptr);
+    void  kRHIBuffer::ReleaseBuffer() {
 
-        m_Buffer = nullptr;
-        m_BufferMemory = nullptr;
+        if (m_Device != nullptr && m_Buffer != nullptr) {
 
-        std::cout << "cleanup kBuffer" << std::endl;
+            if (m_BufferMapped != nullptr) {
+                vkUnmapMemory(m_Device, m_BufferMemory);
+                m_BufferMapped = nullptr;
+            }
+
+            vkDestroyBuffer(m_Device, m_Buffer, nullptr);
+            vkFreeMemory(m_Device, m_BufferMemory, nullptr);
+
+            m_Buffer = nullptr;
+            m_BufferMemory = nullptr;
+
+            std::cout << "cleanup kBuffer" << std::endl;
+        }
     }
 
     void kRHIBuffer::UpdateBuffer(const void* pbuffer, uint32_t bufferSize) {

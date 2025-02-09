@@ -100,7 +100,7 @@ namespace pipeline {
         // for debug
         glm::quat rotateQuat = m_ModelMat;
         glm::vec3 rotation = glm::eulerAngles(rotateQuat);
-        std::cout <<"pos:" << m_Position.x << "," << m_Position.y << "," << m_Position.z << ", rot:" << rotation.x << "," << rotation.y << "," << rotation.z << std::endl;
+        //std::cout <<"pos:" << m_Position.x << "," << m_Position.y << "," << m_Position.z << ", rot:" << rotation.x << "," << rotation.y << "," << rotation.z << std::endl;
     };
 
     //const kMatrix4x4f& kCamera::LookAt(const kVector3f& eye, const kVector3f& center, const kVector3f& up) {

@@ -69,7 +69,8 @@ namespace pipeline {
 		splatstream.seekg(0, splatstream.beg);
 		splatstream.read((char*)splat_array.data(), point_count * sizeof(kSplatPoint));
 
-		//const float sh_C0 = 0.28209479177387814;
+		// convert color to sh coefficient
+		const float sh_C0 = 0.28209479177387814;
 
 		uint32_t ptsize = sizeof(float) * 3;
 		uint32_t cov3dsize = sizeof(float) * 6;
@@ -94,11 +95,11 @@ namespace pipeline {
 			splatscene.bb_max.y = std::max(splatscene.bb_max.y, splat_array[k].pos[1]);
 			splatscene.bb_max.z = std::max(splatscene.bb_max.z, splat_array[k].pos[2]);
 
-			// color
-			tmpcolor.r = (splat_array[k].color[0] / 255.0f);
-			tmpcolor.g = (splat_array[k].color[1] / 255.0f);
-			tmpcolor.b = (splat_array[k].color[2] / 255.0f);
-			tmpcolor.a = (splat_array[k].color[3] / 255.0f);
+			// color, convert color to sh coefficient
+			tmpcolor.r = ((splat_array[k].color[0] / 255.0f) - 0.5f) / sh_C0;
+			tmpcolor.g = ((splat_array[k].color[1] / 255.0f) - 0.5f) / sh_C0;
+			tmpcolor.b = ((splat_array[k].color[2] / 255.0f) - 0.5f) / sh_C0;
+			tmpcolor.a = ((splat_array[k].color[3] / 255.0f) - 0.5f) / sh_C0;
 
 			memcpy(splatscene.color_buf.data() + 4 * k, &tmpcolor, sizeof(float) * 4);
 

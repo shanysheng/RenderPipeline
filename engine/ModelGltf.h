@@ -63,19 +63,6 @@ namespace pipeline {
 
         };
 
-        // Single vertex buffer for all primitives
-        struct {
-            VkBuffer buffer;
-            VkDeviceMemory memory;
-        } vertices;
-
-        // Single index buffer for all primitives
-        struct {
-            int count;
-            VkBuffer buffer;
-            VkDeviceMemory memory;
-        } indices;
-
         // A primitive contains the data for a single draw call
         struct Primitive {
             uint32_t firstIndex;
@@ -144,16 +131,33 @@ namespace pipeline {
         std::vector<Material> materials;
         std::vector<Node*> nodes;
 
-        // camera uniform
+        //// Single vertex buffer for all primitives
+        //struct {
+        //    VkBuffer buffer;
+        //    VkDeviceMemory memory;
+        //} vertices;
+
+        //// Single index buffer for all primitives
+        //struct {
+        //    int count;
+        //    VkBuffer buffer;
+        //    VkDeviceMemory memory;
+        //} indices;
+
+        // vertex and index buffer;
+        size_t                          m_IndexCount;
+        std::shared_ptr<kRHIBuffer>     m_IndexBuffer;
+        std::shared_ptr<kRHIBuffer>     m_VertexBuffer;
+        std::shared_ptr<kRHIBuffer>     m_MatrixBuffer;
+
+        // ds layout
         VkDescriptorSetLayout	m_MatrixDSLayout;
-        VkDescriptorSet	        m_MatrixDSet;
-        kRHIBuffer              m_MatrixBuffer;
+        VkDescriptorSetLayout	m_SamplerDSLayout;
 
         // model matrix
         glm::mat4               m_ModelMat;
+        VkDescriptorSet	        m_MatrixDSet;
 
-        // sampler dslayout
-        VkDescriptorSetLayout	m_SamplerDSLayout;
     };
 
 }

@@ -26,11 +26,13 @@ namespace pipeline {
 		void CreateUniformBuffer(kRHIDevice& rhidevice, VkDeviceSize bufferSize);
 		void UpdateBuffer(const void* pbuffer, uint32_t bufferSize);
 
-		void ReleaseBuffer(kRHIDevice& rhidevice);
+		void ReleaseBuffer();
 
 		VkBuffer GetBuffer() { return m_Buffer; }
 
 	protected:
+		VkDevice			m_Device;
+
 		VkBuffer			m_Buffer;
 		VkDeviceMemory		m_BufferMemory;
 		void*				m_BufferMapped;

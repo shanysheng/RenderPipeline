@@ -7,10 +7,10 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [Resource](#Resource)
 - [Implementations](#implementations)
 - [Architecture](#Architecture)
-- - [RenderEngine](#RenderEngine)
-- - [RenderUnit](#RenderUnit)
-- - [PreRender](#PreRender)
-- - [RenderPipeline](#RenderPipeline)
+  - [RenderEngine](#RenderEngine)
+  - [RenderUnit](#RenderUnit)
+  - [PreRender](#PreRender)
+  - [RenderPipeline](#RenderPipeline)
 - [Samples](#Samples)
 
 # Overview
@@ -31,7 +31,7 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [x] Swapchain: VkSwapchainKHR, VkImage, VkImageView, VkFramebuffer, VkRenderPass
 - [x] Texture: VkImage, VkImageView, VkDeviceMemory, VkSampler
 - [x] Buffer: VkBuffer, VkDeviceMemory
-- [x] Graphic Pipeline: VkPipeline, VkPipelineLayout, VkDescriptorSetLayout
+- [x] Graphic Pipeline: VkPipeline, VkPipelineLayout, VkDescriptorSetLayout, VkDescriptorSet, VkShaderModule
 - [ ] Computer Pipeline: VkPipeline, VkPipelineLayout, VkDescriptorSetLayout
 ### framework
 - [ ] RenderPipeline
@@ -42,11 +42,13 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [ ] RenderTarget
 - [ ] RHIResource, RHIResourceManager
 - [ ] Scene, SGNode, MeshBuilder, Mesh, Material
+  - [ ] MeshBuilder
+  - [ ] SceneBuilder
 ### model files
 - [x] obj
 - [x] gltf
 - [ ] 3dgs
-  - [ ] Load .splat file
+  - [x] Load .splat file
   - [ ] projection, drawing quad
   - [ ] sort splat, color blending
   - [ ] optimize: computer shader parser

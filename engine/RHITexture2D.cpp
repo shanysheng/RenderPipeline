@@ -5,6 +5,20 @@
 
 namespace pipeline {
 
+    kRHITexture2D::kRHITexture2D() {
+        m_Device = nullptr;
+
+        m_TextureImage = nullptr;
+        m_TextureImageMemory = nullptr;
+
+        m_TextureImageView = nullptr;
+        m_TextureSampler = nullptr;
+    }
+    
+    kRHITexture2D::~kRHITexture2D() {
+        ReleaseTexture();
+    }
+
     void kRHITexture2D::CopyBufferToImage(kRHIDevice& rhidevice, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 
         VkCommandBuffer commandBuffer = rhidevice.BeginSingleTimeCommands();
@@ -76,6 +90,9 @@ namespace pipeline {
     }
 
     void kRHITexture2D::CreateTextureImage(kRHIDevice& rhidevice, const std::string& filename) {
+
+        m_Device = rhidevice.GetLogicDevice();
+
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -109,6 +126,8 @@ namespace pipeline {
 
     void kRHITexture2D::CreateTextureImageFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight) {
 
+        m_Device = rhidevice.GetLogicDevice();
+
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
         rhidevice.CreateBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, bufferSize, stagingBuffer, stagingBufferMemory);
@@ -136,6 +155,9 @@ namespace pipeline {
     }
 
     void kRHITexture2D::CreateTextureSampler(kRHIDevice& rhidevice) {
+
+        m_Device = rhidevice.GetLogicDevice();
+
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(rhidevice.GetPhysicalDevice(), &properties);
 
@@ -174,14 +196,33 @@ namespace pipeline {
 
     }
 
-    void kRHITexture2D::ReleaseTexture(kRHIDevice& rhidevice) {
-        vkDestroySampler(rhidevice.GetLogicDevice(), m_TextureSampler, nullptr);
-        vkDestroyImageView(rhidevice.GetLogicDevice(), m_TextureImageView, nullptr);
+    void kRHITexture2D::ReleaseTexture() {
 
-        vkDestroyImage(rhidevice.GetLogicDevice(), m_TextureImage, nullptr);
-        vkFreeMemory(rhidevice.GetLogicDevice(), m_TextureImageMemory, nullptr);
+        if (m_Device != nullptr && m_TextureImage != nullptr) {
 
-        std::cout << "cleanup cleanupTexture" << std::endl;
+            if(m_TextureSampler)
+                vkDestroySampler(m_Device, m_TextureSampler, nullptr);
+
+            if (m_TextureImageView)
+                vkDestroyImageView(m_Device, m_TextureImageView, nullptr);
+
+            if (m_TextureImage)
+                vkDestroyImage(m_Device, m_TextureImage, nullptr);
+
+            if (m_TextureImageMemory)
+                vkFreeMemory(m_Device, m_TextureImageMemory, nullptr);
+
+            m_Device = nullptr;
+            m_TextureImage = nullptr;
+            m_TextureImageMemory = nullptr;
+            m_TextureImageView = nullptr;
+            m_TextureSampler = nullptr;
+
+            std::cout << "cleanup cleanupTexture" << std::endl;
+        }
+
+
+
     }
 
 }

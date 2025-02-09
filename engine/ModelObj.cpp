@@ -93,16 +93,21 @@ namespace pipeline {
 
 	void ModelObj::Load(kRHIDevice& rhidevice) {
 
+		m_VertexBuffer = std::make_shared<kRHIBuffer>();
+		m_IndexBuffer = std::make_shared<kRHIBuffer>();
+		m_UniformBuffer = std::make_shared<kRHIBuffer>();
+		m_Texture = std::make_shared<kRHITexture2D>();
+
 		std::vector<Vertex>    vertex;
 		std::vector<uint32_t>  indices;
 		LoadModelFromfile(vertex, indices);
 		m_IndexCount = indices.size();
 
-		m_VertexBuffer.CreateVertexBuffer(rhidevice, (const char*)vertex.data(), vertex.size() * sizeof(Vertex));
-		m_IndexBuffer.CreateIndexBuffer(rhidevice, (const char*)indices.data(), indices.size() * sizeof(uint32_t));
+		m_VertexBuffer->CreateVertexBuffer(rhidevice, (const char*)vertex.data(), vertex.size() * sizeof(Vertex));
+		m_IndexBuffer->CreateIndexBuffer(rhidevice, (const char*)indices.data(), indices.size() * sizeof(uint32_t));
 
-		m_Texture.CreateTexture(rhidevice, OBJ_TEXTURE_PATH);
-		m_UniformBuffer.CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
+		m_Texture->CreateTexture(rhidevice, OBJ_TEXTURE_PATH);
+		m_UniformBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
 
 		SetupDescriptorSets(rhidevice);
 	}
@@ -124,12 +129,13 @@ namespace pipeline {
 		//temp_shaderdat.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		temp_shaderdat.proj = camera.GetProjMat();
 
-		m_UniformBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
+		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 
-		VkBuffer vertexBuffers[] = { m_VertexBuffer.GetBuffer()};
 		VkDeviceSize offsets[] = { 0 };
+		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer()};
+
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
 		vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
 	}
@@ -138,10 +144,10 @@ namespace pipeline {
 
 		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_DescriptorSetLayout, nullptr);
 
-		m_Texture.ReleaseTexture(rhidevice);
-		m_IndexBuffer.ReleaseBuffer(rhidevice);
-		m_VertexBuffer.ReleaseBuffer(rhidevice);
-		m_UniformBuffer.ReleaseBuffer(rhidevice);
+		m_Texture.reset();
+		m_IndexBuffer.reset();
+		m_VertexBuffer.reset();
+		m_UniformBuffer.reset();
 	}
 
 
@@ -158,14 +164,14 @@ namespace pipeline {
 		}
 
 		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer.GetBuffer();
+		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
 		bufferInfo.offset = 0;
 		bufferInfo.range = sizeof(ModelObjShaderData);
 
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = m_Texture.GetImageView();
-		imageInfo.sampler = m_Texture.GetImageSampler();
+		imageInfo.imageView = m_Texture->GetImageView();
+		imageInfo.sampler = m_Texture->GetImageSampler();
 
 		std::vector<VkWriteDescriptorSet> descriptorWrites(2);
 

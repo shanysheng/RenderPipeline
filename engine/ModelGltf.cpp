@@ -149,103 +149,41 @@ namespace pipeline {
 			return;
 		}
 
+		m_VertexBuffer = std::make_shared<kRHIBuffer>();
+		m_IndexBuffer = std::make_shared<kRHIBuffer>();
+		m_MatrixBuffer = std::make_shared<kRHIBuffer>();
+
 		// Create and upload vertex and index buffer
 		// We will be using one single vertex buffer and one single index buffer for the whole glTF scene
 		// Primitives (of the glTF model) will then index into these using index offsets
-
-		size_t vertexBufferSize = vertexBuffer.size() * sizeof(Vertex);
 		size_t indexBufferSize = indexBuffer.size() * sizeof(uint32_t);
-		indices.count = static_cast<uint32_t>(indexBuffer.size());
+		size_t vertexBufferSize = vertexBuffer.size() * sizeof(Vertex);
 
-		struct StagingBuffer {
-			VkBuffer buffer;
-			VkDeviceMemory memory;
-		} vertexStaging, indexStaging;
-
-		// Create host visible staging buffers (source)
-		(rhidevice.CreateBuffer(
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			vertexBufferSize,
-			&vertexStaging.buffer,
-			&vertexStaging.memory,
-			vertexBuffer.data()));
-		// Index data
-		(rhidevice.CreateBuffer(
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			indexBufferSize,
-			&indexStaging.buffer,
-			&indexStaging.memory,
-			indexBuffer.data()));
-
-		// Create device local buffers (target)
-		(rhidevice.CreateBuffer(
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			vertexBufferSize,
-			&vertices.buffer,
-			&vertices.memory));
-		(rhidevice.CreateBuffer(
-			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			indexBufferSize,
-			&indices.buffer,
-			&indices.memory));
-
-		// Copy data from staging buffers (host) do device local buffer (gpu)
-		VkCommandBuffer commandBuffer = rhidevice.BeginSingleTimeCommands();
-
-		VkBufferCopy copyRegion = {};
-
-		copyRegion.size = vertexBufferSize;
-		vkCmdCopyBuffer(
-			commandBuffer,
-			vertexStaging.buffer,
-			vertices.buffer,
-			1,
-			&copyRegion);
-
-		copyRegion.size = indexBufferSize;
-		vkCmdCopyBuffer(
-			commandBuffer,
-			indexStaging.buffer,
-			indices.buffer,
-			1,
-			&copyRegion);
-
-		rhidevice.EndSingleTimeCommands(commandBuffer);
-
-		// Free staging resources
-		vkDestroyBuffer(rhidevice.GetLogicDevice(), vertexStaging.buffer, nullptr);
-		vkFreeMemory(rhidevice.GetLogicDevice(), vertexStaging.memory, nullptr);
-		vkDestroyBuffer(rhidevice.GetLogicDevice(), indexStaging.buffer, nullptr);
-		vkFreeMemory(rhidevice.GetLogicDevice(), indexStaging.memory, nullptr);
-
-		m_MatrixBuffer.CreateUniformBuffer(rhidevice, sizeof(ModelGltfShaderData));
+		m_IndexCount = static_cast<uint32_t>(indexBuffer.size());
+		m_IndexBuffer->CreateIndexBuffer(rhidevice, (const char*)indexBuffer.data(), indexBufferSize);
+		m_VertexBuffer->CreateVertexBuffer(rhidevice, (const char*)vertexBuffer.data(), vertexBufferSize);
+		m_MatrixBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelGltfShaderData));
 
 		SetupDescriptorSets(rhidevice);
 	}
 
 	void ModelGltf::Unload(kRHIDevice& rhidevice) {
 
+		//// Release all Vulkan resources allocated for the model
+
 		for (auto node : nodes) {
 			delete node;
 		}
-		
-		m_MatrixBuffer.ReleaseBuffer(rhidevice);
 
 		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_MatrixDSLayout, nullptr);
 		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_SamplerDSLayout, nullptr);
 
-		// Release all Vulkan resources allocated for the model
-		vkDestroyBuffer(rhidevice.GetLogicDevice(), vertices.buffer, nullptr);
-		vkFreeMemory(rhidevice.GetLogicDevice(), vertices.memory, nullptr);
-		vkDestroyBuffer(rhidevice.GetLogicDevice(), indices.buffer, nullptr);
-		vkFreeMemory(rhidevice.GetLogicDevice(), indices.memory, nullptr);
+		m_MatrixBuffer.reset();
+		m_IndexBuffer.reset();
+		m_VertexBuffer.reset();
 
 		for (Image image : images) {
-			image.texture.ReleaseTexture(rhidevice);
+			image.texture.ReleaseTexture();
 		}
 
 	}
@@ -263,7 +201,7 @@ namespace pipeline {
 		temp_shaderdat.projection = camera.GetProjMat();
 		temp_shaderdat.lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
 
-		m_MatrixBuffer.UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
+		m_MatrixBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 
 
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_MatrixDSet, 0, nullptr);
@@ -322,7 +260,7 @@ namespace pipeline {
 		}
 
 		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_MatrixBuffer.GetBuffer();
+		bufferInfo.buffer = m_MatrixBuffer->GetBuffer();
 		bufferInfo.offset = 0;
 		bufferInfo.range = sizeof(ModelGltfShaderData);
 
@@ -612,8 +550,10 @@ namespace pipeline {
 
 		// All vertices and indices are stored in single buffers, so we only need to bind once
 		VkDeviceSize offsets[1] = { 0 };
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
+		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer() };
+
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		// Render all nodes at top-level
 		for (auto& node : nodes) {
 			drawNode(commandBuffer, pipelineLayout, node);

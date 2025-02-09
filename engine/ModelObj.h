@@ -50,15 +50,15 @@ namespace pipeline {
 
     protected:
 
-        kRHIBuffer              m_VertexBuffer;
-        kRHIBuffer              m_IndexBuffer;
-        size_t                  m_IndexCount;
+        size_t                          m_IndexCount;
+        std::shared_ptr<kRHIBuffer>     m_IndexBuffer;
+        std::shared_ptr<kRHIBuffer>     m_VertexBuffer;
 
-        kRHIBuffer              m_UniformBuffer;
-        kRHITexture2D           m_Texture;
+        std::shared_ptr<kRHIBuffer>     m_UniformBuffer;
+        std::shared_ptr<kRHITexture2D>  m_Texture;
 
-        VkDescriptorSetLayout	m_DescriptorSetLayout;
-        VkDescriptorSet	        m_DescriptorSet;
+        VkDescriptorSetLayout	        m_DescriptorSetLayout;
+        VkDescriptorSet	                m_DescriptorSet;
     };
 
 }

@@ -18,13 +18,13 @@ namespace pipeline {
 	class kRHITexture2D
 	{
 	public:
-		kRHITexture2D() {};
-		virtual ~kRHITexture2D() {};
+		kRHITexture2D();
+		virtual ~kRHITexture2D();
 
 		void CreateTexture(kRHIDevice& rhidevice, const std::string& filename);
 		void CreateTextureFromBuffer(kRHIDevice& rhidevice, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight);
 
-		void ReleaseTexture(kRHIDevice& rhidevice);
+		void ReleaseTexture();
 
 		VkImage GetImage() { return m_TextureImage; };
 		VkImageView GetImageView() { return m_TextureImageView; };
@@ -43,6 +43,8 @@ namespace pipeline {
 
 
 	protected:
+		VkDevice			m_Device;
+
 		VkImage				m_TextureImage;
 		VkDeviceMemory		m_TextureImageMemory;
 
