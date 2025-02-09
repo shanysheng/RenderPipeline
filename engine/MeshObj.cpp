@@ -1,4 +1,4 @@
-#include "ModelObj.h"
+#include "MeshObj.h"
 #include "RHIDevice.h"
 #include "Camera.h"
 
@@ -6,8 +6,8 @@
 #include "tiny_obj_loader.h"
 
 
-template<> struct std::hash<pipeline::ModelObj::Vertex> {
-	size_t operator()(pipeline::ModelObj::Vertex const& vertex) const {
+template<> struct std::hash<pipeline::kMeshObj::Vertex> {
+	size_t operator()(pipeline::kMeshObj::Vertex const& vertex) const {
 		return ((std::hash<glm::vec3>()(vertex.pos) ^ (std::hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (std::hash<glm::vec2>()(vertex.texCoord) << 1);
 	}
 };
@@ -17,15 +17,15 @@ namespace pipeline {
 	const std::string OBJ_MODEL_PATH = "resources/viking_room.obj";
 	const std::string OBJ_TEXTURE_PATH = "resources/viking_room.png";
 
-	ModelObj::ModelObj() {
+	kMeshObj::kMeshObj() {
 
 	}
 
-	ModelObj::~ModelObj() {
+	kMeshObj::~kMeshObj() {
 
 	}
 
-	VkVertexInputBindingDescription ModelObj::getBindingDescription() {
+	VkVertexInputBindingDescription kMeshObj::getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = 0;
 		bindingDescription.stride = sizeof(Vertex);
@@ -34,7 +34,7 @@ namespace pipeline {
 		return bindingDescription;
 	}
 
-	std::vector<VkVertexInputAttributeDescription> ModelObj::getAttributeDescriptions() {
+	std::vector<VkVertexInputAttributeDescription> kMeshObj::getAttributeDescriptions() {
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
 
 		attributeDescriptions[0].binding = 0;
@@ -55,7 +55,7 @@ namespace pipeline {
 		return attributeDescriptions;
 	}
 
-	std::vector<VkDescriptorSetLayout> ModelObj::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
+	std::vector<VkDescriptorSetLayout> kMeshObj::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
 		uboLayoutBinding.binding = 0;
@@ -85,13 +85,13 @@ namespace pipeline {
 		return std::vector<VkDescriptorSetLayout> {m_DescriptorSetLayout};
 	}
 
-	std::vector<VkPushConstantRange> ModelObj::PreparePushConstantRange(kRHIDevice& rhidevice) {
+	std::vector<VkPushConstantRange> kMeshObj::PreparePushConstantRange(kRHIDevice& rhidevice) {
 
 		return std::vector<VkPushConstantRange>{};
 	}
 
 
-	void ModelObj::Load(kRHIDevice& rhidevice) {
+	void kMeshObj::Load(kRHIDevice& rhidevice) {
 
 		m_VertexBuffer = std::make_shared<kRHIBuffer>();
 		m_IndexBuffer = std::make_shared<kRHIBuffer>();
@@ -112,11 +112,11 @@ namespace pipeline {
 		SetupDescriptorSets(rhidevice);
 	}
 
-	void ModelObj::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
+	void kMeshObj::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
 
 	}
 
-	void ModelObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
+	void kMeshObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -140,7 +140,7 @@ namespace pipeline {
 		vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
 	}
 
-	void ModelObj::Unload(kRHIDevice& rhidevice) {
+	void kMeshObj::Unload(kRHIDevice& rhidevice) {
 
 		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_DescriptorSetLayout, nullptr);
 
@@ -151,7 +151,7 @@ namespace pipeline {
 	}
 
 
-	void ModelObj::SetupDescriptorSets(kRHIDevice& rhidevice) {
+	void kMeshObj::SetupDescriptorSets(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -199,7 +199,7 @@ namespace pipeline {
 		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
-	void ModelObj::LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array) {
+	void kMeshObj::LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array) {
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;

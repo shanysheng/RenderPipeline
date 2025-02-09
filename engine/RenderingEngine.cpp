@@ -1,9 +1,9 @@
 #include "RenderingEngine.h"
 
 #include "Mesh.h"
-#include "ModelGltf.h"
-#include "ModelObj.h"
-#include "Model3DGS.h"
+#include "MeshGltf.h"
+#include "MeshObj.h"
+#include "Mesh3DGS.h"
 
 namespace pipeline {
 
@@ -36,7 +36,7 @@ namespace pipeline {
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
-		Model3DGS tmp_model_3dgs;
+		kMesh3DGS tmp_model_3dgs;
 		kSplatScene tmp_3dgs_scene;
 		//tmp_model_3dgs.LoadGSSplatFile("./models/3dgs/dianli.splat", tmp_3dgs_scene);
 
@@ -48,7 +48,7 @@ namespace pipeline {
 			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
 			// obj model
-			m_pModel = new ModelObj();
+			m_pModel = new kMeshObj();
 			createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
 			createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
 		}
@@ -57,7 +57,7 @@ namespace pipeline {
 			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
 			// gltf model
-			m_pModel = new ModelGltf();
+			m_pModel = new kMeshGltf();
 			createinfo.vertex_shader_file = "shaders/mesh.vert.spv";
 			createinfo.frag_shader_file = "shaders/mesh.frag.spv";
 		}

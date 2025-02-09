@@ -67,7 +67,7 @@ namespace pipeline {
     
     class IPreRender;
     class IRenderTarget;
-    class IModel;
+    class kMeshBase;
 
     class kSGNode;
     class kScene;
@@ -276,7 +276,7 @@ namespace pipeline {
     protected:
 
         kRHIGraphicPipeline				        m_GraphicPipeline;
-        IModel*						            m_pModel;
+        kMeshBase*						        m_pModel;
     };
 
 }

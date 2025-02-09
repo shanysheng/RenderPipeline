@@ -1,4 +1,4 @@
-#include "ModelGltf.h"
+#include "MeshGltf.h"
 #include "RHIDevice.h"
 #include "Camera.h"
 
@@ -15,15 +15,15 @@ namespace pipeline {
 	const std::string GLTF_MODEL_PATH = "models/FlightHelmet/glTF/FlightHelmet.gltf";
 
 
-	ModelGltf::ModelGltf() {
+	kMeshGltf::kMeshGltf() {
 
 	}
 
-	ModelGltf::~ModelGltf() {
+	kMeshGltf::~kMeshGltf() {
 
 	}
 
-	VkVertexInputBindingDescription ModelGltf::getBindingDescription() {
+	VkVertexInputBindingDescription kMeshGltf::getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = 0;
 		bindingDescription.stride = sizeof(Vertex);
@@ -32,7 +32,7 @@ namespace pipeline {
 		return bindingDescription;
 	}
 
-	std::vector<VkVertexInputAttributeDescription> ModelGltf::getAttributeDescriptions() {
+	std::vector<VkVertexInputAttributeDescription> kMeshGltf::getAttributeDescriptions() {
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
 
 		attributeDescriptions[0].binding = 0;
@@ -59,7 +59,7 @@ namespace pipeline {
 	}
 
 
-	std::vector<VkDescriptorSetLayout> ModelGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
+	std::vector<VkDescriptorSetLayout> kMeshGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding matrixLayoutBinding{};
 		matrixLayoutBinding.binding = 0;
@@ -110,7 +110,7 @@ namespace pipeline {
 	}
 
 
-	std::vector<VkPushConstantRange> ModelGltf::PreparePushConstantRange(kRHIDevice& rhidevice) {
+	std::vector<VkPushConstantRange> kMeshGltf::PreparePushConstantRange(kRHIDevice& rhidevice) {
 
 		VkPushConstantRange pushConstantRange{};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -120,7 +120,7 @@ namespace pipeline {
 		return std::vector<VkPushConstantRange>{pushConstantRange};
 	}
 
-	void ModelGltf::Load(kRHIDevice& rhidevice) {
+	void kMeshGltf::Load(kRHIDevice& rhidevice) {
 
 		tinygltf::Model glTFInput;
 		tinygltf::TinyGLTF gltfContext;
@@ -131,7 +131,7 @@ namespace pipeline {
 		// Pass some Vulkan resources required for setup and rendering to the glTF model loading class
 
 		std::vector<uint32_t> indexBuffer;
-		std::vector<ModelGltf::Vertex> vertexBuffer;
+		std::vector<kMeshGltf::Vertex> vertexBuffer;
 
 		if (fileLoaded) {
 			loadImages(rhidevice, glTFInput);
@@ -167,7 +167,7 @@ namespace pipeline {
 		SetupDescriptorSets(rhidevice);
 	}
 
-	void ModelGltf::Unload(kRHIDevice& rhidevice) {
+	void kMeshGltf::Unload(kRHIDevice& rhidevice) {
 
 		//// Release all Vulkan resources allocated for the model
 
@@ -188,12 +188,12 @@ namespace pipeline {
 
 	}
 
-	void ModelGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
+	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
 
 
 	}
 
-	void ModelGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
+	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 
 		ModelGltfShaderData temp_shaderdat{};
 		temp_shaderdat.viewPos = glm::vec4(camera.GetViewPos(), 1.0f);
@@ -209,13 +209,13 @@ namespace pipeline {
 		draw(commandBuffer, pipelineLayout);
 	}
 
-	void ModelGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {
+	void kMeshGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {
 
 		SetupMatrixDescriptorSets(rhidevice);
 		SetupMaterialDescriptorSets(rhidevice);
 	}
 
-	void ModelGltf::SetupMatrixDescriptorSets(kRHIDevice& rhidevice) {
+	void kMeshGltf::SetupMatrixDescriptorSets(kRHIDevice& rhidevice) {
 
 		//VkDescriptorSetAllocateInfo allocInfo{};
 		//allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -285,7 +285,7 @@ namespace pipeline {
 
 	}
 
-	void ModelGltf::SetupMaterialDescriptorSets(kRHIDevice& rhidevice) {
+	void kMeshGltf::SetupMaterialDescriptorSets(kRHIDevice& rhidevice) {
 
 		for (auto& image : images) {
 			VkDescriptorSetAllocateInfo allocInfo{};
@@ -324,7 +324,7 @@ namespace pipeline {
 
 	}
 
-	void ModelGltf::loadImages(kRHIDevice& rhidevice, tinygltf::Model& input) {
+	void kMeshGltf::loadImages(kRHIDevice& rhidevice, tinygltf::Model& input) {
 
 		// Images can be stored inside the glTF (which is the case for the sample model), so instead of directly
 		// loading them from disk, we fetch them from the glTF loader and upload the buffers
@@ -363,14 +363,14 @@ namespace pipeline {
 		}
 	}
 
-	void ModelGltf::loadTextures(kRHIDevice& rhidevice, tinygltf::Model& input) {
+	void kMeshGltf::loadTextures(kRHIDevice& rhidevice, tinygltf::Model& input) {
 		textures.resize(input.textures.size());
 		for (size_t i = 0; i < input.textures.size(); i++) {
 			textures[i].imageIndex = input.textures[i].source;
 		}
 	}
 
-	void ModelGltf::loadMaterials(kRHIDevice& rhidevice, tinygltf::Model& input) {
+	void kMeshGltf::loadMaterials(kRHIDevice& rhidevice, tinygltf::Model& input) {
 		materials.resize(input.materials.size());
 		for (size_t i = 0; i < input.materials.size(); i++) {
 			// We only read the most basic properties required for our sample
@@ -386,7 +386,7 @@ namespace pipeline {
 		}
 	}
 
-	void ModelGltf::loadNode(kRHIDevice& rhidevice, const tinygltf::Node& inputNode, const tinygltf::Model& input, Node* parent, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer) {
+	void kMeshGltf::loadNode(kRHIDevice& rhidevice, const tinygltf::Node& inputNode, const tinygltf::Model& input, Node* parent, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer) {
 
 		Node* node = new Node{};
 		node->matrix = glm::mat4(1.0f);
@@ -516,7 +516,7 @@ namespace pipeline {
 	}
 
 	// Draw a single node including child nodes (if present)
-	void ModelGltf::drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Node* node) {
+	void kMeshGltf::drawNode(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, Node* node) {
 
 		if (node->mesh.primitives.size() > 0) {
 			// Pass the node's matrix via push constants
@@ -546,7 +546,7 @@ namespace pipeline {
 	}
 
 	// Draw the glTF scene starting at the top-level-nodes
-	void ModelGltf::draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
+	void kMeshGltf::draw(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) {
 
 		// All vertices and indices are stored in single buffers, so we only need to bind once
 		VkDeviceSize offsets[1] = { 0 };

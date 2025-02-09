@@ -1,4 +1,4 @@
-#include "Model3DGS.h"
+#include "Mesh3DGS.h"
 
 namespace pipeline {
 
@@ -6,53 +6,53 @@ namespace pipeline {
 
     //--------------------------------------------------------------------------------------------------
 
-    Model3DGS::Model3DGS() {
+    kMesh3DGS::kMesh3DGS() {
 
     }
 
-    Model3DGS::~Model3DGS() {
+    kMesh3DGS::~kMesh3DGS() {
 
     }
 
-    VkVertexInputBindingDescription Model3DGS::getBindingDescription() {
+    VkVertexInputBindingDescription kMesh3DGS::getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
 
         return bindingDescription;
     }
 
-    std::vector<VkVertexInputAttributeDescription> Model3DGS::getAttributeDescriptions() {
+    std::vector<VkVertexInputAttributeDescription> kMesh3DGS::getAttributeDescriptions() {
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
 
         return attributeDescriptions;
     }
 
-    std::vector<VkDescriptorSetLayout> Model3DGS::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
+    std::vector<VkDescriptorSetLayout> kMesh3DGS::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
         return std::vector<VkDescriptorSetLayout> {};
     }
 
-    std::vector<VkPushConstantRange> Model3DGS::PreparePushConstantRange(kRHIDevice& rhidevice) {
+    std::vector<VkPushConstantRange> kMesh3DGS::PreparePushConstantRange(kRHIDevice& rhidevice) {
 
         return std::vector<VkPushConstantRange>{};
     }
 
-    void Model3DGS::Load(kRHIDevice& rhidevicet) {
+    void kMesh3DGS::Load(kRHIDevice& rhidevicet) {
 
     }
 
-    void Model3DGS::Unload(kRHIDevice& rhidevice) {
+    void kMesh3DGS::Unload(kRHIDevice& rhidevice) {
 
     }
 
-    void Model3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
+    void kMesh3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
 
     }
 
-    void Model3DGS::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
+    void kMesh3DGS::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
 
     }
 
-	bool Model3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
+	bool kMesh3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
 
 		std::ifstream splatstream(filepath, std::ios_base::binary);
 		if (!splatstream.good())

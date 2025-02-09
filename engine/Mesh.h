@@ -64,9 +64,9 @@ namespace pipeline {
 
     class kCamera;
 
-    class IModel {
+    class kMeshBase {
     public:
-        virtual ~IModel() {};
+        virtual ~kMeshBase() {};
 
         virtual VkVertexInputBindingDescription getBindingDescription() = 0;
         virtual std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() = 0;

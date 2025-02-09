@@ -29,11 +29,11 @@ namespace tinygltf {
 namespace pipeline {
 
 
-    class ModelGltf : public IModel
+    class kMeshGltf : public kMeshBase
     {
     public:
-        ModelGltf();
-        virtual ~ModelGltf();
+        kMeshGltf();
+        virtual ~kMeshGltf();
 
         VkVertexInputBindingDescription getBindingDescription();
         std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();

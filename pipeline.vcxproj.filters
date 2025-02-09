@@ -123,10 +123,10 @@
     <ClCompile Include="engine\RHIGraphicPipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\ModelGltf.cpp">
+    <ClCompile Include="engine\MeshGltf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\ModelObj.cpp">
+    <ClCompile Include="engine\MeshObj.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\Vector2.cpp">
@@ -138,7 +138,7 @@
     <ClCompile Include="engine\Vector4.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Model3DGS.cpp">
+    <ClCompile Include="engine\Mesh3DGS.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="engine\RHIComputePipeline.cpp">
@@ -251,10 +251,10 @@
     <ClInclude Include="engine\RHIGraphicPipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\ModelGltf.h">
+    <ClInclude Include="engine\MeshGltf.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\ModelObj.h">
+    <ClInclude Include="engine\MeshObj.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\Vector2.h">
@@ -269,7 +269,7 @@
     <ClInclude Include="engine\IRenderModule.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Model3DGS.h">
+    <ClInclude Include="engine\Mesh3DGS.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\RHIComputePipeline.h">

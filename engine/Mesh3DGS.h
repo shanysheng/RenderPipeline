@@ -37,11 +37,11 @@ namespace pipeline {
         }
     };
 
-	class Model3DGS : public IModel
+	class kMesh3DGS : public kMeshBase
 	{
 	public:
-        Model3DGS();
-        virtual ~Model3DGS();
+        kMesh3DGS();
+        virtual ~kMesh3DGS();
 
         VkVertexInputBindingDescription getBindingDescription() ;
         std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() ;

@@ -10,11 +10,11 @@
 
 namespace pipeline {
 
-    class ModelObj : public IModel
+    class kMeshObj : public kMeshBase
     {
     public:
-        ModelObj();
-        virtual ~ModelObj();
+        kMeshObj();
+        virtual ~kMeshObj();
 
         VkVertexInputBindingDescription getBindingDescription();
         std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
