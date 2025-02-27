@@ -15,8 +15,11 @@ namespace pipeline {
 	struct kGraphicsPipelineCreateInfo {
 		VkRenderPass render_pass = VK_NULL_HANDLE;
 
-		std::string vertex_shader_file;
+		VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+		std::string vert_shader_file;
 		std::string frag_shader_file;
+		std::string geom_shader_file;
 		
 		VkVertexInputBindingDescription  input_binding;
 		std::vector<VkVertexInputAttributeDescription> input_attributes;

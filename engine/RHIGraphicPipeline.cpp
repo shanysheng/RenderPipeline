@@ -16,7 +16,7 @@ namespace pipeline {
         //CreateDescriptorSetLayout(rhidevice);
 
 
-        VkShaderModule vertShaderModule = rhidevice.CreateShaderModule(createinfo.vertex_shader_file);
+        VkShaderModule vertShaderModule = rhidevice.CreateShaderModule(createinfo.vert_shader_file);
         VkShaderModule fragShaderModule = rhidevice.CreateShaderModule(createinfo.frag_shader_file);
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -46,7 +46,7 @@ namespace pipeline {
 
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssembly.topology = createinfo.topology;
         inputAssembly.primitiveRestartEnable = VK_FALSE;
 
         VkPipelineViewportStateCreateInfo viewportState{};

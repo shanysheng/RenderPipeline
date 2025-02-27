@@ -36,21 +36,23 @@ namespace pipeline {
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
-		kMesh3DGS tmp_model_3dgs;
-		kSplatScene tmp_3dgs_scene;
-		//tmp_model_3dgs.LoadGSSplatFile("./models/3dgs/dianli.splat", tmp_3dgs_scene);
-
 		kGraphicsPipelineCreateInfo createinfo;
 
-		bool bload_obj_file = false;
+		bool bload_obj_file = true;
 		if (bload_obj_file) {
 			m_Camera.LookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
-			// obj model
+			//// obj model
 			m_pModel = new kMeshObj();
-			createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
-			createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
+			createinfo.vert_shader_file = "shaders/model_depth_vert.spv";
+			createinfo.frag_shader_file = "shaders/model_depth_frag.spv";
+			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+			//m_pModel = new kMesh3DGS();
+			//createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
+			//createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
+			//createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 		}
 		else {
 			m_Camera.LookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -58,8 +60,9 @@ namespace pipeline {
 
 			// gltf model
 			m_pModel = new kMeshGltf();
-			createinfo.vertex_shader_file = "shaders/mesh.vert.spv";
-			createinfo.frag_shader_file = "shaders/mesh.frag.spv";
+			createinfo.vert_shader_file = "shaders/mesh_vert.spv";
+			createinfo.frag_shader_file = "shaders/mesh_frag.spv";
+			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		}
 
 		createinfo.render_pass = m_Swapchain.GetRenderPass();

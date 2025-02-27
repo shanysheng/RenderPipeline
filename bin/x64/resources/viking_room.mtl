@@ -1,0 +1,7 @@
+# MTL 文件：viking_room.mtl
+
+newmtl Texture1
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+map_Kd viking_room.png
