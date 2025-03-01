@@ -152,7 +152,7 @@ namespace pipeline {
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
-		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 2000, 0, 0);
+		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 1, 0, 0);
     }
 
 	bool kMesh3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
