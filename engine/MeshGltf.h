@@ -47,6 +47,9 @@ namespace pipeline {
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
         void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera);
 
+        glm::vec3 GetBBoxCenter() { return m_BBoxCenter; }
+        glm::vec3 GetBBoxSize() { return m_BBoxSize; }
+
     protected:
         void SetupDescriptorSets(kRHIDevice& rhidevice);
         void SetupMatrixDescriptorSets(kRHIDevice& rhidevice);
@@ -143,6 +146,9 @@ namespace pipeline {
         //    VkBuffer buffer;
         //    VkDeviceMemory memory;
         //} indices;
+
+        glm::vec3       m_BBoxCenter;
+        glm::vec3       m_BBoxSize;
 
         // vertex and index buffer;
         size_t                          m_IndexCount;

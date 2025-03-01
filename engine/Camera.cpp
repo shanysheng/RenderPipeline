@@ -28,6 +28,8 @@ namespace pipeline {
         m_Updir = up;
         m_Forward = glm::normalize(m_Target - m_Position);
         
+        m_RotCenter = target;
+
         m_ViewMat = glm::lookAt(eye, target, up);
 
     }
@@ -94,8 +96,12 @@ namespace pipeline {
         glm::mat4 rotM = m_ModelMat;
         glm::mat4 viewmat = glm::lookAt(m_Position, m_Target, m_Updir);
         
+        glm::mat4 transmat(1.0f);
+        transmat[3][0] = -m_RotCenter.x; // X 轴平移量
+        transmat[3][1] = -m_RotCenter.y; // Y 轴平移量
+        transmat[3][2] = -m_RotCenter.z; // Z 轴平移量
 
-        m_ViewMat = viewmat * rotM;
+        m_ViewMat = viewmat * glm::inverse(transmat) * rotM * transmat;
 
         // for debug
         glm::quat rotateQuat = m_ModelMat;

@@ -36,34 +36,41 @@ namespace pipeline {
 		m_Context.CreateDevice(m_WinInfo.pwindow);
 		m_Swapchain.CreateSwapchain(m_Context, extent);
 
+
+		bool yaxis_up = true;
 		kGraphicsPipelineCreateInfo createinfo;
 
-		bool bload_obj_file = false;
-		if (bload_obj_file) {
-			m_Camera.LookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
-
-			//// obj model
-			//m_pModel = new kMeshObj();
-			//createinfo.vert_shader_file = "shaders/model_texture_vert.spv";
-			//createinfo.frag_shader_file = "shaders/model_texture_frag.spv";
-			//createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-
-			/// 3dgs model
-			m_pModel = new kMesh3DGS();
-			createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
-			createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
-			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		}
-		else {
-			m_Camera.LookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
-
-			// gltf model
-			m_pModel = new kMeshGltf();
-			createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
-			createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
-			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		switch (2) {
+			case 1: {
+				//// obj model
+				m_pModel = new kMeshObj();
+				createinfo.vert_shader_file = "shaders/model_texture_vert.spv";
+				createinfo.frag_shader_file = "shaders/model_texture_frag.spv";
+				createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+				yaxis_up = true;
+				break;
+			}
+			case 2: {
+				/// 3dgs model
+				m_pModel = new kMesh3DGS();
+				createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
+				createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
+				createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+				yaxis_up = false;
+				break;
+			}
+			case 3: {
+				// gltf model
+				m_pModel = new kMeshGltf();
+				createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
+				createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
+				createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+				yaxis_up = false;
+				break;
+			}
+			default: {
+				break;
+			}
 		}
 
 		createinfo.render_pass = m_Swapchain.GetRenderPass();
@@ -71,11 +78,18 @@ namespace pipeline {
 		createinfo.push_constant_ranges = m_pModel->PreparePushConstantRange(m_Context);
 		createinfo.input_binding = m_pModel->getBindingDescription();
 		createinfo.input_attributes = m_pModel->getAttributeDescriptions();
-
-
 		m_GraphicPipeline.CreateGraphicsPipeline(m_Context, createinfo);
 
 		m_pModel->Load(m_Context);
+
+		// set camera
+		glm::vec3 bbcenter = m_pModel->GetBBoxCenter();
+		glm::vec3 bbsize = m_pModel->GetBBoxSize();
+		glm::vec3 eyetarget = bbcenter;
+		glm::vec3 eyeposition = bbcenter + bbsize;
+		glm::vec3 updir = yaxis_up ? glm::vec3(0.0f, 0.0f, 1.0f) : glm::vec3(0.0f, 1.0f, 0.0f);
+		m_Camera.LookAt(eyeposition, eyetarget, updir);
+		m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
 		CreateCommandBuffers();
 		CreateSyncObjects();

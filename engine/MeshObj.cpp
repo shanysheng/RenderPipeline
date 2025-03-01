@@ -18,7 +18,7 @@ namespace pipeline {
 	const std::string OBJ_TEXTURE_PATH = "resources/viking_room.png";
 
 	kMeshObj::kMeshObj() {
-
+		m_BBoxSize = glm::vec3(1.0f, 1.0f, 1.0f);
 	}
 
 	kMeshObj::~kMeshObj() {
@@ -101,7 +101,9 @@ namespace pipeline {
 		std::vector<Vertex>    vertex;
 		std::vector<uint32_t>  indices;
 		LoadModelFromfile(vertex, indices);
+
 		m_IndexCount = indices.size();
+		m_VertexCount = vertex.size();
 
 		m_VertexBuffer->CreateVertexBuffer(rhidevice, (const char*)vertex.data(), vertex.size() * sizeof(Vertex));
 		m_IndexBuffer->CreateIndexBuffer(rhidevice, (const char*)indices.data(), indices.size() * sizeof(uint32_t));
@@ -134,10 +136,16 @@ namespace pipeline {
 		VkDeviceSize offsets[] = { 0 };
 		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer()};
 
+		// triangle
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
 		vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
+
+		// points
+		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+		//vkCmdDraw(commandBuffer, m_VertexCount, m_VertexCount, 0, 0);
 	}
 
 	void kMeshObj::Unload(kRHIDevice& rhidevice) {
@@ -209,6 +217,9 @@ namespace pipeline {
 			throw std::runtime_error(warn + err);
 		}
 
+		glm::vec3 bb_min = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+		glm::vec3 bb_max = -glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+
 		std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
 		for (const auto& shape : shapes) {
@@ -229,6 +240,15 @@ namespace pipeline {
 				vertex.color = { 1.0f, 1.0f, 1.0f };
 
 				if (uniqueVertices.count(vertex) == 0) {
+
+					bb_min.x = std::min(bb_min.x, vertex.pos[0]);
+					bb_min.y = std::min(bb_min.y, vertex.pos[1]);
+					bb_min.z = std::min(bb_min.z, vertex.pos[2]);
+
+					bb_max.x = std::max(bb_max.x, vertex.pos[0]);
+					bb_max.y = std::max(bb_max.y, vertex.pos[1]);
+					bb_max.z = std::max(bb_max.z, vertex.pos[2]);
+
 					uniqueVertices[vertex] = static_cast<uint32_t>(vertex_array.size());
 					vertex_array.push_back(vertex);
 				}
@@ -236,5 +256,8 @@ namespace pipeline {
 				index_array.push_back(uniqueVertices[vertex]);
 			}
 		}
+
+		m_BBoxCenter = (bb_max + bb_min) * 0.5f;
+		m_BBoxSize = (bb_max - bb_min);
 	}
 }

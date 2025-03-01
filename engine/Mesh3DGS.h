@@ -59,7 +59,8 @@ namespace pipeline {
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) ;
         void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) ;
 
-
+        glm::vec3 GetBBoxCenter();
+        glm::vec3 GetBBoxSize();
     protected:
         struct ModelObjShaderData {
             alignas(16) glm::mat4 model;

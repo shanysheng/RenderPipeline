@@ -74,4 +74,6 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 
 # Samples
 
-<img src=./doc/images/obj.jpg width=450 /> <img src=./doc/images/gltf.jpg width=450 />
+<img src=./doc/images/obj.jpg width=450 /> 
+<img src=./doc/images/gltf.jpg width=450 />
+<img src=./doc/images/3dgs_01.jpg width=450 />

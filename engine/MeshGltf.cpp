@@ -16,7 +16,7 @@ namespace pipeline {
 
 
 	kMeshGltf::kMeshGltf() {
-
+		m_BBoxSize = glm::vec3(1.0f, 1.0f, 1.0f);
 	}
 
 	kMeshGltf::~kMeshGltf() {

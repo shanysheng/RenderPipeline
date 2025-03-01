@@ -95,6 +95,8 @@ namespace pipeline {
         glm::vec3 m_Forward;
         glm::vec3 m_Updir;
 
+        glm::vec3 m_RotCenter;
+
         glm::mat4 m_ModelMat;
         glm::mat4 m_ViewMat;
         glm::mat4 m_ProjMat;

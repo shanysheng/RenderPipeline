@@ -79,6 +79,9 @@ namespace pipeline {
 
         virtual void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) = 0;
         virtual void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) = 0;
+
+        virtual glm::vec3 GetBBoxCenter() = 0;
+        virtual glm::vec3 GetBBoxSize() = 0;
     };
 }
 

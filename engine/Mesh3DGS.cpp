@@ -21,8 +21,6 @@ namespace pipeline {
 		bindingDescription.stride = sizeof(kSplatPointVertex);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		return bindingDescription;
-
         return bindingDescription;
     }
 
@@ -154,7 +152,7 @@ namespace pipeline {
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
-		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 100000, 0, 0);
+		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 2000, 0, 0);
     }
 
 	bool kMesh3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
@@ -264,4 +262,16 @@ namespace pipeline {
 		return true;
     }
 
+	glm::vec3 kMesh3DGS::GetBBoxCenter() {
+
+		glm::vec3 bbcenter = (m_SplatScene.bb_max + m_SplatScene.bb_min) * 0.5f;
+		return bbcenter;
+	}
+
+	glm::vec3 kMesh3DGS::GetBBoxSize() {
+
+		glm::vec3 bbsize = (m_SplatScene.bb_max - m_SplatScene.bb_min);
+		return bbsize;
+
+	}
 }
