@@ -38,21 +38,22 @@ namespace pipeline {
 
 		kGraphicsPipelineCreateInfo createinfo;
 
-		bool bload_obj_file = true;
+		bool bload_obj_file = false;
 		if (bload_obj_file) {
 			m_Camera.LookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 			m_Camera.Perspective(60.0f, (float)m_WinInfo.width / (float)m_WinInfo.height, 0.1f, 256.0f);
 
 			//// obj model
-			m_pModel = new kMeshObj();
-			createinfo.vert_shader_file = "shaders/model_depth_vert.spv";
-			createinfo.frag_shader_file = "shaders/model_depth_frag.spv";
-			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			//m_pModel = new kMeshObj();
+			//createinfo.vert_shader_file = "shaders/model_texture_vert.spv";
+			//createinfo.frag_shader_file = "shaders/model_texture_frag.spv";
+			//createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
-			//m_pModel = new kMesh3DGS();
-			//createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
-			//createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
-			//createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+			/// 3dgs model
+			m_pModel = new kMesh3DGS();
+			createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
+			createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
+			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 		}
 		else {
 			m_Camera.LookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -60,8 +61,8 @@ namespace pipeline {
 
 			// gltf model
 			m_pModel = new kMeshGltf();
-			createinfo.vert_shader_file = "shaders/mesh_vert.spv";
-			createinfo.frag_shader_file = "shaders/mesh_frag.spv";
+			createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
+			createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
 			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		}
 

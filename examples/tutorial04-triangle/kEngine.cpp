@@ -18,8 +18,8 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	GraphicsPipelineCreateInfo createinfo;
 	createinfo.render_pass = m_Renderpass;
-	createinfo.vertex_shader_file = "shaders/texture_vert.spv";
-	createinfo.frag_shader_file = "shaders/texture_frag.spv";
+	createinfo.vertex_shader_file = "shaders/triangle_texture_vert.spv";
+	createinfo.frag_shader_file = "shaders/triangle_texture_frag.spv";
 	createinfo.input_binding = Vertex::getBindingDescription();
 	createinfo.input_attributes = Vertex::getAttributeDescriptions();
 	m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);
@@ -206,12 +206,14 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 			scissor.extent = m_Extent;
 			vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+
 			VkBuffer vertexBuffers[] = { m_Model.getVertexBuffer() };
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(commandBuffer, m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
+			//vkCmdBindIndexBuffer(commandBuffer, m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-			vkCmdDrawIndexed(commandBuffer, m_Model.getIndiesCount(), 1, 0, 0, 0);
+			//vkCmdDrawIndexed(commandBuffer, m_Model.getIndiesCount(), 1, 0, 0, 0);
+			vkCmdDraw(commandBuffer, m_Model.getVertiesCount(), 6, 0, 0);
 		}
 
 		vkCmdEndRenderPass(commandBuffer);

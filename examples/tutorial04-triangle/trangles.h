@@ -66,7 +66,9 @@ public:
             {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
             {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
             {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-0.5f,-0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}
         };
 
         const std::vector<uint16_t> indices = {
@@ -94,6 +96,7 @@ public:
     VkBuffer getVertexBuffer() { return m_VertexBuffer.getBuffer(); }
     VkBuffer getIndexBuffer() { return m_IndexBuffer.getBuffer(); }
     uint32_t getIndiesCount() { return (uint32_t)m_Indices.size(); }
+    uint32_t getVertiesCount() { return (uint32_t)m_Vertex.size(); }
 
     kTexture& getTexture() { return m_Texture; }
     const kTexture& getTexture()const { return m_Texture; }

@@ -94,13 +94,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\31_shader_compute.comp">
+    <None Include="..\..\bin\x64\shaders\computer_shader.comp">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\..\bin\x64\shaders\31_shader_compute.frag">
+    <None Include="..\..\bin\x64\shaders\computer_shader.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\..\bin\x64\shaders\31_shader_compute.vert">
+    <None Include="..\..\bin\x64\shaders\computer_shader.vert">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

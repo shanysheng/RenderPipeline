@@ -18,8 +18,8 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	GraphicsPipelineCreateInfo createinfo;
 	createinfo.render_pass = m_Renderpass;
-	createinfo.vertex_shader_file = "shaders/model_depth.vert.spv";
-	createinfo.frag_shader_file = "shaders/model_depth.frag.spv";
+	createinfo.vertex_shader_file = "shaders/model_texture_vert.spv";
+	createinfo.frag_shader_file = "shaders/model_texture_frag.spv";
 	createinfo.input_binding = Vertex::getBindingDescription();
 	createinfo.input_attributes = Vertex::getAttributeDescriptions();
 	m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);

@@ -115,9 +115,9 @@
     <ClInclude Include="trangles.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\31_shader_compute.comp" />
-    <None Include="..\..\bin\x64\shaders\31_shader_compute.frag" />
-    <None Include="..\..\bin\x64\shaders\31_shader_compute.vert" />
+    <None Include="..\..\bin\x64\shaders\computer_shader.comp" />
+    <None Include="..\..\bin\x64\shaders\computer_shader.frag" />
+    <None Include="..\..\bin\x64\shaders\computer_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

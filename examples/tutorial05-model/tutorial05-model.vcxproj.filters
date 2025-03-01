@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{a0aac374-ede7-4722-a502-56440a38888e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tutorial05-model.cpp">
@@ -84,5 +87,11 @@
   <ItemGroup>
     <None Include="..\..\bin\x64\shaders\27_shader_depth.frag" />
     <None Include="..\..\bin\x64\shaders\27_shader_depth.vert" />
+    <None Include="..\..\bin\x64\shaders\model_texture.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\..\bin\x64\shaders\model_texture.vert">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -82,10 +82,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\26_shader_textures.vert">
+    <None Include="..\..\bin\x64\shaders\triangle_texture.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\..\bin\x64\shaders\26_shader_textures.frag">
+    <None Include="..\..\bin\x64\shaders\triangle_texture.vert">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

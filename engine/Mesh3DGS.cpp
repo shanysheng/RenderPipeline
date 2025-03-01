@@ -52,6 +52,41 @@ namespace pipeline {
         return attributeDescriptions;
     }
 
+
+	void kMesh3DGS::SetupDescriptorSets(kRHIDevice& rhidevice) {
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = &m_DescriptorSetLayout;
+
+		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
+
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(ModelObjShaderData);
+
+		std::vector<VkWriteDescriptorSet> descriptorWrites(1);
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = m_DescriptorSet;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
+		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
+		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
+		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
+		// used to update these binding relationships.
+		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	}
+
     std::vector<VkDescriptorSetLayout> kMesh3DGS::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -59,7 +94,7 @@ namespace pipeline {
 		uboLayoutBinding.descriptorCount = 1;
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_GEOMETRY_BIT;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
 		std::vector<VkDescriptorSetLayoutBinding> bindings = { uboLayoutBinding};
 
@@ -119,42 +154,8 @@ namespace pipeline {
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
-		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, m_SplatScene.gs_count, 0, 0);
+		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 100000, 0, 0);
     }
-
-	void kMesh3DGS::SetupDescriptorSets(kRHIDevice& rhidevice) {
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &m_DescriptorSetLayout;
-
-		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
-		}
-
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(ModelObjShaderData);
-
-		std::vector<VkWriteDescriptorSet> descriptorWrites(1);
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_DescriptorSet;
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
-		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
-		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
-		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
-		// used to update these binding relationships.
-		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
 
 	bool kMesh3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
 
@@ -197,7 +198,7 @@ namespace pipeline {
 			splatscene.bb_max.z = std::max(splatscene.bb_max.z, splat_array[k].pos[2]);
 
 			// position
-			memcpy(&splatscene.gs_points[k].pos, splat_array[k].pos, sizeof(float) * 3);
+			memcpy(&(splatscene.gs_points[k].pos), splat_array[k].pos, sizeof(float) * 3);
 
 
 			// color, convert color to sh coefficient
@@ -206,7 +207,7 @@ namespace pipeline {
 			tmpcolor.b = ((splat_array[k].color[2] / 255.0f) - 0.5f) / sh_C0;
 			tmpcolor.a = (float)log((255.0 / splat_array[k].color[3]) - 1);
 			tmpcolor.a = (float)1.0f / (1.0f + exp(tmpcolor.a));
-			memcpy(&splatscene.gs_points[k].color, &tmpcolor, sizeof(float) * 4);
+			memcpy(&(splatscene.gs_points[k].color), &tmpcolor, sizeof(float) * 4);
 
 			// rotate
 			tmpquat.w = (splat_array[k].rot[0] - 128) / 128.0f;

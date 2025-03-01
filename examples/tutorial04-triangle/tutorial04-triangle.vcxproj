@@ -111,8 +111,8 @@
     <ClInclude Include="kEngine.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\26_shader_textures.frag" />
-    <None Include="..\..\bin\x64\shaders\26_shader_textures.vert" />
+    <None Include="..\..\bin\x64\shaders\triangle_texture.frag" />
+    <None Include="..\..\bin\x64\shaders\triangle_texture.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
