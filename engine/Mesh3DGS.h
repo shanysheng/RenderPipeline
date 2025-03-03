@@ -11,7 +11,7 @@
 namespace pipeline {
 
 
-    struct kSplatPointRaw
+    struct kSplatRaw
     {
         float pos[3];
         float scale[3];
@@ -19,11 +19,17 @@ namespace pipeline {
         uint8_t rot[4];
     };
 
-    struct kSplatPointVertex {
+    struct kSplatVertex {
         glm::vec3 pos;
         glm::vec4 color;
         glm::vec3 cov3d_1;
         glm::vec3 cov3d_2;
+    };
+
+    struct kSplatQuad {
+        glm::vec3 pos;      // position
+        glm::vec3 obb;      // size and rotate
+        glm::vec4 color;    // color and opacity
     };
 
     struct kSplatScene
@@ -33,7 +39,7 @@ namespace pipeline {
         glm::vec3 bb_min;
         glm::vec3 bb_max;
 
-        std::vector<kSplatPointVertex> gs_points;
+        std::vector<kSplatVertex> gs_points;
 
         void resize(uint32_t count) {
             gs_count = count;
@@ -69,14 +75,25 @@ namespace pipeline {
         };
 
         bool LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene);
-        void SetupDescriptorSets(kRHIDevice& rhidevice);
 
+        void SetupSortDescriptorSets(kRHIDevice& rhidevice) {}
+        void SetupProjectionDescriptorSets(kRHIDevice& rhidevice) {}
+        void SetupRenderingDescriptorSets(kRHIDevice& rhidevice);
 
+        void CreateSortComputePipeline() {}
+        void CreateProjectionComputePipeline() {}
+        void CreateGraphicPipeline() {}
+
+        void BuildSortCommandBuffer(VkCommandBuffer commandBuffer) {}
+        void BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer) {}
+        void BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer) {}
     protected:
         kSplatScene     m_SplatScene;
 
-        std::shared_ptr<kRHIBuffer>     m_VertexBuffer;
         std::shared_ptr<kRHIBuffer>     m_UniformBuffer;
+        std::shared_ptr<kRHIBuffer>     m_3DGSVertexBuffer;
+        std::shared_ptr<kRHIBuffer>     m_QuadVertexBuffer;
+        std::shared_ptr<kRHIBuffer>     m_QuadIndexBuffer;
 
         VkDescriptorSetLayout	        m_DescriptorSetLayout;
         VkDescriptorSet	                m_DescriptorSet;

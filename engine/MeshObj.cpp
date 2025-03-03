@@ -145,7 +145,7 @@ namespace pipeline {
 		// points
 		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
-		//vkCmdDraw(commandBuffer, m_VertexCount, m_VertexCount, 0, 0);
+		//vkCmdDraw(commandBuffer, m_VertexCount, 1, 0, 0);
 	}
 
 	void kMeshObj::Unload(kRHIDevice& rhidevice) {

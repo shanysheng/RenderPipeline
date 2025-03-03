@@ -4,7 +4,6 @@
 #include "RHIBuffer.h"
 
 #include <iostream>
-#include <array>
 
 namespace pipeline {
 

@@ -25,7 +25,7 @@ namespace pipeline {
 		std::vector<VkVertexInputAttributeDescription> input_attributes;
 
 		std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
-		std::vector< VkPushConstantRange>  push_constant_ranges;
+		std::vector<VkPushConstantRange>  push_constant_ranges;
 	};
 
 	class kRHIGraphicPipeline

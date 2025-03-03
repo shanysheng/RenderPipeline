@@ -18,7 +18,7 @@ namespace pipeline {
     VkVertexInputBindingDescription kMesh3DGS::getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(kSplatPointVertex);
+		bindingDescription.stride = sizeof(kSplatVertex);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
         return bindingDescription;
@@ -30,28 +30,28 @@ namespace pipeline {
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
 		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(kSplatPointVertex, pos);
+		attributeDescriptions[0].offset = offsetof(kSplatVertex, pos);
 
 		attributeDescriptions[1].binding = 0;
 		attributeDescriptions[1].location = 1;
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(kSplatPointVertex, color);
+		attributeDescriptions[1].offset = offsetof(kSplatVertex, color);
 
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(kSplatPointVertex, cov3d_1);
+		attributeDescriptions[2].offset = offsetof(kSplatVertex, cov3d_1);
 
 		attributeDescriptions[3].binding = 0;
 		attributeDescriptions[3].location = 3;
 		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[3].offset = offsetof(kSplatPointVertex, cov3d_2);
+		attributeDescriptions[3].offset = offsetof(kSplatVertex, cov3d_2);
 
         return attributeDescriptions;
     }
 
 
-	void kMesh3DGS::SetupDescriptorSets(kRHIDevice& rhidevice) {
+	void kMesh3DGS::SetupRenderingDescriptorSets(kRHIDevice& rhidevice) {
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
@@ -115,22 +115,22 @@ namespace pipeline {
 
     void kMesh3DGS::Load(kRHIDevice& rhidevice) {
 
-		m_VertexBuffer = std::make_shared<kRHIBuffer>();
+		m_3DGSVertexBuffer = std::make_shared<kRHIBuffer>();
 		m_UniformBuffer = std::make_shared<kRHIBuffer>();
 
 		LoadGSSplatFile("./models/3dgs/dianli.splat", m_SplatScene);
 
-		m_VertexBuffer->CreateVertexBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatPointVertex));
+		m_3DGSVertexBuffer->CreateVertexBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
 		m_UniformBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
 
-		SetupDescriptorSets(rhidevice);
+		SetupRenderingDescriptorSets(rhidevice);
     }
 
     void kMesh3DGS::Unload(kRHIDevice& rhidevice) {
 
 		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_DescriptorSetLayout, nullptr);
 
-		m_VertexBuffer.reset();
+		m_3DGSVertexBuffer.reset();
 		m_UniformBuffer.reset();
     }
 
@@ -148,7 +148,7 @@ namespace pipeline {
 		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 
 		VkDeviceSize offsets[] = { 0 };
-		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer() };
+		VkBuffer vertexBuffers[] = { m_3DGSVertexBuffer->GetBuffer() };
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
@@ -165,12 +165,12 @@ namespace pipeline {
 		uint64_t filesize = splatstream.tellg();
 		int point_count = (int)filesize / 32;
 
-		std::vector< kSplatPointRaw> splat_array;
+		std::vector< kSplatRaw> splat_array;
 		splat_array.resize(point_count);
 		splatscene.resize(point_count);
 
 		splatstream.seekg(0, splatstream.beg);
-		splatstream.read((char*)splat_array.data(), point_count * sizeof(kSplatPointRaw));
+		splatstream.read((char*)splat_array.data(), point_count * sizeof(kSplatRaw));
 
 		// convert color to sh coefficient
 		const float sh_C0 = 0.28209479177387814f;
@@ -272,6 +272,5 @@ namespace pipeline {
 
 		glm::vec3 bbsize = (m_SplatScene.bb_max - m_SplatScene.bb_min);
 		return bbsize;
-
 	}
 }

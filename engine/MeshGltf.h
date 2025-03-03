@@ -63,7 +63,6 @@ namespace pipeline {
             glm::vec3 normal;
             glm::vec2 uv;
             glm::vec3 color;
-
         };
 
         // A primitive contains the data for a single draw call
@@ -163,7 +162,6 @@ namespace pipeline {
         // model matrix
         glm::mat4               m_ModelMat;
         VkDescriptorSet	        m_MatrixDSet;
-
     };
 
 }
