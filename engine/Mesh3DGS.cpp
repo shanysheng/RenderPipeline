@@ -51,40 +51,6 @@ namespace pipeline {
     }
 
 
-	void kMesh3DGS::SetupRenderingDescriptorSets(kRHIDevice& rhidevice) {
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &m_DescriptorSetLayout;
-
-		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
-		}
-
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(ModelObjShaderData);
-
-		std::vector<VkWriteDescriptorSet> descriptorWrites(1);
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_DescriptorSet;
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
-		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
-		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
-		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
-		// used to update these binding relationships.
-		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
-
     std::vector<VkDescriptorSetLayout> kMesh3DGS::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -101,11 +67,11 @@ namespace pipeline {
 		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 		layoutInfo.pBindings = bindings.data();
 
-		if (vkCreateDescriptorSetLayout(rhidevice.GetLogicDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
+		if (vkCreateDescriptorSetLayout(rhidevice.GetLogicDevice(), &layoutInfo, nullptr, &m_RenderingDescSetLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create descriptor set layout!");
 		}
 
-		return std::vector<VkDescriptorSetLayout> {m_DescriptorSetLayout};
+		return std::vector<VkDescriptorSetLayout> {m_RenderingDescSetLayout};
     }
 
     std::vector<VkPushConstantRange> kMesh3DGS::PreparePushConstantRange(kRHIDevice& rhidevice) {
@@ -113,27 +79,70 @@ namespace pipeline {
         return std::vector<VkPushConstantRange>{};
     }
 
-    void kMesh3DGS::Load(kRHIDevice& rhidevice) {
+	void kMesh3DGS::SetupRenderingDescSets(kRHIDevice& rhidevice) {
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = &m_RenderingDescSetLayout;
 
-		m_3DGSVertexBuffer = std::make_shared<kRHIBuffer>();
-		m_UniformBuffer = std::make_shared<kRHIBuffer>();
+		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_RenderingDescSet) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
 
-		LoadGSSplatFile("./models/3dgs/dianli.splat", m_SplatScene);
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(ModelObjShaderData);
 
-		m_3DGSVertexBuffer->CreateVertexBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
-		m_UniformBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
+		std::vector<VkWriteDescriptorSet> descriptorWrites(1);
 
-		SetupRenderingDescriptorSets(rhidevice);
-    }
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = m_RenderingDescSet;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-    void kMesh3DGS::Unload(kRHIDevice& rhidevice) {
+		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
+		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
+		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
+		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
+		// used to update these binding relationships.
+		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	}
 
-		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_DescriptorSetLayout, nullptr);
+	void kMesh3DGS::CreateGraphicPipeline() {
+	}
+	
+	void kMesh3DGS::BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer) {
+	
+	}
 
-		m_3DGSVertexBuffer.reset();
-		m_UniformBuffer.reset();
-    }
+	void kMesh3DGS::SetupSortDescSets(kRHIDevice& rhidevice) {
+	
+	}
 
+	void kMesh3DGS::CreateSortComputePipeline() {
+	
+	}
+
+	void kMesh3DGS::BuildSortCommandBuffer(VkCommandBuffer commandBuffer) {
+	
+	}
+
+	void kMesh3DGS::SetupProjectionDescSets(kRHIDevice& rhidevice) {
+
+	}
+
+	void kMesh3DGS::CreateProjectionComputePipeline() {
+
+	}
+
+	void kMesh3DGS::BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer) {
+
+	}
     void kMesh3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
 
     }
@@ -151,9 +160,32 @@ namespace pipeline {
 		VkBuffer vertexBuffers[] = { m_3DGSVertexBuffer->GetBuffer() };
 
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_RenderingDescSet, 0, nullptr);
 		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 1, 0, 0);
     }
+
+
+	void kMesh3DGS::Load(kRHIDevice& rhidevice) {
+
+		m_3DGSVertexBuffer = std::make_shared<kRHIBuffer>();
+		m_UniformBuffer = std::make_shared<kRHIBuffer>();
+
+		LoadGSSplatFile("./models/3dgs/dianli.splat", m_SplatScene);
+
+		m_3DGSVertexBuffer->CreateVertexBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
+		m_UniformBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
+
+		SetupRenderingDescSets(rhidevice);
+	}
+
+	void kMesh3DGS::Unload(kRHIDevice& rhidevice) {
+
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_RenderingDescSetLayout, nullptr);
+
+		m_3DGSVertexBuffer.reset();
+		m_UniformBuffer.reset();
+	}
+
 
 	bool kMesh3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
 
@@ -273,4 +305,6 @@ namespace pipeline {
 		glm::vec3 bbsize = (m_SplatScene.bb_max - m_SplatScene.bb_min);
 		return bbsize;
 	}
+
+
 }

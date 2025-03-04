@@ -19,6 +19,8 @@ namespace pipeline {
 
 	kMeshObj::kMeshObj() {
 		m_BBoxSize = glm::vec3(1.0f, 1.0f, 1.0f);
+
+
 	}
 
 	kMeshObj::~kMeshObj() {
@@ -92,6 +94,8 @@ namespace pipeline {
 
 
 	void kMeshObj::Load(kRHIDevice& rhidevice) {
+
+
 
 		m_VertexBuffer = std::make_shared<kRHIBuffer>();
 		m_IndexBuffer = std::make_shared<kRHIBuffer>();

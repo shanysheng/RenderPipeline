@@ -93,7 +93,7 @@ namespace pipeline {
         return extensions;
     }
 
-    void kRHIDevice::CreateDevice(GLFWwindow* pwindow) {
+    void kRHIDevice::CreateDevice(GLFWwindow* pwindow, int width, int height) {
 
         CreateInstance(pwindow);
         CreateDebugMessenger(m_Instance);
@@ -104,9 +104,18 @@ namespace pipeline {
         CreateCommandPool();
         CreateDescriptorPool();
 
+        VkExtent2D extent = { width, height };
+        m_RHISwapchain.CreateSwapchain(*this, extent);
     }
 
+    void kRHIDevice::RecreateSwapchain(VkExtent2D extent) {
+        m_RHISwapchain.RecreateSwapchain(*this, extent);
+    }
+
+
     void kRHIDevice::ReleaseDevice() {
+
+        m_RHISwapchain.ReleaseSwapchain(*this);
 
         vkDestroyDescriptorPool(m_Logicaldevice, m_DescriptorPool, nullptr);
         vkDestroyCommandPool(m_Logicaldevice, m_CommandPool, nullptr);
@@ -290,6 +299,8 @@ namespace pipeline {
         }
 
         vkGetDeviceQueue(m_Logicaldevice, m_QueueFamilyIndices.graphicsAndComputeFamily.value(), 0, &m_GraphicsQueue);
+        vkGetDeviceQueue(m_Logicaldevice, m_QueueFamilyIndices.graphicsAndComputeFamily.value(), 0, &m_ComputeQueue);
+
         vkGetDeviceQueue(m_Logicaldevice, m_QueueFamilyIndices.presentFamily.value(), 0, &m_PresentQueue);
     }
 
@@ -341,8 +352,7 @@ namespace pipeline {
         int i = 0;
         for (const auto& queueFamily : queueFamilies) {
 
-            if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && 
-                (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+            if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
                 indices.graphicsAndComputeFamily = i;
             }
 

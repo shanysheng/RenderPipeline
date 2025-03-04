@@ -2,6 +2,8 @@
 
 #include "Common.h"
 
+#include "RHISwapchain.h"
+
 namespace pipeline {
 
 	struct QueueFamilyIndices {
@@ -27,16 +29,23 @@ namespace pipeline {
 		kRHIDevice();
 		virtual ~kRHIDevice();
 
-		void CreateDevice(GLFWwindow* pwindow);
+		void CreateDevice(GLFWwindow* pwindow, int width, int height);
 		void ReleaseDevice();
+		void RecreateSwapchain(VkExtent2D extent);
 
 		VkSurfaceKHR GetSurface() { return m_Surface; }
 		VkDevice GetLogicDevice() { return m_Logicaldevice; }
 		VkPhysicalDevice GetPhysicalDevice() { return m_PhysicalDevice; }
 		VkDescriptorPool GetDescriptorPool() { return m_DescriptorPool; }
 		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; }
+		VkQueue GetComputeQueue() { return m_ComputeQueue; }
 		VkQueue GetPresentQueue() { return m_PresentQueue; }
 		VkCommandPool GetCommandPool() { return m_CommandPool; }
+
+
+		VkSwapchainKHR GetSwapchain() { return m_RHISwapchain.GetSwapchain(); }
+		VkRenderPass GetRenderPass() { return m_RHISwapchain.GetRenderPass(); }
+		VkFramebuffer GetFramebuffer(int index) { return m_RHISwapchain.GetFramebuffer(index); }
 
 		/**
 		* Create a buffer
@@ -135,12 +144,16 @@ namespace pipeline {
 
 
 	protected:
+		kRHISwapchain				m_RHISwapchain;
+
+
 		VkSurfaceKHR				m_Surface;
 		VkInstance					m_Instance;
 		VkPhysicalDevice			m_PhysicalDevice;
 		VkDevice					m_Logicaldevice;
 
 		VkQueue						m_GraphicsQueue;
+		VkQueue						m_ComputeQueue;
 		VkQueue						m_PresentQueue;
 
 		VkDescriptorPool			m_DescriptorPool;

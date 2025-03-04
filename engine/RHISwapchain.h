@@ -13,8 +13,9 @@ namespace pipeline {
 		virtual ~kRHISwapchain();
 
 		void CreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent);
-		void RecreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent);
 		void ReleaseSwapchain(kRHIDevice& rhidevice);
+
+		void RecreateSwapchain(kRHIDevice& rhidevice, VkExtent2D extent);
 
 		VkSwapchainKHR GetSwapchain() { return m_Swapchain; }
 		VkRenderPass GetRenderPass() { return m_RenderPass; }

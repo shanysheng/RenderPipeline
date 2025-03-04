@@ -76,17 +76,17 @@ namespace pipeline {
 
         bool LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene);
 
-        void SetupSortDescriptorSets(kRHIDevice& rhidevice) {}
-        void SetupProjectionDescriptorSets(kRHIDevice& rhidevice) {}
-        void SetupRenderingDescriptorSets(kRHIDevice& rhidevice);
+        void SetupRenderingDescSets(kRHIDevice& rhidevice);
+        void CreateGraphicPipeline();
+        void BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer);
 
-        void CreateSortComputePipeline() {}
-        void CreateProjectionComputePipeline() {}
-        void CreateGraphicPipeline() {}
+        void SetupSortDescSets(kRHIDevice& rhidevice);
+        void CreateSortComputePipeline();
+        void BuildSortCommandBuffer(VkCommandBuffer commandBuffer);
 
-        void BuildSortCommandBuffer(VkCommandBuffer commandBuffer) {}
-        void BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer) {}
-        void BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer) {}
+        void SetupProjectionDescSets(kRHIDevice& rhidevice);
+        void CreateProjectionComputePipeline();
+        void BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer);
     protected:
         kSplatScene     m_SplatScene;
 
@@ -95,8 +95,8 @@ namespace pipeline {
         std::shared_ptr<kRHIBuffer>     m_QuadVertexBuffer;
         std::shared_ptr<kRHIBuffer>     m_QuadIndexBuffer;
 
-        VkDescriptorSetLayout	        m_DescriptorSetLayout;
-        VkDescriptorSet	                m_DescriptorSet;
+        VkDescriptorSetLayout	        m_RenderingDescSetLayout;
+        VkDescriptorSet	                m_RenderingDescSet;
 	};
 
 

@@ -7,7 +7,7 @@
 
 namespace pipeline {
 
-	const int MAX_FRAMES_IN_FLIGHT = 2;
+	const int MAX_FRAMES_IN_FLIGHT = 1;
     
     kRenderingEngine::kRenderingEngine(void) {
 		m_CurrentFrame = 0;
@@ -30,17 +30,13 @@ namespace pipeline {
     int kRenderingEngine::Initialize(const kWinInfo& wininfo) {
 
 		m_WinInfo = wininfo;
-
-		VkExtent2D extent = { m_WinInfo.width, m_WinInfo.height };
-
-		m_Context.CreateDevice(m_WinInfo.pwindow);
-		m_Swapchain.CreateSwapchain(m_Context, extent);
+		m_RHIDevice.CreateDevice(m_WinInfo.pwindow, m_WinInfo.width, m_WinInfo.height);
 
 
 		bool yaxis_up = true;
 		kGraphicsPipelineCreateInfo createinfo;
 
-		switch (2) {
+		switch (1) {
 			case 1: {
 				//// obj model
 				m_pModel = new kMeshObj();
@@ -73,14 +69,14 @@ namespace pipeline {
 			}
 		}
 
-		createinfo.render_pass = m_Swapchain.GetRenderPass();
-		createinfo.descriptor_set_layouts = m_pModel->PrepareDescriptorSetLayout(m_Context);
-		createinfo.push_constant_ranges = m_pModel->PreparePushConstantRange(m_Context);
+		createinfo.render_pass = m_RHIDevice.GetRenderPass();
+		createinfo.descriptor_set_layouts = m_pModel->PrepareDescriptorSetLayout(m_RHIDevice);
+		createinfo.push_constant_ranges = m_pModel->PreparePushConstantRange(m_RHIDevice);
 		createinfo.input_binding = m_pModel->getBindingDescription();
 		createinfo.input_attributes = m_pModel->getAttributeDescriptions();
-		m_GraphicPipeline.CreateGraphicsPipeline(m_Context, createinfo);
+		m_GraphicPipeline.CreateGraphicsPipeline(m_RHIDevice, createinfo);
 
-		m_pModel->Load(m_Context);
+		m_pModel->Load(m_RHIDevice);
 
 		// set camera
 		glm::vec3 bbcenter = m_pModel->GetBBoxCenter();
@@ -99,19 +95,16 @@ namespace pipeline {
 
     void  kRenderingEngine::Finalize() {
 
-		m_pModel->Unload(m_Context);
+		m_pModel->Unload(m_RHIDevice);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			vkDestroySemaphore(m_Context.GetLogicDevice(), m_RenderFinishedSemaphores[i], nullptr);
-			vkDestroySemaphore(m_Context.GetLogicDevice(), m_ImageAvailableSemaphores[i], nullptr);
-			vkDestroyFence(m_Context.GetLogicDevice(), m_InFlightFences[i], nullptr);
+			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_RenderFinishedSemaphores[i], nullptr);
+			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_ImageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(m_RHIDevice.GetLogicDevice(), m_InFlightFences[i], nullptr);
 		}
 
-
-		m_Swapchain.ReleaseSwapchain(m_Context);
-		m_GraphicPipeline.ReleaseGraphicsPipeline(m_Context);
-		m_Context.ReleaseDevice();
-
+		m_GraphicPipeline.ReleaseGraphicsPipeline(m_RHIDevice);
+		m_RHIDevice.ReleaseDevice();
     }
 
     int kRenderingEngine::OpenSceneModel(const std::string& SceneModelName, int ActiveSceneGraph ) {
@@ -132,10 +125,10 @@ namespace pipeline {
 
 	void kRenderingEngine::DoRendering() {
 
-		vkWaitForFences(m_Context.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+		vkWaitForFences(m_RHIDevice.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
 		uint32_t imageIndex;
-		VkResult result = vkAcquireNextImageKHR(m_Context.GetLogicDevice(), m_Swapchain.GetSwapchain(),
+		VkResult result = vkAcquireNextImageKHR(m_RHIDevice.GetLogicDevice(), m_RHIDevice.GetSwapchain(),
 												UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame],
 												VK_NULL_HANDLE, &imageIndex);
 
@@ -152,7 +145,7 @@ namespace pipeline {
 		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
 
 		{
-			vkResetFences(m_Context.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
+			vkResetFences(m_RHIDevice.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
 			vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
 			BuildCommandBuffer(imageIndex);
@@ -168,7 +161,7 @@ namespace pipeline {
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = signalSemaphores;
 
-			if (vkQueueSubmit(m_Context.GetGraphicsQueue(), 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
+			if (vkQueueSubmit(m_RHIDevice.GetGraphicsQueue(), 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to submit draw command buffer!");
 			}
 		}
@@ -176,7 +169,7 @@ namespace pipeline {
 
 		{
 			// present command wait render finished semaphore 
-			VkSwapchainKHR swapChains[] = { m_Swapchain.GetSwapchain() };
+			VkSwapchainKHR swapChains[] = { m_RHIDevice.GetSwapchain() };
 
 			VkPresentInfoKHR presentInfo{};
 			presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -186,7 +179,7 @@ namespace pipeline {
 			presentInfo.pSwapchains = swapChains;
 			presentInfo.pImageIndices = &imageIndex;
 
-			result = vkQueuePresentKHR(m_Context.GetPresentQueue(), &presentInfo);
+			result = vkQueuePresentKHR(m_RHIDevice.GetPresentQueue(), &presentInfo);
 		}
 
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -194,7 +187,7 @@ namespace pipeline {
 	}
 
 	void kRenderingEngine::SwapBuffers() {
-		vkDeviceWaitIdle(m_Context.GetLogicDevice());
+		vkDeviceWaitIdle(m_RHIDevice.GetLogicDevice());
 	}
 
     int kRenderingEngine::RegisterPreRenderPrototypes() {
@@ -225,9 +218,9 @@ namespace pipeline {
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			if (vkCreateSemaphore(m_Context.GetLogicDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
-				vkCreateSemaphore(m_Context.GetLogicDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
-				vkCreateFence(m_Context.GetLogicDevice(), &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
+			if (vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
+				vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
+				vkCreateFence(m_RHIDevice.GetLogicDevice(), &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to create synchronization objects for a frame!");
 			}
 		}
@@ -238,11 +231,11 @@ namespace pipeline {
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = m_Context.GetCommandPool();
+		allocInfo.commandPool = m_RHIDevice.GetCommandPool();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-		if (vkAllocateCommandBuffers(m_Context.GetLogicDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
+		if (vkAllocateCommandBuffers(m_RHIDevice.GetLogicDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate command buffers!");
 		}
 	}
@@ -260,8 +253,8 @@ namespace pipeline {
 		{
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = m_Swapchain.GetRenderPass();
-			renderPassInfo.framebuffer = m_Swapchain.GetFramebuffer(imageIndex);
+			renderPassInfo.renderPass = m_RHIDevice.GetRenderPass();
+			renderPassInfo.framebuffer = m_RHIDevice.GetFramebuffer(imageIndex);
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent.width = m_WinInfo.width;
 			renderPassInfo.renderArea.extent.height = m_WinInfo.height;
@@ -293,7 +286,7 @@ namespace pipeline {
 				scissor.extent.height = m_WinInfo.height;
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-				m_pModel->UpdateUniformBuffer(m_Context, m_CurrentFrame);
+				m_pModel->UpdateUniformBuffer(m_RHIDevice, m_CurrentFrame);
 				m_pModel->BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout(), m_Camera);
 			}
 
@@ -312,7 +305,7 @@ namespace pipeline {
 			glfwGetFramebufferSize(m_WinInfo.pwindow, &width, &height);
 			glfwWaitEvents();
 		}
-		vkDeviceWaitIdle(m_Context.GetLogicDevice());
+		vkDeviceWaitIdle(m_RHIDevice.GetLogicDevice());
 
 		m_WinInfo.width = width;
 		m_WinInfo.height = height;
@@ -322,7 +315,7 @@ namespace pipeline {
 			static_cast<uint32_t>(height)
 		};
 
-		m_Swapchain.RecreateSwapchain(m_Context, actualExtent);
+		m_RHIDevice.RecreateSwapchain(actualExtent);
 	}
 
 }

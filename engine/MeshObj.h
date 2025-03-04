@@ -65,6 +65,7 @@ namespace pipeline {
 
         VkDescriptorSetLayout	        m_DescriptorSetLayout;
         VkDescriptorSet	                m_DescriptorSet;
+
     };
 
 }

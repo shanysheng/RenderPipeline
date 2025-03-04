@@ -212,8 +212,7 @@ namespace pipeline {
         kWinInfo								m_WinInfo;
 
 
-        kRHIDevice						        m_Context;
-        kRHISwapchain					        m_Swapchain;
+        kRHIDevice						        m_RHIDevice;
         bool							        m_FramebufferResized = false;
 
 
