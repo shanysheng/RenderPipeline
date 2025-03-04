@@ -1,6 +1,7 @@
 #include "MeshGltf.h"
 #include "RHIDevice.h"
 #include "Camera.h"
+#include "RHIGraphicPipeline.h"
 
 
 
@@ -122,6 +123,19 @@ namespace pipeline {
 
 	void kMeshGltf::Load(kRHIDevice& rhidevice) {
 
+		kGraphicsPipelineCreateInfo createinfo;
+		createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
+		createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
+		createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+		createinfo.render_pass = rhidevice.GetRenderPass();
+		createinfo.descriptor_set_layouts = this->PrepareDescriptorSetLayout(rhidevice);
+		createinfo.push_constant_ranges = this->PreparePushConstantRange(rhidevice);
+		createinfo.input_binding = this->getBindingDescription();
+		createinfo.input_attributes = this->getAttributeDescriptions();
+		m_GraphicPipeline.CreateGraphicsPipeline(rhidevice, createinfo);
+
+
 		tinygltf::Model glTFInput;
 		tinygltf::TinyGLTF gltfContext;
 		std::string error, warning;
@@ -186,6 +200,7 @@ namespace pipeline {
 			image.texture.ReleaseTexture();
 		}
 
+		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
 
 	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
@@ -193,7 +208,7 @@ namespace pipeline {
 
 	}
 
-	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
+	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
 		ModelGltfShaderData temp_shaderdat{};
 		temp_shaderdat.viewPos = glm::vec4(camera.GetViewPos(), 1.0f);
@@ -204,9 +219,10 @@ namespace pipeline {
 		m_MatrixBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 
 
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_MatrixDSet, 0, nullptr);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_MatrixDSet, 0, nullptr);
 
-		draw(commandBuffer, pipelineLayout);
+		draw(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
 	}
 
 	void kMeshGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {

@@ -34,33 +34,23 @@ namespace pipeline {
 
 
 		bool yaxis_up = true;
-		kGraphicsPipelineCreateInfo createinfo;
 
-		switch (1) {
+		switch (3) {
 			case 1: {
 				//// obj model
 				m_pModel = new kMeshObj();
-				createinfo.vert_shader_file = "shaders/model_texture_vert.spv";
-				createinfo.frag_shader_file = "shaders/model_texture_frag.spv";
-				createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 				yaxis_up = true;
 				break;
 			}
 			case 2: {
 				/// 3dgs model
 				m_pModel = new kMesh3DGS();
-				createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
-				createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
-				createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 				yaxis_up = false;
 				break;
 			}
 			case 3: {
 				// gltf model
 				m_pModel = new kMeshGltf();
-				createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
-				createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
-				createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 				yaxis_up = false;
 				break;
 			}
@@ -68,13 +58,6 @@ namespace pipeline {
 				break;
 			}
 		}
-
-		createinfo.render_pass = m_RHIDevice.GetRenderPass();
-		createinfo.descriptor_set_layouts = m_pModel->PrepareDescriptorSetLayout(m_RHIDevice);
-		createinfo.push_constant_ranges = m_pModel->PreparePushConstantRange(m_RHIDevice);
-		createinfo.input_binding = m_pModel->getBindingDescription();
-		createinfo.input_attributes = m_pModel->getAttributeDescriptions();
-		m_GraphicPipeline.CreateGraphicsPipeline(m_RHIDevice, createinfo);
 
 		m_pModel->Load(m_RHIDevice);
 
@@ -103,7 +86,6 @@ namespace pipeline {
 			vkDestroyFence(m_RHIDevice.GetLogicDevice(), m_InFlightFences[i], nullptr);
 		}
 
-		m_GraphicPipeline.ReleaseGraphicsPipeline(m_RHIDevice);
 		m_RHIDevice.ReleaseDevice();
     }
 
@@ -269,8 +251,6 @@ namespace pipeline {
 			vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			{
-				vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
-
 				VkViewport viewport{};
 				viewport.x = 0.0f;
 				viewport.y = 0.0f;
@@ -287,7 +267,7 @@ namespace pipeline {
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 				m_pModel->UpdateUniformBuffer(m_RHIDevice, m_CurrentFrame);
-				m_pModel->BuildCommandBuffer(commandBuffer, m_GraphicPipeline.GetPipelineLayout(), m_Camera);
+				m_pModel->BuildCommandBuffer(commandBuffer, m_Camera);
 			}
 
 			vkCmdEndRenderPass(commandBuffer);

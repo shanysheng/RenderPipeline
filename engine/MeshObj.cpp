@@ -1,6 +1,7 @@
 #include "MeshObj.h"
 #include "RHIDevice.h"
 #include "Camera.h"
+#include "RHIGraphicPipeline.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -95,6 +96,17 @@ namespace pipeline {
 
 	void kMeshObj::Load(kRHIDevice& rhidevice) {
 
+		kGraphicsPipelineCreateInfo createinfo;
+		createinfo.vert_shader_file = "shaders/model_texture_vert.spv";
+		createinfo.frag_shader_file = "shaders/model_texture_frag.spv";
+		createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+		createinfo.render_pass = rhidevice.GetRenderPass();
+		createinfo.descriptor_set_layouts = this->PrepareDescriptorSetLayout(rhidevice);
+		createinfo.push_constant_ranges = this->PreparePushConstantRange(rhidevice);
+		createinfo.input_binding = this->getBindingDescription();
+		createinfo.input_attributes = this->getAttributeDescriptions();
+		m_GraphicPipeline.CreateGraphicsPipeline(rhidevice, createinfo);
 
 
 		m_VertexBuffer = std::make_shared<kRHIBuffer>();
@@ -122,7 +134,7 @@ namespace pipeline {
 
 	}
 
-	void kMeshObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
+	void kMeshObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -140,10 +152,12 @@ namespace pipeline {
 		VkDeviceSize offsets[] = { 0 };
 		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer()};
 
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_DescriptorSet, 0, nullptr);
+
 		// triangle
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
 		vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
 
 		// points
@@ -160,6 +174,8 @@ namespace pipeline {
 		m_IndexBuffer.reset();
 		m_VertexBuffer.reset();
 		m_UniformBuffer.reset();
+
+		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
 
 

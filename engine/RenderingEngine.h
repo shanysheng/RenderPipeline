@@ -8,7 +8,6 @@
 #include "RHIBuffer.h"
 #include "RHISwapchain.h"
 #include "RHIDevice.h"
-#include "RHIGraphicPipeline.h"
 
 
 namespace pipeline {
@@ -274,7 +273,6 @@ namespace pipeline {
 
     protected:
 
-        kRHIGraphicPipeline				        m_GraphicPipeline;
         kMeshBase*						        m_pModel;
     };
 

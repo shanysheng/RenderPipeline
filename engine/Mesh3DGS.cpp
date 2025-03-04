@@ -1,6 +1,7 @@
 #include "Mesh3DGS.h"
 #include "RHIDevice.h"
 #include "Camera.h"
+#include "RHIGraphicPipeline.h"
 
 
 namespace pipeline {
@@ -147,7 +148,7 @@ namespace pipeline {
 
     }
 
-    void kMesh3DGS::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) {
+    void kMesh3DGS::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
 		ModelObjShaderData temp_shaderdat{};
 		temp_shaderdat.model = glm::mat4(1.0f);
@@ -159,13 +160,26 @@ namespace pipeline {
 		VkDeviceSize offsets[] = { 0 };
 		VkBuffer vertexBuffers[] = { m_3DGSVertexBuffer->GetBuffer() };
 
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &m_RenderingDescSet, 0, nullptr);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_RenderingDescSet, 0, nullptr);
 		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 1, 0, 0);
     }
 
 
 	void kMesh3DGS::Load(kRHIDevice& rhidevice) {
+
+		kGraphicsPipelineCreateInfo createinfo;
+		createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
+		createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
+		createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+
+		createinfo.render_pass = rhidevice.GetRenderPass();
+		createinfo.descriptor_set_layouts = this->PrepareDescriptorSetLayout(rhidevice);
+		createinfo.push_constant_ranges = this->PreparePushConstantRange(rhidevice);
+		createinfo.input_binding = this->getBindingDescription();
+		createinfo.input_attributes = this->getAttributeDescriptions();
+		m_GraphicPipeline.CreateGraphicsPipeline(rhidevice, createinfo);
 
 		m_3DGSVertexBuffer = std::make_shared<kRHIBuffer>();
 		m_UniformBuffer = std::make_shared<kRHIBuffer>();
@@ -184,6 +198,8 @@ namespace pipeline {
 
 		m_3DGSVertexBuffer.reset();
 		m_UniformBuffer.reset();
+
+		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
 
 

@@ -5,6 +5,7 @@
 
 #include "RHIBuffer.h"
 #include "RHITexture2D.h"
+#include "RHIGraphicPipeline.h"
 
 #include "Mesh.h"
 
@@ -63,7 +64,7 @@ namespace pipeline {
         void Unload(kRHIDevice& rhidevice);
 
         void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) ;
-        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, kCamera& camera) ;
+        void BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) ;
 
         glm::vec3 GetBBoxCenter();
         glm::vec3 GetBBoxSize();
@@ -97,6 +98,9 @@ namespace pipeline {
 
         VkDescriptorSetLayout	        m_RenderingDescSetLayout;
         VkDescriptorSet	                m_RenderingDescSet;
+
+        kRHIGraphicPipeline				m_GraphicPipeline;
+
 	};
 
 
