@@ -12,13 +12,7 @@ namespace pipeline {
 	class kRHIDevice;
 
 	struct kComputePipelineCreateInfo {
-		VkRenderPass render_pass = VK_NULL_HANDLE;
-
 		std::string comp_shader_file;
-
-		VkVertexInputBindingDescription  input_binding;
-		std::vector<VkVertexInputAttributeDescription> input_attributes;
-
 		std::vector<VkDescriptorSetLayout> descriptor_set_layouts;
 		std::vector<VkPushConstantRange>  push_constant_ranges;
 	};
@@ -29,8 +23,8 @@ namespace pipeline {
 		kRHIComputePipeline();
 		virtual ~kRHIComputePipeline();
 
-		void CreateGraphicsPipeline(kRHIDevice& rhidevice, kComputePipelineCreateInfo& info);
-		void ReleaseGraphicsPipeline(kRHIDevice& rhidevice);
+		void CreateComputePipeline(kRHIDevice& rhidevice, kComputePipelineCreateInfo& info);
+		void ReleaseComputePipeline(kRHIDevice& rhidevice);
 
 		VkPipeline GetPipeline() { return m_Pipeline; }
 		VkPipelineLayout GetPipelineLayout() { return m_PipelineLayout; }

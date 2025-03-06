@@ -36,12 +36,6 @@ namespace pipeline {
         kMeshGltf();
         virtual ~kMeshGltf();
 
-        VkVertexInputBindingDescription getBindingDescription();
-        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
-
-        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
-        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
-
         void Load(kRHIDevice& rhidevice);
         void Unload(kRHIDevice& rhidevice);
 
@@ -52,9 +46,13 @@ namespace pipeline {
         glm::vec3 GetBBoxSize() { return m_BBoxSize; }
 
     protected:
+
+        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
+        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
         void SetupDescriptorSets(kRHIDevice& rhidevice);
         void SetupMatrixDescriptorSets(kRHIDevice& rhidevice);
         void SetupMaterialDescriptorSets(kRHIDevice& rhidevice);
+        void CreateGraphicPipeline(kRHIDevice& rhidevice);
 
 
     protected:

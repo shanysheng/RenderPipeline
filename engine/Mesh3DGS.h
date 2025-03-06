@@ -6,6 +6,7 @@
 #include "RHIBuffer.h"
 #include "RHITexture2D.h"
 #include "RHIGraphicPipeline.h"
+#include "RHIComputePipeline.h"
 
 #include "Mesh.h"
 
@@ -54,12 +55,6 @@ namespace pipeline {
         kMesh3DGS();
         virtual ~kMesh3DGS();
 
-        VkVertexInputBindingDescription getBindingDescription() ;
-        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() ;
-
-        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice) ;
-        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
-
         void Load(kRHIDevice& rhidevicet);
         void Unload(kRHIDevice& rhidevice);
 
@@ -77,17 +72,19 @@ namespace pipeline {
 
         bool LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene);
 
-        void SetupRenderingDescSets(kRHIDevice& rhidevice);
-        void CreateGraphicPipeline();
-        void BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer);
-
         void SetupSortDescSets(kRHIDevice& rhidevice);
-        void CreateSortComputePipeline();
+        void CreateSortComputePipeline(kRHIDevice& rhidevice);
         void BuildSortCommandBuffer(VkCommandBuffer commandBuffer);
 
+        std::vector<VkDescriptorSetLayout> PrepareProjectionDSLayout(kRHIDevice& rhidevice);
         void SetupProjectionDescSets(kRHIDevice& rhidevice);
-        void CreateProjectionComputePipeline();
-        void BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer);
+        void CreateProjectionComputePipeline(kRHIDevice& rhidevice);
+        void BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
+
+        std::vector<VkDescriptorSetLayout> PrepareRenderingDSLayout(kRHIDevice& rhidevice);
+        void SetupRenderingDescSets(kRHIDevice& rhidevice);
+        void CreateRenderingPipeline(kRHIDevice& rhidevice);
+        void BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
     protected:
         kSplatScene     m_SplatScene;
 
@@ -96,11 +93,14 @@ namespace pipeline {
         std::shared_ptr<kRHIBuffer>     m_QuadVertexBuffer;
         std::shared_ptr<kRHIBuffer>     m_QuadIndexBuffer;
 
-        VkDescriptorSetLayout	        m_RenderingDescSetLayout;
-        VkDescriptorSet	                m_RenderingDescSet;
+        VkDescriptorSetLayout	        m_RenderingDSLayout;
+        VkDescriptorSet	                m_RenderingDS;
+        kRHIGraphicPipeline				m_RenderingPipeline;
 
-        kRHIGraphicPipeline				m_GraphicPipeline;
 
+        VkDescriptorSetLayout	        m_ProjectionDSLayout;
+        VkDescriptorSet	                m_ProjectionDS;
+        kRHIComputePipeline             m_ProjectionComp;
 	};
 
 

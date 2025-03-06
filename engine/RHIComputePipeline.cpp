@@ -17,7 +17,7 @@ namespace pipeline {
 
 	}
 
-	void kRHIComputePipeline::CreateGraphicsPipeline(kRHIDevice& rhidevice, kComputePipelineCreateInfo& info) 
+	void kRHIComputePipeline::CreateComputePipeline(kRHIDevice& rhidevice, kComputePipelineCreateInfo& info)
 	{
         VkShaderModule computeShaderModule = rhidevice.CreateShaderModule(info.comp_shader_file);
 
@@ -48,10 +48,9 @@ namespace pipeline {
         vkDestroyShaderModule(rhidevice.GetLogicDevice(), computeShaderModule, nullptr);
 	}
 
-	void kRHIComputePipeline::ReleaseGraphicsPipeline(kRHIDevice& rhidevice) 
+	void kRHIComputePipeline::ReleaseComputePipeline(kRHIDevice& rhidevice)
 	{
         vkDestroyPipeline(rhidevice.GetLogicDevice(), m_Pipeline, nullptr);
         vkDestroyPipelineLayout(rhidevice.GetLogicDevice(), m_PipelineLayout, nullptr);
 	}
-
 }	

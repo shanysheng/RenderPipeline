@@ -22,16 +22,20 @@ namespace pipeline {
 
 		void CreateVertexBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
 		void CreateIndexBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
-		
+		void CreateStageBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
+
 		void CreateUniformBuffer(kRHIDevice& rhidevice, VkDeviceSize bufferSize);
 		void UpdateBuffer(const void* pbuffer, uint32_t bufferSize);
 
 		void ReleaseBuffer();
 
 		VkBuffer GetBuffer() { return m_Buffer; }
+		VkDescriptorBufferInfo GetBufferInfo();
 
 	protected:
 		VkDevice			m_Device;
+
+		size_t				m_BufferSize;
 
 		VkBuffer			m_Buffer;
 		VkDeviceMemory		m_BufferMemory;

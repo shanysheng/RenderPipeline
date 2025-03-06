@@ -24,42 +24,6 @@ namespace pipeline {
 
 	}
 
-	VkVertexInputBindingDescription kMeshGltf::getBindingDescription() {
-		VkVertexInputBindingDescription bindingDescription{};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		return bindingDescription;
-	}
-
-	std::vector<VkVertexInputAttributeDescription> kMeshGltf::getAttributeDescriptions() {
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, normal);
-
-		attributeDescriptions[2].binding = 0;
-		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(Vertex, uv);
-
-		attributeDescriptions[3].binding = 0;
-		attributeDescriptions[3].location = 3;
-		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[3].offset = offsetof(Vertex, color);
-
-		return attributeDescriptions;
-	}
-
-
 	std::vector<VkDescriptorSetLayout> kMeshGltf::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding matrixLayoutBinding{};
@@ -121,109 +85,6 @@ namespace pipeline {
 		return std::vector<VkPushConstantRange>{pushConstantRange};
 	}
 
-	void kMeshGltf::Load(kRHIDevice& rhidevice) {
-
-		kGraphicsPipelineCreateInfo createinfo;
-		createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
-		createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
-		createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-
-		createinfo.render_pass = rhidevice.GetRenderPass();
-		createinfo.descriptor_set_layouts = this->PrepareDescriptorSetLayout(rhidevice);
-		createinfo.push_constant_ranges = this->PreparePushConstantRange(rhidevice);
-		createinfo.input_binding = this->getBindingDescription();
-		createinfo.input_attributes = this->getAttributeDescriptions();
-		m_GraphicPipeline.CreateGraphicsPipeline(rhidevice, createinfo);
-
-
-		tinygltf::Model glTFInput;
-		tinygltf::TinyGLTF gltfContext;
-		std::string error, warning;
-
-		bool fileLoaded = gltfContext.LoadASCIIFromFile(&glTFInput, &error, &warning, GLTF_MODEL_PATH);
-
-		// Pass some Vulkan resources required for setup and rendering to the glTF model loading class
-
-		std::vector<uint32_t> indexBuffer;
-		std::vector<kMeshGltf::Vertex> vertexBuffer;
-
-		if (fileLoaded) {
-			loadImages(rhidevice, glTFInput);
-			loadMaterials(rhidevice, glTFInput);
-			loadTextures(rhidevice, glTFInput);
-			const tinygltf::Scene& scene = glTFInput.scenes[0];
-
-			for (size_t i = 0; i < scene.nodes.size(); i++) {
-				const tinygltf::Node node = glTFInput.nodes[scene.nodes[i]];
-				loadNode(rhidevice, node, glTFInput, nullptr, indexBuffer, vertexBuffer);
-			}
-		}
-		else {
-			throw std::runtime_error("Could not open the glTF file.\n\nMake sure the assets submodule has been checked out and is up-to-date.");
-			return;
-		}
-
-		m_VertexBuffer = std::make_shared<kRHIBuffer>();
-		m_IndexBuffer = std::make_shared<kRHIBuffer>();
-		m_MatrixBuffer = std::make_shared<kRHIBuffer>();
-
-		// Create and upload vertex and index buffer
-		// We will be using one single vertex buffer and one single index buffer for the whole glTF scene
-		// Primitives (of the glTF model) will then index into these using index offsets
-		size_t indexBufferSize = indexBuffer.size() * sizeof(uint32_t);
-		size_t vertexBufferSize = vertexBuffer.size() * sizeof(Vertex);
-
-		m_IndexCount = static_cast<uint32_t>(indexBuffer.size());
-		m_IndexBuffer->CreateIndexBuffer(rhidevice, (const char*)indexBuffer.data(), indexBufferSize);
-		m_VertexBuffer->CreateVertexBuffer(rhidevice, (const char*)vertexBuffer.data(), vertexBufferSize);
-		m_MatrixBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelGltfShaderData));
-
-		SetupDescriptorSets(rhidevice);
-	}
-
-	void kMeshGltf::Unload(kRHIDevice& rhidevice) {
-
-		//// Release all Vulkan resources allocated for the model
-
-		for (auto node : nodes) {
-			delete node;
-		}
-
-		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_MatrixDSLayout, nullptr);
-		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_SamplerDSLayout, nullptr);
-
-		m_MatrixBuffer.reset();
-		m_IndexBuffer.reset();
-		m_VertexBuffer.reset();
-
-		for (Image image : images) {
-			image.texture.ReleaseTexture();
-		}
-
-		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
-	}
-
-	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
-
-
-	}
-
-	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
-
-		ModelGltfShaderData temp_shaderdat{};
-		temp_shaderdat.viewPos = glm::vec4(camera.GetViewPos(), 1.0f);
-		temp_shaderdat.view = camera.GetViewMat();
-		temp_shaderdat.projection = camera.GetProjMat();
-		temp_shaderdat.lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
-
-		m_MatrixBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
-
-
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_MatrixDSet, 0, nullptr);
-
-		draw(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
-	}
 
 	void kMeshGltf::SetupDescriptorSets(kRHIDevice& rhidevice) {
 
@@ -339,6 +200,144 @@ namespace pipeline {
 		}
 
 	}
+
+	void kMeshGltf::CreateGraphicPipeline(kRHIDevice& rhidevice) {
+
+		VkVertexInputBindingDescription vertex_bindingDesc{};
+		vertex_bindingDesc.binding = 0;
+		vertex_bindingDesc.stride = sizeof(Vertex);
+		vertex_bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		std::vector<VkVertexInputAttributeDescription> vertex_attributeDescs(4);
+		vertex_attributeDescs[0].binding = 0;
+		vertex_attributeDescs[0].location = 0;
+		vertex_attributeDescs[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertex_attributeDescs[0].offset = offsetof(Vertex, pos);
+
+		vertex_attributeDescs[1].binding = 0;
+		vertex_attributeDescs[1].location = 1;
+		vertex_attributeDescs[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertex_attributeDescs[1].offset = offsetof(Vertex, normal);
+
+		vertex_attributeDescs[2].binding = 0;
+		vertex_attributeDescs[2].location = 2;
+		vertex_attributeDescs[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertex_attributeDescs[2].offset = offsetof(Vertex, uv);
+
+		vertex_attributeDescs[3].binding = 0;
+		vertex_attributeDescs[3].location = 3;
+		vertex_attributeDescs[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertex_attributeDescs[3].offset = offsetof(Vertex, color);
+
+
+		kGraphicsPipelineCreateInfo createinfo;
+		createinfo.vert_shader_file = "shaders/gltf_mesh_vert.spv";
+		createinfo.frag_shader_file = "shaders/gltf_mesh_frag.spv";
+		createinfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+		createinfo.render_pass = rhidevice.GetRenderPass();
+		createinfo.descriptor_set_layouts = this->PrepareDescriptorSetLayout(rhidevice);
+		createinfo.push_constant_ranges = this->PreparePushConstantRange(rhidevice);
+		createinfo.input_binding = vertex_bindingDesc;
+		createinfo.input_attributes = vertex_attributeDescs;
+		m_GraphicPipeline.CreateGraphicsPipeline(rhidevice, createinfo);
+
+		SetupDescriptorSets(rhidevice);
+	}
+
+	void kMeshGltf::Load(kRHIDevice& rhidevice) {
+
+
+		tinygltf::Model glTFInput;
+		tinygltf::TinyGLTF gltfContext;
+		std::string error, warning;
+
+		bool fileLoaded = gltfContext.LoadASCIIFromFile(&glTFInput, &error, &warning, GLTF_MODEL_PATH);
+
+		// Pass some Vulkan resources required for setup and rendering to the glTF model loading class
+
+		std::vector<uint32_t> indexBuffer;
+		std::vector<kMeshGltf::Vertex> vertexBuffer;
+
+		if (fileLoaded) {
+			loadImages(rhidevice, glTFInput);
+			loadMaterials(rhidevice, glTFInput);
+			loadTextures(rhidevice, glTFInput);
+			const tinygltf::Scene& scene = glTFInput.scenes[0];
+
+			for (size_t i = 0; i < scene.nodes.size(); i++) {
+				const tinygltf::Node node = glTFInput.nodes[scene.nodes[i]];
+				loadNode(rhidevice, node, glTFInput, nullptr, indexBuffer, vertexBuffer);
+			}
+		}
+		else {
+			throw std::runtime_error("Could not open the glTF file.\n\nMake sure the assets submodule has been checked out and is up-to-date.");
+			return;
+		}
+
+		m_VertexBuffer = std::make_shared<kRHIBuffer>();
+		m_IndexBuffer = std::make_shared<kRHIBuffer>();
+		m_MatrixBuffer = std::make_shared<kRHIBuffer>();
+
+		// Create and upload vertex and index buffer
+		// We will be using one single vertex buffer and one single index buffer for the whole glTF scene
+		// Primitives (of the glTF model) will then index into these using index offsets
+		size_t indexBufferSize = indexBuffer.size() * sizeof(uint32_t);
+		size_t vertexBufferSize = vertexBuffer.size() * sizeof(Vertex);
+
+		m_IndexCount = static_cast<uint32_t>(indexBuffer.size());
+		m_IndexBuffer->CreateIndexBuffer(rhidevice, (const char*)indexBuffer.data(), indexBufferSize);
+		m_VertexBuffer->CreateVertexBuffer(rhidevice, (const char*)vertexBuffer.data(), vertexBufferSize);
+		m_MatrixBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelGltfShaderData));
+
+		CreateGraphicPipeline(rhidevice);
+	}
+
+	void kMeshGltf::Unload(kRHIDevice& rhidevice) {
+
+		//// Release all Vulkan resources allocated for the model
+
+		for (auto node : nodes) {
+			delete node;
+		}
+
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_MatrixDSLayout, nullptr);
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_SamplerDSLayout, nullptr);
+
+		m_MatrixBuffer.reset();
+		m_IndexBuffer.reset();
+		m_VertexBuffer.reset();
+
+		for (Image image : images) {
+			image.texture.ReleaseTexture();
+		}
+
+		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
+	}
+
+	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
+
+
+	}
+
+	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+
+		ModelGltfShaderData temp_shaderdat{};
+		temp_shaderdat.viewPos = glm::vec4(camera.GetViewPos(), 1.0f);
+		temp_shaderdat.view = camera.GetViewMat();
+		temp_shaderdat.projection = camera.GetProjMat();
+		temp_shaderdat.lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
+
+		m_MatrixBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
+
+
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_MatrixDSet, 0, nullptr);
+
+		draw(commandBuffer, m_GraphicPipeline.GetPipelineLayout());
+	}
+
+
 
 	void kMeshGltf::loadImages(kRHIDevice& rhidevice, tinygltf::Model& input) {
 

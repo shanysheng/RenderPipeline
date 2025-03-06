@@ -17,12 +17,6 @@ namespace pipeline {
         kMeshObj();
         virtual ~kMeshObj();
 
-        VkVertexInputBindingDescription getBindingDescription();
-        std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
-
-        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
-        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
-
         void Load(kRHIDevice& rhidevicet);
         void Unload(kRHIDevice& rhidevice);
 
@@ -50,7 +44,11 @@ namespace pipeline {
         };
 
         void LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array);
+
+        std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice);
+        std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice);
         void SetupDescriptorSets(kRHIDevice& rhidevice);
+        void CreateGraphicPipeline(kRHIDevice& rhidevice);
 
     protected:
         glm::vec3       m_BBoxCenter;

@@ -68,12 +68,6 @@ namespace pipeline {
     public:
         virtual ~kMeshBase() {};
 
-        virtual VkVertexInputBindingDescription getBindingDescription() = 0;
-        virtual std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() = 0;
-
-        virtual std::vector<VkDescriptorSetLayout> PrepareDescriptorSetLayout(kRHIDevice& rhidevice) = 0;
-        virtual std::vector<VkPushConstantRange> PreparePushConstantRange(kRHIDevice& rhidevice) = 0;
-
         virtual void Load(kRHIDevice& rhidevicet) = 0;
         virtual void Unload(kRHIDevice& rhidevice) = 0;
 

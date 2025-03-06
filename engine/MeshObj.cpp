@@ -28,36 +28,6 @@ namespace pipeline {
 
 	}
 
-	VkVertexInputBindingDescription kMeshObj::getBindingDescription() {
-		VkVertexInputBindingDescription bindingDescription{};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		return bindingDescription;
-	}
-
-	std::vector<VkVertexInputAttributeDescription> kMeshObj::getAttributeDescriptions() {
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-		attributeDescriptions[2].binding = 0;
-		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
-
-		return attributeDescriptions;
-	}
-
 	std::vector<VkDescriptorSetLayout> kMeshObj::PrepareDescriptorSetLayout(kRHIDevice& rhidevice) {
 
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -93,8 +63,79 @@ namespace pipeline {
 		return std::vector<VkPushConstantRange>{};
 	}
 
+	void kMeshObj::SetupDescriptorSets(kRHIDevice& rhidevice) {
 
-	void kMeshObj::Load(kRHIDevice& rhidevice) {
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = &m_DescriptorSetLayout;
+
+		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
+
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(ModelObjShaderData);
+
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = m_Texture->GetImageView();
+		imageInfo.sampler = m_Texture->GetImageSampler();
+
+		std::vector<VkWriteDescriptorSet> descriptorWrites(2);
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = m_DescriptorSet;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[1].dstSet = m_DescriptorSet;
+		descriptorWrites[1].dstBinding = 1;
+		descriptorWrites[1].dstArrayElement = 0;
+		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[1].descriptorCount = 1;
+		descriptorWrites[1].pImageInfo = &imageInfo;
+
+		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
+		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
+		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
+		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
+		// used to update these binding relationships.
+		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	}
+
+	void kMeshObj::CreateGraphicPipeline(kRHIDevice& rhidevice)
+	{
+		VkVertexInputBindingDescription vertex_bindingDesc{};
+		vertex_bindingDesc.binding = 0;
+		vertex_bindingDesc.stride = sizeof(Vertex);
+		vertex_bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+
+		std::vector<VkVertexInputAttributeDescription> vertex_attributeDescs(3);
+
+		vertex_attributeDescs[0].binding = 0;
+		vertex_attributeDescs[0].location = 0;
+		vertex_attributeDescs[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertex_attributeDescs[0].offset = offsetof(Vertex, pos);
+
+		vertex_attributeDescs[1].binding = 0;
+		vertex_attributeDescs[1].location = 1;
+		vertex_attributeDescs[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertex_attributeDescs[1].offset = offsetof(Vertex, color);
+
+		vertex_attributeDescs[2].binding = 0;
+		vertex_attributeDescs[2].location = 2;
+		vertex_attributeDescs[2].format = VK_FORMAT_R32G32_SFLOAT;
+		vertex_attributeDescs[2].offset = offsetof(Vertex, texCoord);
+
 
 		kGraphicsPipelineCreateInfo createinfo;
 		createinfo.vert_shader_file = "shaders/model_texture_vert.spv";
@@ -104,10 +145,14 @@ namespace pipeline {
 		createinfo.render_pass = rhidevice.GetRenderPass();
 		createinfo.descriptor_set_layouts = this->PrepareDescriptorSetLayout(rhidevice);
 		createinfo.push_constant_ranges = this->PreparePushConstantRange(rhidevice);
-		createinfo.input_binding = this->getBindingDescription();
-		createinfo.input_attributes = this->getAttributeDescriptions();
+		createinfo.input_binding = vertex_bindingDesc;
+		createinfo.input_attributes = vertex_attributeDescs;
 		m_GraphicPipeline.CreateGraphicsPipeline(rhidevice, createinfo);
 
+		SetupDescriptorSets(rhidevice);
+	}
+
+	void kMeshObj::Load(kRHIDevice& rhidevice) {
 
 		m_VertexBuffer = std::make_shared<kRHIBuffer>();
 		m_IndexBuffer = std::make_shared<kRHIBuffer>();
@@ -127,7 +172,7 @@ namespace pipeline {
 		m_Texture->CreateTexture(rhidevice, OBJ_TEXTURE_PATH);
 		m_UniformBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
 
-		SetupDescriptorSets(rhidevice);
+		CreateGraphicPipeline(rhidevice);
 	}
 
 	void kMeshObj::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
@@ -178,54 +223,6 @@ namespace pipeline {
 		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
 
-
-	void kMeshObj::SetupDescriptorSets(kRHIDevice& rhidevice) {
-
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = rhidevice.GetDescriptorPool();
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &m_DescriptorSetLayout;
-
-		if (vkAllocateDescriptorSets(rhidevice.GetLogicDevice(), &allocInfo, &m_DescriptorSet) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
-		}
-
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(ModelObjShaderData);
-
-		VkDescriptorImageInfo imageInfo{};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = m_Texture->GetImageView();
-		imageInfo.sampler = m_Texture->GetImageSampler();
-
-		std::vector<VkWriteDescriptorSet> descriptorWrites(2);
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_DescriptorSet;
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = m_DescriptorSet;
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pImageInfo = &imageInfo;
-
-		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
-		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
-		// storage buffers, textures, samplers, etc.) to shaders. Each descriptor set corresponds 
-		// to one or more binding points in the shader, and vkUpdateDescriptorSets is the function
-		// used to update these binding relationships.
-		vkUpdateDescriptorSets(rhidevice.GetLogicDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
 
 	void kMeshObj::LoadModelFromfile(std::vector<Vertex>& vertex_array, std::vector<uint32_t>& index_array) {
 		tinyobj::attrib_t attrib;
