@@ -79,9 +79,9 @@ namespace pipeline {
 		m_pModel->Unload(m_RHIDevice);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_RenderFinishedSemaphores[i], nullptr);
-			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_ImageAvailableSemaphores[i], nullptr);
-			vkDestroyFence(m_RHIDevice.GetLogicDevice(), m_InFlightFences[i], nullptr);
+			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_RenderFinishedSems[i], nullptr);
+			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_ImageAvailableSems[i], nullptr);
+			vkDestroySemaphore(m_RHIDevice.GetLogicDevice(), m_ComputeFinishedSems[i], nullptr);
 		}
 
 		m_RHIDevice.ReleaseDevice();
@@ -95,23 +95,35 @@ namespace pipeline {
 
     }
 
-    void kRenderingEngine::SetRenderTraverseRoot(const std::vector<kSGNode*>& roots) {
-
-    }
-
-	void kRenderingEngine::ClearScreen(float r, float g, float b, float a) {
-
-	}
-
 	void kRenderingEngine::DoRendering() {
 
+		VkCommandBuffer computeCmdBuffer = m_ComputeCommandBuffers[m_CurrentFrame];
+		vkResetCommandBuffer(computeCmdBuffer, /*VkCommandBufferResetFlagBits*/ 0);
 
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		if (vkBeginCommandBuffer(computeCmdBuffer, &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording command buffer!");
+		}
 
-		vkWaitForFences(m_RHIDevice.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+		m_pModel->BuildComputeCommandBuffer(computeCmdBuffer, m_Camera);
+
+		vkEndCommandBuffer(computeCmdBuffer);
+
+		// Submit compute commands
+		VkSubmitInfo computeSubmitInfo{};
+		computeSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		computeSubmitInfo.commandBufferCount = 1;
+		computeSubmitInfo.pCommandBuffers = &computeCmdBuffer;
+		computeSubmitInfo.signalSemaphoreCount = 1;
+		computeSubmitInfo.pSignalSemaphores = &m_ComputeFinishedSems[m_CurrentFrame];
+		if (vkQueueSubmit(m_RHIDevice.GetComputeQueue(), 1, &computeSubmitInfo, VK_NULL_HANDLE) != VK_SUCCESS) {
+			throw std::runtime_error("failed to submit draw command buffer!");
+		}
 
 		uint32_t imageIndex;
 		VkResult result = vkAcquireNextImageKHR(m_RHIDevice.GetLogicDevice(), m_RHIDevice.GetSwapchain(),
-												UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame],
+												UINT64_MAX, m_ImageAvailableSems[m_CurrentFrame],
 												VK_NULL_HANDLE, &imageIndex);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_FramebufferResized) {
@@ -122,41 +134,40 @@ namespace pipeline {
 			throw std::runtime_error("failed to acquire swap chain image!");
 		}
 
-		// submit command wait image available semaphore and signal render finished semaphore
-		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[m_CurrentFrame] };
-		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
-
 		{
-			vkResetFences(m_RHIDevice.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
-			vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+			VkCommandBuffer graphicCmdBuffer = m_GraphicCommandBuffers[m_CurrentFrame];
+			vkResetCommandBuffer(graphicCmdBuffer, /*VkCommandBufferResetFlagBits*/ 0);
+			BuildCommandBuffer(graphicCmdBuffer, m_RHIDevice.GetFramebuffer(imageIndex));
 
-			BuildCommandBuffer(imageIndex);
+			// submit command wait image available semaphore and signal render finished semaphore
+			VkSemaphore render_waitSems[] = { m_ComputeFinishedSems[m_CurrentFrame], m_ImageAvailableSems[m_CurrentFrame] };
+			VkSemaphore render_signalSems[] = { m_RenderFinishedSems[m_CurrentFrame] };
 
-			VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+			VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 			VkSubmitInfo submitInfo{};
 			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			submitInfo.waitSemaphoreCount = 1;
-			submitInfo.pWaitSemaphores = waitSemaphores;
+			submitInfo.waitSemaphoreCount = 2;
+			submitInfo.pWaitSemaphores = render_waitSems;
 			submitInfo.pWaitDstStageMask = waitStages;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentFrame];
+			submitInfo.pCommandBuffers = &graphicCmdBuffer;
 			submitInfo.signalSemaphoreCount = 1;
-			submitInfo.pSignalSemaphores = signalSemaphores;
+			submitInfo.pSignalSemaphores = render_signalSems;
 
-			if (vkQueueSubmit(m_RHIDevice.GetGraphicsQueue(), 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS) {
+			if (vkQueueSubmit(m_RHIDevice.GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) {
 				throw std::runtime_error("failed to submit draw command buffer!");
 			}
 		}
 
-
 		{
 			// present command wait render finished semaphore 
 			VkSwapchainKHR swapChains[] = { m_RHIDevice.GetSwapchain() };
+			VkSemaphore present_waitSems[] = { m_RenderFinishedSems[m_CurrentFrame] };
 
 			VkPresentInfoKHR presentInfo{};
 			presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 			presentInfo.waitSemaphoreCount = 1;
-			presentInfo.pWaitSemaphores = signalSemaphores;
+			presentInfo.pWaitSemaphores = present_waitSems;
 			presentInfo.swapchainCount = 1;
 			presentInfo.pSwapchains = swapChains;
 			presentInfo.pImageIndices = &imageIndex;
@@ -188,42 +199,47 @@ namespace pipeline {
 
 	void kRenderingEngine::CreateSyncObjects() {
 
-		m_ImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		m_RenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		m_InFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+		m_ImageAvailableSems.resize(MAX_FRAMES_IN_FLIGHT);
+		m_RenderFinishedSems.resize(MAX_FRAMES_IN_FLIGHT);
+		m_ComputeFinishedSems.resize(MAX_FRAMES_IN_FLIGHT);
 
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-		VkFenceCreateInfo fenceInfo{};
-		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-			if (vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
-				vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
-				vkCreateFence(m_RHIDevice.GetLogicDevice(), &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
+			if (vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSems[i]) != VK_SUCCESS ||
+				vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSems[i]) != VK_SUCCESS ||
+				vkCreateSemaphore(m_RHIDevice.GetLogicDevice(), &semaphoreInfo, nullptr, &m_ComputeFinishedSems[i]) != VK_SUCCESS ) {
 				throw std::runtime_error("failed to create synchronization objects for a frame!");
 			}
 		}
 	}
 
 	void kRenderingEngine::CreateCommandBuffers() {
-		m_CommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
+		// graphic cmd buffers
+		m_GraphicCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool = m_RHIDevice.GetCommandPool();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
-
-		if (vkAllocateCommandBuffers(m_RHIDevice.GetLogicDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
+		allocInfo.commandBufferCount = (uint32_t)m_GraphicCommandBuffers.size();
+		if (vkAllocateCommandBuffers(m_RHIDevice.GetLogicDevice(), &allocInfo, m_GraphicCommandBuffers.data()) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate command buffers!");
+		}
+
+		// compute cmd buffers
+		m_ComputeCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.commandPool = m_RHIDevice.GetCommandPool();
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandBufferCount = (uint32_t)m_ComputeCommandBuffers.size();
+		if (vkAllocateCommandBuffers(m_RHIDevice.GetLogicDevice(), &allocInfo, m_ComputeCommandBuffers.data()) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate compute command buffers!");
 		}
 	}
 
-	void kRenderingEngine::BuildCommandBuffer(uint32_t imageIndex) {
-		VkCommandBuffer commandBuffer = m_CommandBuffers[m_CurrentFrame];
+	void kRenderingEngine::BuildCommandBuffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer) {
+
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -232,13 +248,11 @@ namespace pipeline {
 			throw std::runtime_error("failed to begin recording command buffer!");
 		}
 
-		m_pModel->BuildComputeCommandBuffer(commandBuffer, m_Camera);
-
 		{
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			renderPassInfo.renderPass = m_RHIDevice.GetRenderPass();
-			renderPassInfo.framebuffer = m_RHIDevice.GetFramebuffer(imageIndex);
+			renderPassInfo.framebuffer = framebuffer;
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent.width = m_WinInfo.width;
 			renderPassInfo.renderArea.extent.height = m_WinInfo.height;

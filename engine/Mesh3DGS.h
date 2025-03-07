@@ -29,9 +29,10 @@ namespace pipeline {
     };
 
     struct kSplatQuad {
-        glm::vec3 pos;      // position
-        glm::vec4 color;    // color and opacity
-        glm::vec3 obb;      // size and rotate
+        glm::vec3 pos;
+        glm::vec4 color;
+        glm::vec3 cov3d_1;
+        glm::vec3 cov3d_2;
     };
 
     struct kSplatScene

@@ -167,10 +167,8 @@ namespace pipeline {
         //			certain rate with the changing viewing parameters. 
         //
         //------------------------------------------------------------------------------
-        void ClearScreen(float r = 0.0f, float g = 0.3f, float b = 0.9f, float a = 0.0f);
         void DoRendering();
         void SwapBuffers();
-
 
         void FrameChanged() { m_FramebufferResized = true; }
 
@@ -181,13 +179,10 @@ namespace pipeline {
 
         void CreateSyncObjects();
         void CreateCommandBuffers();
-        void BuildCommandBuffer(uint32_t imageIndex);
+        void BuildCommandBuffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer);
 
         void RecreateSwapChain();
 
-        void SetRenderTraverseRoot( const std::vector<kSGNode*>& roots );
-        
-        
     protected:
 
         kRenderQueueManager*					GetRenderQueueManager()		{return m_pRenderQueueMgr;}
@@ -252,14 +247,15 @@ namespace pipeline {
         // Unlike the semaphore example, this example does block host execution. This means the 
         // host won't do anything except wait until execution has finished. For this case, we 
         // had to make sure the transfer was complete before we could save the screenshot to disk.
-
-        std::vector<VkSemaphore>		        m_ImageAvailableSemaphores;
-        std::vector<VkSemaphore>		        m_RenderFinishedSemaphores;
-        std::vector<VkFence>			        m_InFlightFences;
-        std::vector<VkCommandBuffer>	        m_CommandBuffers;
         uint32_t						        m_CurrentFrame = 0;
-
         
+        std::vector<VkSemaphore>		        m_ImageAvailableSems;
+        std::vector<VkSemaphore>		        m_RenderFinishedSems;
+        std::vector<VkCommandBuffer>	        m_GraphicCommandBuffers;
+
+        std::vector<VkSemaphore>		        m_ComputeFinishedSems;
+        std::vector<VkCommandBuffer>	        m_ComputeCommandBuffers;
+
         kRHIResourceManager*				    m_pRHIResourceMpr;
         kRenderQueueManager*   					m_pRenderQueueMgr;
         kRenderTargetManager*					m_pRenderTargetMgr;

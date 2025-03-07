@@ -1,41 +1,35 @@
 #version 450
 
-struct kSplatVertex {
+struct Particle {
     vec3 pos;
     vec4 color;
     vec3 cov3d_1;
     vec3 cov3d_2;
 };
 
-struct kSplatQuad {
-    vec3 pos;      // position
-    vec4 color;    // color and opacity
-    vec3 obb;      // size and rotate
-};
-
-layout(std140, binding = 0) uniform CameraUBO {
+layout (binding = 0) uniform ParameterUBO {
     mat4 model;
     mat4 view;
     mat4 proj;
     uint particleCount;
 } ubo;
 
-layout(std140, binding = 1) buffer gaussian_vertex_in {
-  kSplatVertex gaussian_verts[];  
+layout(std140, binding = 1) readonly buffer ParticlesIn {
+   Particle particlesIn[ ];
 };
 
-layout(std140, binding = 2) buffer gaussian_quad_out {
-  kSplatQuad gaussian_quads[]; 
+layout(std140, binding = 2) buffer ParticlesOut {
+   Particle particlesOut[ ];
 };
 
-layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
-void main() {
-      uint index = gl_GlobalInvocationID.x;  
-      if (index >= ubo.particleCount) 
-		    return;	
+void main() 
+{
+    uint index = gl_GlobalInvocationID.x;  
+    if(index>ubo.particleCount)
+      return;
 
-      gaussian_quads[index].pos = gaussian_verts[index].pos;
-      gaussian_quads[index].color = gaussian_verts[index].color;
-      gaussian_quads[index].obb = gaussian_verts[index].cov3d_1;
+    particlesOut[index].pos = particlesIn[index].pos;
+    particlesOut[index].color = particlesIn[index].color;
 }

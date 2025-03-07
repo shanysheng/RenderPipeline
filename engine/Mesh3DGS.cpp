@@ -205,7 +205,7 @@ namespace pipeline {
 		bindingDescription.stride = sizeof(kSplatQuad);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
@@ -220,12 +220,12 @@ namespace pipeline {
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(kSplatQuad, obb);
+		attributeDescriptions[2].offset = offsetof(kSplatQuad, cov3d_1);
 
-		//attributeDescriptions[3].binding = 0;
-		//attributeDescriptions[3].location = 3;
-		//attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-		//attributeDescriptions[3].offset = offsetof(kSplatVertex, cov3d_2);
+		attributeDescriptions[3].binding = 0;
+		attributeDescriptions[3].location = 3;
+		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[3].offset = offsetof(kSplatQuad, cov3d_2);
 
 		kGraphicsPipelineCreateInfo createinfo;
 		createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
@@ -257,7 +257,7 @@ namespace pipeline {
 
 	void kMesh3DGS::BuildComputeCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
-		//BuildProjectionCommandBuffer(commandBuffer, camera);
+		BuildProjectionCommandBuffer(commandBuffer, camera);
 	}
 
     void kMesh3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) {
@@ -286,20 +286,20 @@ namespace pipeline {
 		m_3DGSVertexBuffer->CreateStageBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
 
 
+		size_t buffer_size = m_SplatScene.gs_points.size() * sizeof(kSplatQuad);
+		char* pbuffer = new char[buffer_size];
+		memset(pbuffer, 0, buffer_size);
 		m_QuadVertexBuffer = std::make_shared<kRHIBuffer>();
+		m_QuadVertexBuffer->CreateStageBuffer(rhidevice, pbuffer, buffer_size);
 
-		//size_t buffer_size = m_SplatScene.gs_points.size() * sizeof(kSplatQuad);
-		//char* pbuffer = new char[buffer_size];
-		//memset(pbuffer, 0, buffer_size);
-		//m_QuadVertexBuffer->CreateStageBuffer(rhidevice, pbuffer, buffer_size);
-
-		std::vector<kSplatQuad> quads;
-		quads.resize(m_SplatScene.gs_points.size());
-		for (size_t i = 0; i < m_SplatScene.gs_points.size(); ++i) {
-			quads[i].pos = m_SplatScene.gs_points[i].pos;
-			quads[i].color = m_SplatScene.gs_points[i].color;
-		}
-		m_QuadVertexBuffer->CreateStageBuffer(rhidevice, (const char*)quads.data(), quads.size() * sizeof(kSplatQuad));
+		//std::vector<kSplatQuad> quads;
+		//quads.resize(m_SplatScene.gs_points.size());
+		//for (size_t i = 0; i < m_SplatScene.gs_points.size(); ++i) {
+		//	quads[i].pos = m_SplatScene.gs_points[i].pos;
+		//	quads[i].color = m_SplatScene.gs_points[i].color;
+		//}
+		//m_QuadVertexBuffer = std::make_shared<kRHIBuffer>();
+		//m_QuadVertexBuffer->CreateStageBuffer(rhidevice, (const char*)quads.data(), quads.size() * sizeof(kSplatQuad));
 
 		CreateProjectionComputePipeline(rhidevice);
 		CreateRenderingPipeline(rhidevice);
