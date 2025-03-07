@@ -83,17 +83,14 @@ namespace pipeline {
 		std::vector<VkWriteDescriptorSet> descriptorWrites{};
 		descriptorWrites.resize(3);
 
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(ModelObjShaderData);
+		VkDescriptorBufferInfo buffer0_Info = m_UniformBuffer->GetBufferInfo();
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_ProjectionDS;
 		descriptorWrites[0].dstBinding = 0;
 		descriptorWrites[0].dstArrayElement = 0;
 		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
+		descriptorWrites[0].pBufferInfo = &buffer0_Info;
 
 		VkDescriptorBufferInfo buffer1_info = m_3DGSVertexBuffer->GetBufferInfo();
 		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -134,21 +131,9 @@ namespace pipeline {
 
 	void kMesh3DGS::BuildProjectionCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-			throw std::runtime_error("failed to begin recording compute command buffer!");
-		}
-
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ProjectionComp.GetPipeline());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ProjectionComp.GetPipelineLayout(), 0, 1, &m_ProjectionDS, 0, nullptr);
 		vkCmdDispatch(commandBuffer, m_SplatScene.gs_points.size()/ 256, 1, 1);
-
-		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-			throw std::runtime_error("failed to record compute command buffer!");
-		}
-
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------
@@ -187,20 +172,15 @@ namespace pipeline {
 			throw std::runtime_error("failed to allocate descriptor sets!");
 		}
 
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_UniformBuffer->GetBuffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(ModelObjShaderData);
-
 		std::vector<VkWriteDescriptorSet> descriptorWrites(1);
-
+		VkDescriptorBufferInfo buffer0_Info = m_UniformBuffer->GetBufferInfo();
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_RenderingDS;
 		descriptorWrites[0].dstBinding = 0;
 		descriptorWrites[0].dstArrayElement = 0;
 		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
+		descriptorWrites[0].pBufferInfo = &buffer0_Info;
 
 		// In Vulkan, a descriptor set (VkDescriptorSet) is a container used to store descriptors. 
 		// Descriptors are mechanisms in Vulkan for binding resources (such as uniform buffers, 
@@ -255,12 +235,12 @@ namespace pipeline {
 	}
 
 	void kMesh3DGS::BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
-		ModelObjShaderData temp_shaderdat{};
-		temp_shaderdat.model = glm::mat4(1.0f);
-		temp_shaderdat.view = camera.GetViewMat();
-		temp_shaderdat.proj = camera.GetProjMat();
 
-		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
+		//VkMemoryBarrier barrier;
+		//barrier = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+		//barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+		//barrier.dstAccessMask = VK_ACCESS_INDIRECT_COMMAND_READ_BIT | VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+		//vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT | VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, 1, &barrier, 0, NULL, 0, NULL);
 
 		VkDeviceSize offsets[] = { 0 };
 		VkBuffer vertexBuffers[] = { m_3DGSVertexBuffer->GetBuffer() };
@@ -272,12 +252,18 @@ namespace pipeline {
 	}
 	//--------------------------------------------------------------------------------------------------------------------
 
-    void kMesh3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
+    void kMesh3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) {
+		ModelObjShaderData temp_shaderdat{};
+		temp_shaderdat.model = glm::mat4(1.0f);
+		temp_shaderdat.view = camera.GetViewMat();
+		temp_shaderdat.proj = camera.GetProjMat();
 
+		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
     }
 
     void kMesh3DGS::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
+		//BuildProjectionCommandBuffer(commandBuffer, camera);
 		BuildRenderingCommandBuffer(commandBuffer, camera);
     }
 
@@ -297,20 +283,22 @@ namespace pipeline {
 		m_QuadVertexBuffer = std::make_shared<kRHIBuffer>();
 		m_QuadVertexBuffer->CreateStageBuffer(rhidevice, pbuffer, buffer_size);
 
+		CreateProjectionComputePipeline(rhidevice);
 		CreateRenderingPipeline(rhidevice);
 	}
 
 	void kMesh3DGS::Unload(kRHIDevice& rhidevice) {
 
-		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_RenderingDSLayout, nullptr);
-
 		m_3DGSVertexBuffer.reset();
 		m_QuadVertexBuffer.reset();
 		m_UniformBuffer.reset();
 
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_RenderingDSLayout, nullptr);
+		vkDestroyDescriptorSetLayout(rhidevice.GetLogicDevice(), m_ProjectionDSLayout, nullptr);
+
+		m_ProjectionComp.ReleaseComputePipeline(rhidevice);
 		m_RenderingPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
-
 
 	bool kMesh3DGS::LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene){
 

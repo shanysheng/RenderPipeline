@@ -10,11 +10,11 @@ layout (binding = 0) uniform ParameterUBO {
     float deltaTime;
 } ubo;
 
-layout(std140, binding = 1) readonly buffer ParticleSSBOIn {
+layout(std140, binding = 1) readonly buffer ParticlesIn {
    Particle particlesIn[ ];
 };
 
-layout(std140, binding = 2) buffer ParticleSSBOOut {
+layout(std140, binding = 2) buffer ParticlesOut {
    Particle particlesOut[ ];
 };
 

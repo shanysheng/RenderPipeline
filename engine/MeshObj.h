@@ -20,7 +20,7 @@ namespace pipeline {
         void Load(kRHIDevice& rhidevicet);
         void Unload(kRHIDevice& rhidevice);
 
-        void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage);
+        void UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera);
         void BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
 
         glm::vec3 GetBBoxCenter() { return m_BBoxCenter; }

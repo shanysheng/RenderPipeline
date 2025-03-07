@@ -315,12 +315,7 @@ namespace pipeline {
 		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
 
-	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
-
-
-	}
-
-	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) {
 
 		ModelGltfShaderData temp_shaderdat{};
 		temp_shaderdat.viewPos = glm::vec4(camera.GetViewPos(), 1.0f);
@@ -329,7 +324,9 @@ namespace pipeline {
 		temp_shaderdat.lightPos = glm::vec4(5.0f, 5.0f, -5.0f, 1.0f);
 
 		m_MatrixBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
+	}
 
+	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_MatrixDSet, 0, nullptr);

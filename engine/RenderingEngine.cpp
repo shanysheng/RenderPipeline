@@ -22,8 +22,6 @@ namespace pipeline {
     int kRenderingEngine::Configure(const std::string& ConfigFileName) {
 		OnConfigure();
 
-
-
         return 1;
     }
 
@@ -266,7 +264,7 @@ namespace pipeline {
 				scissor.extent.height = m_WinInfo.height;
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-				m_pModel->UpdateUniformBuffer(m_RHIDevice, m_CurrentFrame);
+				m_pModel->UpdateUniformBuffer(m_RHIDevice, m_Camera);
 				m_pModel->BuildCommandBuffer(commandBuffer, m_Camera);
 			}
 

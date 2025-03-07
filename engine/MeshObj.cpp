@@ -175,11 +175,7 @@ namespace pipeline {
 		CreateGraphicPipeline(rhidevice);
 	}
 
-	void kMeshObj::UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) {
-
-	}
-
-	void kMeshObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+	void kMeshObj::UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) {
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -193,6 +189,9 @@ namespace pipeline {
 		temp_shaderdat.proj = camera.GetProjMat();
 
 		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
+	}
+
+	void kMeshObj::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
 		VkDeviceSize offsets[] = { 0 };
 		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer()};

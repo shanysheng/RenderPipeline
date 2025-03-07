@@ -30,8 +30,8 @@ namespace pipeline {
 
     struct kSplatQuad {
         glm::vec3 pos;      // position
-        glm::vec3 obb;      // size and rotate
         glm::vec4 color;    // color and opacity
+        glm::vec3 obb;      // size and rotate
     };
 
     struct kSplatScene
@@ -58,7 +58,7 @@ namespace pipeline {
         void Load(kRHIDevice& rhidevicet);
         void Unload(kRHIDevice& rhidevice);
 
-        void UpdateUniformBuffer(kRHIDevice& rhidevice, uint32_t currentImage) ;
+        void UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) ;
         void BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) ;
 
         glm::vec3 GetBBoxCenter();
