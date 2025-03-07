@@ -39,8 +39,10 @@ namespace pipeline {
         void Load(kRHIDevice& rhidevice);
         void Unload(kRHIDevice& rhidevice);
 
+        void BuildComputeCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
+
         void UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera);
-        void BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
+        void BuildGraphicCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
 
         glm::vec3 GetBBoxCenter() { return m_BBoxCenter; }
         glm::vec3 GetBBoxSize() { return m_BBoxSize; }

@@ -315,6 +315,10 @@ namespace pipeline {
 		m_GraphicPipeline.ReleaseGraphicsPipeline(rhidevice);
 	}
 
+	void kMeshGltf::BuildComputeCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+
+	}
+
 	void kMeshGltf::UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) {
 
 		ModelGltfShaderData temp_shaderdat{};
@@ -326,7 +330,7 @@ namespace pipeline {
 		m_MatrixBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
 	}
 
-	void kMeshGltf::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+	void kMeshGltf::BuildGraphicCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipeline());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.GetPipelineLayout(), 0, 1, &m_MatrixDSet, 0, nullptr);

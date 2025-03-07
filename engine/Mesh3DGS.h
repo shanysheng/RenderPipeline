@@ -58,8 +58,10 @@ namespace pipeline {
         void Load(kRHIDevice& rhidevicet);
         void Unload(kRHIDevice& rhidevice);
 
+        void BuildComputeCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
+
         void UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) ;
-        void BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) ;
+        void BuildGraphicCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera);
 
         glm::vec3 GetBBoxCenter();
         glm::vec3 GetBBoxSize();
@@ -68,6 +70,7 @@ namespace pipeline {
             alignas(16) glm::mat4 model;
             alignas(16) glm::mat4 view;
             alignas(16) glm::mat4 proj;
+            uint32_t particleCount;
         };
 
         bool LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene);

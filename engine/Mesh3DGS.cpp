@@ -133,7 +133,15 @@ namespace pipeline {
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ProjectionComp.GetPipeline());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ProjectionComp.GetPipelineLayout(), 0, 1, &m_ProjectionDS, 0, nullptr);
-		vkCmdDispatch(commandBuffer, m_SplatScene.gs_points.size()/ 256, 1, 1);
+
+		constexpr int local_size = 256;
+		vkCmdDispatch(commandBuffer, (m_SplatScene.gs_points.size()+ local_size - 1) / local_size, 1, 1);
+
+		VkMemoryBarrier barrier;
+		barrier = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+		barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_INDIRECT_COMMAND_READ_BIT | VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT | VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, 1, &barrier, 0, NULL, 0, NULL);
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------
@@ -194,30 +202,30 @@ namespace pipeline {
 
 		VkVertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(kSplatVertex);
+		bindingDescription.stride = sizeof(kSplatQuad);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
 		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(kSplatVertex, pos);
+		attributeDescriptions[0].offset = offsetof(kSplatQuad, pos);
 
 		attributeDescriptions[1].binding = 0;
 		attributeDescriptions[1].location = 1;
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(kSplatVertex, color);
+		attributeDescriptions[1].offset = offsetof(kSplatQuad, color);
 
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(kSplatVertex, cov3d_1);
+		attributeDescriptions[2].offset = offsetof(kSplatQuad, obb);
 
-		attributeDescriptions[3].binding = 0;
-		attributeDescriptions[3].location = 3;
-		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[3].offset = offsetof(kSplatVertex, cov3d_2);
+		//attributeDescriptions[3].binding = 0;
+		//attributeDescriptions[3].location = 3;
+		//attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+		//attributeDescriptions[3].offset = offsetof(kSplatVertex, cov3d_2);
 
 		kGraphicsPipelineCreateInfo createinfo;
 		createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
@@ -236,14 +244,9 @@ namespace pipeline {
 
 	void kMesh3DGS::BuildRenderingCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
-		//VkMemoryBarrier barrier;
-		//barrier = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
-		//barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-		//barrier.dstAccessMask = VK_ACCESS_INDIRECT_COMMAND_READ_BIT | VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-		//vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT | VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, 1, &barrier, 0, NULL, 0, NULL);
 
 		VkDeviceSize offsets[] = { 0 };
-		VkBuffer vertexBuffers[] = { m_3DGSVertexBuffer->GetBuffer() };
+		VkBuffer vertexBuffers[] = { m_QuadVertexBuffer->GetBuffer() };
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_RenderingPipeline.GetPipeline());
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -252,18 +255,23 @@ namespace pipeline {
 	}
 	//--------------------------------------------------------------------------------------------------------------------
 
+	void kMesh3DGS::BuildComputeCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+
+		//BuildProjectionCommandBuffer(commandBuffer, camera);
+	}
+
     void kMesh3DGS::UpdateUniformBuffer(kRHIDevice& rhidevice, kCamera& camera) {
 		ModelObjShaderData temp_shaderdat{};
 		temp_shaderdat.model = glm::mat4(1.0f);
 		temp_shaderdat.view = camera.GetViewMat();
 		temp_shaderdat.proj = camera.GetProjMat();
+		temp_shaderdat.particleCount = m_SplatScene.gs_points.size();
 
 		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
     }
 
-    void kMesh3DGS::BuildCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
+    void kMesh3DGS::BuildGraphicCommandBuffer(VkCommandBuffer commandBuffer, kCamera& camera) {
 
-		//BuildProjectionCommandBuffer(commandBuffer, camera);
 		BuildRenderingCommandBuffer(commandBuffer, camera);
     }
 
@@ -277,11 +285,21 @@ namespace pipeline {
 		m_3DGSVertexBuffer = std::make_shared<kRHIBuffer>();
 		m_3DGSVertexBuffer->CreateStageBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
 
-		size_t buffer_size = m_SplatScene.gs_points.size() * sizeof(kSplatQuad);
-		char* pbuffer = new char[buffer_size];
-		memset(pbuffer, 0, buffer_size);
+
 		m_QuadVertexBuffer = std::make_shared<kRHIBuffer>();
-		m_QuadVertexBuffer->CreateStageBuffer(rhidevice, pbuffer, buffer_size);
+
+		//size_t buffer_size = m_SplatScene.gs_points.size() * sizeof(kSplatQuad);
+		//char* pbuffer = new char[buffer_size];
+		//memset(pbuffer, 0, buffer_size);
+		//m_QuadVertexBuffer->CreateStageBuffer(rhidevice, pbuffer, buffer_size);
+
+		std::vector<kSplatQuad> quads;
+		quads.resize(m_SplatScene.gs_points.size());
+		for (size_t i = 0; i < m_SplatScene.gs_points.size(); ++i) {
+			quads[i].pos = m_SplatScene.gs_points[i].pos;
+			quads[i].color = m_SplatScene.gs_points[i].color;
+		}
+		m_QuadVertexBuffer->CreateStageBuffer(rhidevice, (const char*)quads.data(), quads.size() * sizeof(kSplatQuad));
 
 		CreateProjectionComputePipeline(rhidevice);
 		CreateRenderingPipeline(rhidevice);

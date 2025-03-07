@@ -105,6 +105,8 @@ namespace pipeline {
 
 	void kRenderingEngine::DoRendering() {
 
+
+
 		vkWaitForFences(m_RHIDevice.GetLogicDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
 		uint32_t imageIndex;
@@ -230,6 +232,8 @@ namespace pipeline {
 			throw std::runtime_error("failed to begin recording command buffer!");
 		}
 
+		m_pModel->BuildComputeCommandBuffer(commandBuffer, m_Camera);
+
 		{
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -265,7 +269,7 @@ namespace pipeline {
 				vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 				m_pModel->UpdateUniformBuffer(m_RHIDevice, m_Camera);
-				m_pModel->BuildCommandBuffer(commandBuffer, m_Camera);
+				m_pModel->BuildGraphicCommandBuffer(commandBuffer, m_Camera);
 			}
 
 			vkCmdEndRenderPass(commandBuffer);
