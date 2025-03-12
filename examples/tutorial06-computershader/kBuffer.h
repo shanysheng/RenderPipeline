@@ -19,6 +19,7 @@ public:
 
 	void createVertexBuffer(kContext& contextref, const char* pbuffer, size_t buffersize);
 	void createIndexBuffer(kContext& contextref, const char* pbuffer, size_t buffersize);
+	void createShaderStorageBuffer(kContext& rhidevice, const char* pbuffer, size_t buffersize);
 
 	void cleanupBuffer(kContext& contextref);
 

@@ -13,7 +13,6 @@
 
 
 #include "kEngine.h"
-#include "trangles.h"
 
 
 const uint32_t WIDTH = 1280;

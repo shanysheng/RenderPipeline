@@ -143,6 +143,7 @@ void kContext::createContext(GLFWwindow* pwindow) {
 
 void kContext::cleanupContext() {
 
+    vkDestroyDescriptorPool(logicaldevice, descriptorPool, nullptr);
     vkDestroyCommandPool(logicaldevice, commandPool, nullptr);
     vkDestroyDevice(logicaldevice, nullptr);
 

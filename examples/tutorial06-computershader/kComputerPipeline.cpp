@@ -11,7 +11,7 @@ void kComputePipeline::createComputePipeline(kContext& contextref, ComputePipeli
 
     createDescriptorSetLayout(contextref);
 
-    VkShaderModule computeShaderModule = contextref.createShaderModule("shaders/computer_shader_comp.spv");
+    VkShaderModule computeShaderModule = contextref.createShaderModule("shaders/particles_comp.spv");
 
     VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
     computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

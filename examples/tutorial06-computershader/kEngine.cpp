@@ -20,8 +20,8 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 
 	GraphicsPipelineCreateInfo createinfo;
 	createinfo.render_pass = m_Renderpass;
-	createinfo.vertex_shader_file = "shaders/computer_shader_vert.spv";
-	createinfo.frag_shader_file = "shaders/computer_shader_frag.spv";
+	createinfo.vertex_shader_file = "shaders/particles_vert.spv";
+	createinfo.frag_shader_file = "shaders/particles_frag.spv";
 	createinfo.input_binding = Particle::getBindingDescription();
 	createinfo.input_attributes = Particle::getAttributeDescriptions();
 	m_GraphicPipeline.createGraphicsPipeline(m_Context, createinfo);
@@ -29,15 +29,15 @@ void kEngine::createEngine(GLFWwindow* pwindow) {
 	ComputePipelineCreateInfo computeCreateInfo;
 	m_ComputePipeline.createComputePipeline(m_Context, computeCreateInfo);
 
-	//m_Model.Load(m_Context);
+	createUniformBuffers(sizeof(particleUniformBufferObject));
 	createShaderStorageBuffers();
 
-	createUniformBuffers(sizeof(particleUniformBufferObject));
-	//createDescriptorSets(sizeof(particleUniformBufferObject));
-	createComputeDescriptorSets(sizeof(particleUniformBufferObject));
+	createGraphicDescriptorSets(sizeof(particleUniformBufferObject));
+	createGraphicCommandBuffers();
 
-	createCommandBuffers();
+	createComputeDescriptorSets(sizeof(particleUniformBufferObject));
 	createComputeCommandBuffers();
+
 	createSyncObjects();
 }
 
@@ -89,66 +89,36 @@ void kEngine::createSyncObjects() {
 	}
 }
 
-void kEngine::createCommandBuffers() {
-	graphicCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = m_Context.commandPool;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = (uint32_t)graphicCommandBuffers.size();
+void kEngine::createShaderStorageBuffers() {
 
-	if (vkAllocateCommandBuffers(m_Context.logicaldevice, &allocInfo, graphicCommandBuffers.data()) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate command buffers!");
+	const uint32_t WIDTH = 1280;
+	const uint32_t HEIGHT = 720;
+
+	// Initialize particles
+	std::default_random_engine rndEngine((unsigned)time(nullptr));
+	std::uniform_real_distribution<float> rndDist(0.0f, 1.0f);
+
+	// Initial particle positions on a circle
+	std::vector<Particle> particles(PARTICLE_COUNT);
+	for (auto& particle : particles) {
+		float r = 0.25f * sqrt(rndDist(rndEngine));
+		float theta = rndDist(rndEngine) * 2.0f * 3.14159265358979323846f;
+		float x = r * cos(theta) * HEIGHT / WIDTH;
+		float y = r * sin(theta);
+		particle.position = glm::vec2(x, y);
+		particle.velocity = glm::normalize(glm::vec2(x, y)) * 0.00025f;
+		particle.color = glm::vec4(rndDist(rndEngine), rndDist(rndEngine), rndDist(rndEngine), 1.0f);
+	}
+
+	VkDeviceSize bufferSize = sizeof(Particle) * PARTICLE_COUNT;
+
+	// Copy initial particle data to all storage buffers
+	shaderStorageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		shaderStorageBuffers[i].createShaderStorageBuffer(m_Context, (const char*)particles.data(), bufferSize);
 	}
 }
-//
-//void kEngine::createDescriptorSets(VkDeviceSize bufferSize) {
-//
-//	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, m_GraphicPipeline.getDescriptorSetLayout());
-//	VkDescriptorSetAllocateInfo allocInfo{};
-//	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-//	allocInfo.descriptorPool = m_Context.descriptorPool;
-//	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-//	allocInfo.pSetLayouts = layouts.data();
-//
-//	graphicDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-//	if (vkAllocateDescriptorSets(m_Context.logicaldevice, &allocInfo, graphicDescriptorSets.data()) != VK_SUCCESS) {
-//		throw std::runtime_error("failed to allocate descriptor sets!");
-//	}
-//
-//	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-//		VkDescriptorBufferInfo bufferInfo{};
-//		bufferInfo.buffer = m_UniformBuffers[i]->getBuffer();
-//		bufferInfo.offset = 0;
-//		bufferInfo.range = bufferSize;
-//
-//		VkDescriptorImageInfo imageInfo{};
-//		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-//		//imageInfo.imageView = m_Model.getTexture().getImageView();
-//		//imageInfo.sampler = m_Model.getTexture().getImageSampler();
-//
-//		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
-//
-//		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//		descriptorWrites[0].dstSet = graphicDescriptorSets[i];
-//		descriptorWrites[0].dstBinding = 0;
-//		descriptorWrites[0].dstArrayElement = 0;
-//		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-//		descriptorWrites[0].descriptorCount = 1;
-//		descriptorWrites[0].pBufferInfo = &bufferInfo;
-//
-//		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//		descriptorWrites[1].dstSet = graphicDescriptorSets[i];
-//		descriptorWrites[1].dstBinding = 1;
-//		descriptorWrites[1].dstArrayElement = 0;
-//		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-//		descriptorWrites[1].descriptorCount = 1;
-//		descriptorWrites[1].pImageInfo = &imageInfo;
-//
-//		vkUpdateDescriptorSets(m_Context.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-//	}
-//}
 
 void kEngine::createUniformBuffers(VkDeviceSize bufferSize) {
 
@@ -164,13 +134,74 @@ void kEngine::createUniformBuffers(VkDeviceSize bufferSize) {
 void kEngine::updateUniformBuffer(uint32_t currentImage) {
 
 	particleUniformBufferObject ubo{};
-	ubo.deltaTime = lastFrameTime * 2.0f;
+
+	static auto startTime = std::chrono::high_resolution_clock::now();
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.proj = glm::perspective(glm::radians(45.0f), m_Extent.width / (float)m_Extent.height, 0.1f, 100.0f);
+	ubo.proj[1][1] *= -1;
+
+	ubo.deltaTime = lastFrameTime;
 
 	//memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 	memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
 }
 
-void kEngine::recordCommandBuffer(uint32_t imageIndex) {
+void kEngine::createGraphicCommandBuffers() {
+	graphicCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = m_Context.commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = (uint32_t)graphicCommandBuffers.size();
+
+	if (vkAllocateCommandBuffers(m_Context.logicaldevice, &allocInfo, graphicCommandBuffers.data()) != VK_SUCCESS) {
+		throw std::runtime_error("failed to allocate command buffers!");
+	}
+}
+
+
+void kEngine::createGraphicDescriptorSets(VkDeviceSize bufferSize) {
+
+	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, m_GraphicPipeline.getDescriptorSetLayout());
+	VkDescriptorSetAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.descriptorPool = m_Context.descriptorPool;
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	allocInfo.pSetLayouts = layouts.data();
+
+	graphicDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+	if (vkAllocateDescriptorSets(m_Context.logicaldevice, &allocInfo, graphicDescriptorSets.data()) != VK_SUCCESS) {
+		throw std::runtime_error("failed to allocate descriptor sets!");
+	}
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = m_UniformBuffers[i]->getBuffer();
+		bufferInfo.offset = 0;
+		bufferInfo.range = bufferSize;
+
+		std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = graphicDescriptorSets[i];
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+		vkUpdateDescriptorSets(m_Context.logicaldevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	}
+}
+
+
+void kEngine::recordGraphicCommandBuffer(uint32_t imageIndex) {
 	VkCommandBuffer commandBuffer = graphicCommandBuffers[currentFrame];
 
 	VkCommandBufferBeginInfo beginInfo{};
@@ -188,14 +219,16 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = m_Extent;
 
-		VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		{
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipeline());
 
 			VkViewport viewport{};
 			viewport.x = 0.0f;
@@ -219,7 +252,11 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 			//vkCmdDrawIndexed(commandBuffer, m_Model.getIndiesCount(), 1, 0, 0, 0);
 
 			VkDeviceSize offsets[] = { 0 };
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &shaderStorageBuffers[currentFrame], offsets);
+			VkBuffer vertexBuffers[] = { shaderStorageBuffers[currentFrame].getBuffer() };
+
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipeline());
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipelineLayout(), 0, 1, &graphicDescriptorSets[currentFrame], 0, nullptr);
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 			vkCmdDraw(commandBuffer, PARTICLE_COUNT, 1, 0, 0);
 		}
 
@@ -228,6 +265,97 @@ void kEngine::recordCommandBuffer(uint32_t imageIndex) {
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
 		throw std::runtime_error("failed to record command buffer!");
+	}
+}
+
+void kEngine::createComputeCommandBuffers() {
+	computeCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = m_Context.commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = (uint32_t)computeCommandBuffers.size();
+
+	if (vkAllocateCommandBuffers(m_Context.logicaldevice, &allocInfo, computeCommandBuffers.data()) != VK_SUCCESS) {
+		throw std::runtime_error("failed to allocate compute command buffers!");
+	}
+}
+
+void kEngine::createComputeDescriptorSets(VkDeviceSize bufferSize) {
+
+	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, m_ComputePipeline.getDescriptorSetLayout());
+	VkDescriptorSetAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.descriptorPool = m_Context.descriptorPool;
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	allocInfo.pSetLayouts = layouts.data();
+
+	computeDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+	if (vkAllocateDescriptorSets(m_Context.logicaldevice, &allocInfo, computeDescriptorSets.data()) != VK_SUCCESS) {
+		throw std::runtime_error("failed to allocate descriptor sets!");
+	}
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		VkDescriptorBufferInfo uniformBufferInfo{};
+		uniformBufferInfo.buffer = m_UniformBuffers[i]->getBuffer();
+		uniformBufferInfo.offset = 0;
+		uniformBufferInfo.range = bufferSize;
+
+		std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = computeDescriptorSets[i];
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &uniformBufferInfo;
+
+		VkDescriptorBufferInfo storageBufferInfoLastFrame{};
+		storageBufferInfoLastFrame.buffer = shaderStorageBuffers[(i - 1) % MAX_FRAMES_IN_FLIGHT].getBuffer();
+		storageBufferInfoLastFrame.offset = 0;
+		storageBufferInfoLastFrame.range = sizeof(Particle) * PARTICLE_COUNT;
+
+		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[1].dstSet = computeDescriptorSets[i];
+		descriptorWrites[1].dstBinding = 1;
+		descriptorWrites[1].dstArrayElement = 0;
+		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorWrites[1].descriptorCount = 1;
+		descriptorWrites[1].pBufferInfo = &storageBufferInfoLastFrame;
+
+		VkDescriptorBufferInfo storageBufferInfoCurrentFrame{};
+		storageBufferInfoCurrentFrame.buffer = shaderStorageBuffers[i].getBuffer();
+		storageBufferInfoCurrentFrame.offset = 0;
+		storageBufferInfoCurrentFrame.range = sizeof(Particle) * PARTICLE_COUNT;
+
+		descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[2].dstSet = computeDescriptorSets[i];
+		descriptorWrites[2].dstBinding = 2;
+		descriptorWrites[2].dstArrayElement = 0;
+		descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorWrites[2].descriptorCount = 1;
+		descriptorWrites[2].pBufferInfo = &storageBufferInfoCurrentFrame;
+
+		vkUpdateDescriptorSets(m_Context.logicaldevice, 3, descriptorWrites.data(), 0, nullptr);
+	}
+}
+
+void kEngine::recordComputeCommandBuffer(VkCommandBuffer commandBuffer) {
+
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+		throw std::runtime_error("failed to begin recording compute command buffer!");
+	}
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ComputePipeline.getPipeline());
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ComputePipeline.getPipelineLayout(), 0, 1, &computeDescriptorSets[currentFrame], 0, nullptr);
+	vkCmdDispatch(commandBuffer, PARTICLE_COUNT / 256, 1, 1);
+
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("failed to record compute command buffer!");
 	}
 }
 
@@ -285,7 +413,7 @@ void kEngine::drawFrame() {
 		vkResetCommandBuffer(graphicCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
 		updateUniformBuffer(currentFrame);
-		recordCommandBuffer(imageIndex);
+		recordGraphicCommandBuffer(imageIndex);
 
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
@@ -327,6 +455,8 @@ void kEngine::drawFrame() {
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+	vkDeviceWaitIdle(m_Context.logicaldevice);
 }
 
 void kEngine::cleanEngine() {
@@ -343,8 +473,7 @@ void kEngine::cleanEngine() {
 	}
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		vkDestroyBuffer(m_Context.logicaldevice, shaderStorageBuffers[i], nullptr);
-		vkFreeMemory(m_Context.logicaldevice, shaderStorageBuffersMemory[i], nullptr);
+		shaderStorageBuffers[i].cleanupBuffer(m_Context);
 	}
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -376,145 +505,3 @@ void kEngine::recreateSwapChain() {
 	m_Swapchain.recreateSwapChain(m_Context, actualExtent, m_Renderpass);
 }
 
-void kEngine::recordComputeCommandBuffer(VkCommandBuffer commandBuffer) {
-
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-		throw std::runtime_error("failed to begin recording compute command buffer!");
-	}
-
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ComputePipeline.getPipeline());
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ComputePipeline.getPipelineLayout(), 0, 1, &computeDescriptorSets[currentFrame], 0, nullptr);
-	vkCmdDispatch(commandBuffer, PARTICLE_COUNT / 256, 1, 1);
-
-	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-		throw std::runtime_error("failed to record compute command buffer!");
-	}
-}
-
-void kEngine::createComputeCommandBuffers() {
-	computeCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = m_Context.commandPool;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = (uint32_t)computeCommandBuffers.size();
-
-	if (vkAllocateCommandBuffers(m_Context.logicaldevice, &allocInfo, computeCommandBuffers.data()) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate compute command buffers!");
-	}
-}
-
-void kEngine::createComputeDescriptorSets(VkDeviceSize bufferSize) {
-
-	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, m_ComputePipeline.getDescriptorSetLayout());
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = m_Context.descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	allocInfo.pSetLayouts = layouts.data();
-
-	computeDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-	if (vkAllocateDescriptorSets(m_Context.logicaldevice, &allocInfo, computeDescriptorSets.data()) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		VkDescriptorBufferInfo uniformBufferInfo{};
-		uniformBufferInfo.buffer = m_UniformBuffers[i]->getBuffer();
-		uniformBufferInfo.offset = 0;
-		uniformBufferInfo.range = bufferSize;
-
-		std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = computeDescriptorSets[i];
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &uniformBufferInfo;
-
-		VkDescriptorBufferInfo storageBufferInfoLastFrame{};
-		storageBufferInfoLastFrame.buffer = shaderStorageBuffers[(i - 1) % MAX_FRAMES_IN_FLIGHT];
-		storageBufferInfoLastFrame.offset = 0;
-		storageBufferInfoLastFrame.range = sizeof(Particle) * PARTICLE_COUNT;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = computeDescriptorSets[i];
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pBufferInfo = &storageBufferInfoLastFrame;
-
-		VkDescriptorBufferInfo storageBufferInfoCurrentFrame{};
-		storageBufferInfoCurrentFrame.buffer = shaderStorageBuffers[i];
-		storageBufferInfoCurrentFrame.offset = 0;
-		storageBufferInfoCurrentFrame.range = sizeof(Particle) * PARTICLE_COUNT;
-
-		descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[2].dstSet = computeDescriptorSets[i];
-		descriptorWrites[2].dstBinding = 2;
-		descriptorWrites[2].dstArrayElement = 0;
-		descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorWrites[2].descriptorCount = 1;
-		descriptorWrites[2].pBufferInfo = &storageBufferInfoCurrentFrame;
-
-		vkUpdateDescriptorSets(m_Context.logicaldevice, 3, descriptorWrites.data(), 0, nullptr);
-	}
-}
-
-void kEngine::createShaderStorageBuffers() {
-
-	const uint32_t WIDTH = 1280;
-	const uint32_t HEIGHT = 720;
-
-	// Initialize particles
-	std::default_random_engine rndEngine((unsigned)time(nullptr));
-	std::uniform_real_distribution<float> rndDist(0.0f, 1.0f);
-
-	// Initial particle positions on a circle
-	std::vector<Particle> particles(PARTICLE_COUNT);
-	for (auto& particle : particles) {
-		float r = 0.25f * sqrt(rndDist(rndEngine));
-		float theta = rndDist(rndEngine) * 2.0f * 3.14159265358979323846f;
-		float x = r * cos(theta) * HEIGHT / WIDTH;
-		float y = r * sin(theta);
-		particle.position = glm::vec2(x, y);
-		particle.velocity = glm::normalize(glm::vec2(x, y)) * 0.00025f;
-		particle.color = glm::vec4(rndDist(rndEngine), rndDist(rndEngine), rndDist(rndEngine), 1.0f);
-	}
-
-	VkDeviceSize bufferSize = sizeof(Particle) * PARTICLE_COUNT;
-
-	// Create a staging buffer used to upload data to the gpu
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-	m_Context.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-							VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-							stagingBuffer, stagingBufferMemory);
-
-	void* data;
-	vkMapMemory(m_Context.logicaldevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, particles.data(), (size_t)bufferSize);
-	vkUnmapMemory(m_Context.logicaldevice, stagingBufferMemory);
-
-	shaderStorageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-	shaderStorageBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-
-	// Copy initial particle data to all storage buffers
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		m_Context.createBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
-								VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-								shaderStorageBuffers[i], shaderStorageBuffersMemory[i]);
-
-		m_Context.copyBuffer(stagingBuffer, shaderStorageBuffers[i], bufferSize);
-	}
-
-	vkDestroyBuffer(m_Context.logicaldevice, stagingBuffer, nullptr);
-	vkFreeMemory(m_Context.logicaldevice, stagingBufferMemory, nullptr);
-
-}

@@ -112,12 +112,11 @@
     <ClInclude Include="kTexture.h" />
     <ClInclude Include="kUniformBuffer.h" />
     <ClInclude Include="particle.h" />
-    <ClInclude Include="trangles.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\computer_shader.comp" />
-    <None Include="..\..\bin\x64\shaders\computer_shader.frag" />
-    <None Include="..\..\bin\x64\shaders\computer_shader.vert" />
+    <None Include="..\..\bin\x64\shaders\particles.comp" />
+    <None Include="..\..\bin\x64\shaders\particles.frag" />
+    <None Include="..\..\bin\x64\shaders\particles.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

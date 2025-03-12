@@ -16,7 +16,6 @@
 #include "kGraphicPipeline.h"
 #include "kComputerPipeline.h"
 
-#include "trangles.h"
 
 // 创建vulkan应用所需要的windows
 // 创建vulkan instance实例，可以指定所需要的vulkan实例扩展
@@ -68,7 +67,7 @@
 // 构建VkPresentInfoKHR，指定renderFinishedSemaphore，vkQueuePresentKHR
 
 
-const int MAX_FRAMES_IN_FLIGHT = 2;
+const int MAX_FRAMES_IN_FLIGHT = 1;
 
 
 class kEngine
@@ -93,18 +92,18 @@ protected:
 	void recreateSwapChain();
 	VkExtent2D chooseSwapExtent(GLFWwindow* pwindow, const VkSurfaceCapabilitiesKHR& capabilities);
 
+	void createShaderStorageBuffers();
 	void createUniformBuffers(VkDeviceSize bufferSize);
 	void updateUniformBuffer(uint32_t currentImage);
 
-	void createCommandBuffers();
-	//void createDescriptorSets(VkDeviceSize bufferSize);
-	void recordCommandBuffer(uint32_t imageIndex);
+	void createGraphicCommandBuffers();
+	void createGraphicDescriptorSets(VkDeviceSize bufferSize);
+	void recordGraphicCommandBuffer(uint32_t imageIndex);
 
 	void createComputeCommandBuffers();
 	void createComputeDescriptorSets(VkDeviceSize bufferSize);
 	void recordComputeCommandBuffer(VkCommandBuffer commandBuffer);
 
-	void createShaderStorageBuffers();
 
 protected:
 
@@ -122,15 +121,14 @@ protected:
 	//Model							m_Model;
 
 	std::vector<kUniformBuffer*>	m_UniformBuffers;
+	std::vector<kBuffer>			shaderStorageBuffers;
 
-	//std::vector<VkDescriptorSet>	graphicDescriptorSets;
+	std::vector<VkDescriptorSet>	graphicDescriptorSets;
 	std::vector<VkCommandBuffer>	graphicCommandBuffers;
 
 	std::vector<VkDescriptorSet>	computeDescriptorSets;
 	std::vector<VkCommandBuffer>	computeCommandBuffers;
 
-	std::vector<VkBuffer>			shaderStorageBuffers;
-	std::vector<VkDeviceMemory>		shaderStorageBuffersMemory;
 
 	std::vector<VkSemaphore>		imageAvailableSemaphores;
 	std::vector<VkSemaphore>		renderFinishedSemaphores;
@@ -138,7 +136,6 @@ protected:
 
 	std::vector<VkSemaphore>		computeFinishedSemaphores;
 	std::vector<VkFence>			computeInFlightFences;
-
 
 	uint32_t						currentFrame = 0;
 	float							lastFrameTime = 0.0f;

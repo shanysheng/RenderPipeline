@@ -7,6 +7,9 @@ struct Particle {
 };
 
 layout (binding = 0) uniform ParameterUBO {
+    mat4 model;
+    mat4 view;
+    mat4 proj;
     float deltaTime;
 } ubo;
 

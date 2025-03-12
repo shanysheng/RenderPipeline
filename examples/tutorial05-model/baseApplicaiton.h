@@ -56,7 +56,6 @@ private:
             m_Engine.drawFrame();
         }
 
-        //vkDeviceWaitIdle(kEngine.logicaldevice);
     }
 
     void cleanup() {

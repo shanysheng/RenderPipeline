@@ -59,9 +59,6 @@
     <ClInclude Include="baseApplicaiton.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="trangles.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="kBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -94,13 +91,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\computer_shader.comp">
+    <None Include="..\..\bin\x64\shaders\particles.comp">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\..\bin\x64\shaders\computer_shader.frag">
+    <None Include="..\..\bin\x64\shaders\particles.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\..\bin\x64\shaders\computer_shader.vert">
+    <None Include="..\..\bin\x64\shaders\particles.vert">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

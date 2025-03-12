@@ -12,10 +12,13 @@
 #include <array>
 #include <random>
 
-const uint32_t PARTICLE_COUNT = 8192;
+const uint32_t PARTICLE_COUNT = 256;
 
 
 struct particleUniformBufferObject {
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
     float deltaTime = 1.0f;
 };
 

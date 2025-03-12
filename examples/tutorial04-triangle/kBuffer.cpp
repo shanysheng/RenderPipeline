@@ -15,6 +15,9 @@ void  kBuffer::cleanupBuffer(kContext& contextref) {
     vkDestroyBuffer(contextref.logicaldevice, m_vkBuffer, nullptr);
     vkFreeMemory(contextref.logicaldevice, m_vkBufferMemory, nullptr);
 
+    m_vkBuffer = nullptr;
+    m_vkBufferMemory = nullptr;
+
     std::cout << "cleanup kBuffer" << std::endl;
 }
 

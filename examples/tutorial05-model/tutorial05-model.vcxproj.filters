@@ -85,8 +85,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\bin\x64\shaders\27_shader_depth.frag" />
-    <None Include="..\..\bin\x64\shaders\27_shader_depth.vert" />
     <None Include="..\..\bin\x64\shaders\model_texture.frag">
       <Filter>Shader</Filter>
     </None>

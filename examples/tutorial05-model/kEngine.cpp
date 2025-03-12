@@ -327,6 +327,8 @@ void kEngine::drawFrame() {
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+	vkDeviceWaitIdle(m_Context.logicaldevice);
 }
 
 void kEngine::cleanEngine() {
