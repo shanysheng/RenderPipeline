@@ -60,18 +60,6 @@ namespace pipeline {
 
 
 		/**
-		* Create a buffer
-		*
-		* @param image
-		* @param format
-		* @param aspectFlags
-		*
-		* @return VK_SUCCESS if
-		*/
-		VkResult CreateBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer* buffer, VkDeviceMemory* memory, void* data = nullptr);
-
-
-		/**
 		* Create a image view
 		*
 		* @param image 

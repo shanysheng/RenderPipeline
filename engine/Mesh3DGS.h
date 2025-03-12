@@ -13,43 +13,6 @@
 namespace pipeline {
 
 
-    struct kSplatRaw
-    {
-        float pos[3];
-        float scale[3];
-        uint8_t color[4];
-        uint8_t rot[4];
-    };
-
-    struct kSplatVertex {
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec3 cov3d_1;
-        glm::vec3 cov3d_2;
-    };
-
-    struct kSplatQuad {
-        glm::vec3 pos;
-        glm::vec4 color;
-        glm::vec3 cov3d_1;
-        glm::vec3 cov3d_2;
-    };
-
-    struct kSplatScene
-    {
-        uint32_t gs_count;
-
-        glm::vec3 bb_min;
-        glm::vec3 bb_max;
-
-        std::vector<kSplatVertex> gs_points;
-
-        void resize(uint32_t count) {
-            gs_count = count;
-            gs_points.resize(gs_count);
-        }
-    };
-
 	class kMesh3DGS : public kMeshBase
 	{
 	public:
@@ -67,6 +30,45 @@ namespace pipeline {
         glm::vec3 GetBBoxCenter();
         glm::vec3 GetBBoxSize();
     protected:
+
+        struct kSplatRaw
+        {
+            float pos[3];
+            float scale[3];
+            uint8_t color[4];
+            uint8_t rot[4];
+        };
+
+        struct kSplatVertex {
+            glm::vec3 pos;
+            glm::vec4 color;
+            glm::vec3 cov3d_1;
+            glm::vec3 cov3d_2;
+        };
+
+        struct kSplatQuad {
+            glm::vec3 pos;
+            glm::vec4 color;
+            glm::vec3 cov3d_1;
+            glm::vec3 cov3d_2;
+        };
+
+        struct kSplatScene
+        {
+            uint32_t gs_count;
+
+            glm::vec3 bb_min;
+            glm::vec3 bb_max;
+
+            std::vector<kSplatVertex> gs_points;
+
+            void resize(uint32_t count) {
+                gs_count = count;
+                gs_points.resize(gs_count);
+            }
+        };
+
+
         struct ModelObjShaderData {
             alignas(16) glm::mat4 model;
             alignas(16) glm::mat4 view;

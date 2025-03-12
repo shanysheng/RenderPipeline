@@ -35,8 +35,7 @@ namespace pipeline {
 
 	std::vector<VkDescriptorSetLayout> kMesh3DGS::PrepareProjectionDSLayout(kRHIDevice& rhidevice) {
 
-		std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-		layoutBindings.resize(3);
+		std::array<VkDescriptorSetLayoutBinding, 3> layoutBindings{};
 
 		layoutBindings[0].binding = 0;
 		layoutBindings[0].descriptorCount = 1;
@@ -283,14 +282,14 @@ namespace pipeline {
 		m_UniformBuffer->CreateUniformBuffer(rhidevice, sizeof(ModelObjShaderData));
 
 		m_3DGSVertexBuffer = std::make_shared<kRHIBuffer>();
-		m_3DGSVertexBuffer->CreateStageBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
+		m_3DGSVertexBuffer->CreateShaderStorageBuffer(rhidevice, (const char*)m_SplatScene.gs_points.data(), m_SplatScene.gs_points.size() * sizeof(kSplatVertex));
 
 
 		size_t buffer_size = m_SplatScene.gs_points.size() * sizeof(kSplatQuad);
 		char* pbuffer = new char[buffer_size];
 		memset(pbuffer, 0, buffer_size);
 		m_QuadVertexBuffer = std::make_shared<kRHIBuffer>();
-		m_QuadVertexBuffer->CreateStageBuffer(rhidevice, pbuffer, buffer_size);
+		m_QuadVertexBuffer->CreateShaderStorageBuffer(rhidevice, pbuffer, buffer_size);
 
 		//std::vector<kSplatQuad> quads;
 		//quads.resize(m_SplatScene.gs_points.size());

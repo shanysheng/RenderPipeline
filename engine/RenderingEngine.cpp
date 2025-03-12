@@ -33,7 +33,7 @@ namespace pipeline {
 
 		bool yaxis_up = true;
 
-		switch (2) {
+		switch (1) {
 			case 1: {
 				//// obj model
 				m_pModel = new kMeshObj();

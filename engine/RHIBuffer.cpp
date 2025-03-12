@@ -68,7 +68,7 @@ namespace pipeline {
         vkFreeMemory(rhidevice.GetLogicDevice(), stagingBufferMemory, nullptr);
     }
 
-    void kRHIBuffer::CreateStageBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize) {
+    void kRHIBuffer::CreateShaderStorageBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize) {
 
         m_BufferSize = buffersize;
 

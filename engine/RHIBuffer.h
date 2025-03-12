@@ -22,7 +22,7 @@ namespace pipeline {
 
 		void CreateVertexBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
 		void CreateIndexBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
-		void CreateStageBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
+		void CreateShaderStorageBuffer(kRHIDevice& rhidevice, const char* pbuffer, size_t buffersize);
 
 		void CreateUniformBuffer(kRHIDevice& rhidevice, VkDeviceSize bufferSize);
 		void UpdateBuffer(const void* pbuffer, uint32_t bufferSize);
