@@ -102,12 +102,30 @@ void kEngine::createShaderStorageBuffers() {
 	// Initial particle positions on a circle
 	std::vector<Particle> particles(PARTICLE_COUNT);
 	for (auto& particle : particles) {
-		float r = 0.25f * sqrt(rndDist(rndEngine));
-		float theta = rndDist(rndEngine) * 2.0f * 3.14159265358979323846f;
-		float x = r * cos(theta) * HEIGHT / WIDTH;
-		float y = r * sin(theta);
-		particle.position = glm::vec2(x, y);
-		particle.velocity = glm::normalize(glm::vec2(x, y)) * 0.00025f;
+		// 球坐标生成（保证均匀分布）
+		float u = rndDist(rndEngine);
+		float v = rndDist(rndEngine);
+		float w = rndDist(rndEngine);
+
+		// 半径：立方根变换保证体积均匀分布
+		float r = powf(w, 1.0f / 3.0f);  // 等效于 cbrt(w)
+
+		// 角度分布：
+		float theta = acos(2.0f * u - 1.0f); // 极角 [0, π]
+		float phi = 2.0f * 3.1415926f * v;           // 方位角 [0, 2π)
+
+		// 转换为笛卡尔坐标
+		float sinTheta = sin(theta);
+		float x = r * sinTheta * cos(phi);
+		float y = r * sinTheta * sin(phi);
+		float z = r * cos(theta);
+
+		particle.position = glm::vec3(x, y, z);
+
+		// 速度方向沿法线方向（可改为切向或随机方向）
+		particle.velocity = glm::normalize(particle.position) * 0.00025f;
+
+		// 颜色保持随机
 		particle.color = glm::vec4(rndDist(rndEngine), rndDist(rndEngine), rndDist(rndEngine), 1.0f);
 	}
 
@@ -135,20 +153,13 @@ void kEngine::updateUniformBuffer(uint32_t currentImage) {
 
 	particleUniformBufferObject ubo{};
 
-	static auto startTime = std::chrono::high_resolution_clock::now();
-
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = glm::rotate(glm::mat4(1.0f), (float)lastTime * glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_Extent.width / (float)m_Extent.height, 0.1f, 100.0f);
 	ubo.proj[1][1] *= -1;
 
-	ubo.deltaTime = lastFrameTime;
+	ubo.deltaTime = deltaTime;
 	m_UniformBuffers[currentImage]->updateBuffer(&ubo, sizeof(ubo));
-	//memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
-	//memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
 }
 
 void kEngine::createGraphicCommandBuffers() {
@@ -355,7 +366,7 @@ void kEngine::drawFrame() {
 
 	// We want to animate the particle system using the last frames time to get smooth, frame-rate independent animation
 	double currentTime = glfwGetTime();
-	lastFrameTime = (currentTime - lastTime) * 1000.0;
+	deltaTime = (float)(currentTime - lastTime) * 1000.0f;
 	lastTime = currentTime;
 
 	VkSubmitInfo submitInfo{};
@@ -364,23 +375,21 @@ void kEngine::drawFrame() {
 	// Compute submission        
 	vkWaitForFences(m_Context.logicaldevice, 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-	{
-		vkResetFences(m_Context.logicaldevice, 1, &computeInFlightFences[currentFrame]);
-		vkResetCommandBuffer(computeCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+	updateUniformBuffer(currentFrame);
 
-		updateUniformBuffer(currentFrame);
-		recordComputeCommandBuffer(computeCommandBuffers[currentFrame]);
+	vkResetFences(m_Context.logicaldevice, 1, &computeInFlightFences[currentFrame]);
 
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &computeCommandBuffers[currentFrame];
-		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = &computeFinishedSemaphores[currentFrame];
+	vkResetCommandBuffer(computeCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+	recordComputeCommandBuffer(computeCommandBuffers[currentFrame]);
 
-		if (vkQueueSubmit(m_Context.computeQueue, 1, &submitInfo, computeInFlightFences[currentFrame]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to submit compute command buffer!");
-		};
-	}
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &computeCommandBuffers[currentFrame];
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = &computeFinishedSemaphores[currentFrame];
 
+	if (vkQueueSubmit(m_Context.computeQueue, 1, &submitInfo, computeInFlightFences[currentFrame]) != VK_SUCCESS) {
+		throw std::runtime_error("failed to submit compute command buffer!");
+	};
 
 	vkWaitForFences(m_Context.logicaldevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -396,14 +405,12 @@ void kEngine::drawFrame() {
 
 
 	// submit command wait image available semaphore and signal render finished semaphore
-	VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
 	VkSemaphore waitSemaphores[] = { computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
 
 	{
 		vkResetFences(m_Context.logicaldevice, 1, &inFlightFences[currentFrame]);
-		vkResetCommandBuffer(graphicCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
-		updateUniformBuffer(currentFrame);
+		vkResetCommandBuffer(graphicCommandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 		recordGraphicCommandBuffer(imageIndex);
 
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
@@ -416,7 +423,7 @@ void kEngine::drawFrame() {
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &graphicCommandBuffers[currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = signalSemaphores;
+		submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
 		if (vkQueueSubmit(m_Context.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to submit draw command buffer!");
@@ -430,7 +437,7 @@ void kEngine::drawFrame() {
 		VkPresentInfoKHR presentInfo{};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = signalSemaphores;
+		presentInfo.pWaitSemaphores = &renderFinishedSemaphores[currentFrame];
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
@@ -446,11 +453,11 @@ void kEngine::drawFrame() {
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-
-	vkDeviceWaitIdle(m_Context.logicaldevice);
 }
 
 void kEngine::cleanEngine() {
+
+	vkDeviceWaitIdle(m_Context.logicaldevice);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		vkDestroySemaphore(m_Context.logicaldevice, renderFinishedSemaphores[i], nullptr);

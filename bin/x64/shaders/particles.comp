@@ -1,8 +1,8 @@
 #version 450
 
 struct Particle {
-	vec2 position;
-	vec2 velocity;
+	vec3 position;
+	vec3 velocity;
     vec4 color;
 };
 
@@ -29,7 +29,7 @@ void main()
 
     Particle particleIn = particlesIn[index];
 
-    particlesOut[index].position = particleIn.position + particleIn.velocity.xy * ubo.deltaTime;
+    particlesOut[index].position = particleIn.position + particleIn.velocity * ubo.deltaTime;
     particlesOut[index].velocity = particleIn.velocity;
 
     // Flip movement at window border
@@ -38,6 +38,9 @@ void main()
     }
     if ((particlesOut[index].position.y <= -1.0) || (particlesOut[index].position.y >= 1.0)) {
         particlesOut[index].velocity.y = -particlesOut[index].velocity.y;
+    }
+    if ((particlesOut[index].position.z <= -1.0) || (particlesOut[index].position.z >= 1.0)) {
+        particlesOut[index].velocity.z = -particlesOut[index].velocity.z;
     }
 
 }
