@@ -146,9 +146,9 @@ void kEngine::updateUniformBuffer(uint32_t currentImage) {
 	ubo.proj[1][1] *= -1;
 
 	ubo.deltaTime = lastFrameTime;
-
+	m_UniformBuffers[currentImage]->updateBuffer(&ubo, sizeof(ubo));
 	//memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
-	memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
+	//memcpy(m_UniformBuffers[currentImage]->getMappedBuffer(), &ubo, sizeof(ubo));
 }
 
 void kEngine::createGraphicCommandBuffers() {
@@ -229,7 +229,6 @@ void kEngine::recordGraphicCommandBuffer(uint32_t imageIndex) {
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		{
-
 			VkViewport viewport{};
 			viewport.x = 0.0f;
 			viewport.y = 0.0f;
@@ -244,16 +243,8 @@ void kEngine::recordGraphicCommandBuffer(uint32_t imageIndex) {
 			scissor.extent = m_Extent;
 			vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-			//VkBuffer vertexBuffers[] = { m_Model.getVertexBuffer() };
-			//VkDeviceSize offsets[] = { 0 };
-			//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-			//vkCmdBindIndexBuffer(commandBuffer, m_Model.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
-			//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipelineLayout(), 0, 1, &graphicDescriptorSets[currentFrame], 0, nullptr);
-			//vkCmdDrawIndexed(commandBuffer, m_Model.getIndiesCount(), 1, 0, 0, 0);
-
 			VkDeviceSize offsets[] = { 0 };
 			VkBuffer vertexBuffers[] = { shaderStorageBuffers[currentFrame].getBuffer() };
-
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipeline());
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicPipeline.getPipelineLayout(), 0, 1, &graphicDescriptorSets[currentFrame], 0, nullptr);
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -460,8 +451,6 @@ void kEngine::drawFrame() {
 }
 
 void kEngine::cleanEngine() {
-
-	//m_Model.Unload(m_Context);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		vkDestroySemaphore(m_Context.logicaldevice, renderFinishedSemaphores[i], nullptr);

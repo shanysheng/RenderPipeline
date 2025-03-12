@@ -18,7 +18,6 @@ public:
 	void updateBuffer(const void* pbuffer, uint32_t bufferSize);
 
 	VkBuffer getBuffer() { return m_UniformBuffer; }
-	void* getMappedBuffer() { return m_UniformBuffersMapped; }
 
 protected:
 	VkBuffer		m_UniformBuffer;

@@ -15,9 +15,9 @@ public:
 	void createUniformBuffers(kContext& contextref, VkDeviceSize bufferSize);
 	void cleanupGPUResource(kContext& contextref);
 
+	void updateBuffer(const void* pbuffer, uint32_t bufferSize);
 
 	VkBuffer getBuffer() { return m_UniformBuffer; }
-	void* getMappedBuffer() { return m_UniformBuffersMapped; }
 
 protected:
 	VkBuffer		m_UniformBuffer;
