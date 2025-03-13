@@ -21,18 +21,18 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 
 # Samples
 ## obj/gltf models
-| ![3D高斯点云](./doc/images/obj.jpg) | ![四边形混合前](./doc/images/gltf.jpg) |
+| ![obj model](./doc/images/obj.jpg) | ![gltf model](./doc/images/gltf.jpg) |
 |:------------------------------------------:|:------------------------------------------:|
-| 图1: obj模型                           | 图2: gltf模型    
+| Fig 1: obj model                           | Fig 2: gltf model   
 
 ## splat 3dgs models
-| ![3D高斯点云](./doc/images/3dgs_points.jpg) | ![四边形混合前](./doc/images/3dgs_quads_blend01.jpg) |
+| ![3dgs points](./doc/images/3dgs_points.jpg) | ![3dgs quad](./doc/images/3dgs_quads_blend01.jpg) |
 |:------------------------------------------:|:------------------------------------------:|
-| 图1: 基础点云形态                           | 图2: 四边形混合效果                      |
+| Fig 1: 3D Gaussian Splatting points          | Fig 2: Quad Splat State                       |
 
-| ![四边形混合后](./doc/images/3dgs_quads_blend02.jpg) | ![球体混合无排序](./doc/images/3dgs_balls_blend_no_sort.jpg) |
+| ![3dgs quad](./doc/images/3dgs_quads_blend02.jpg) | ![3dgs unsorted blending](./doc/images/3dgs_balls_blend_no_sort.jpg) |
 |:------------------------------------------:|:------------------------------------------:|
-| 图3: 四边形混合效果                      | 图4: 球体无序混合效果                      |
+| Fig 3: Quad Splat State                     | Fig 4: Splat Unsorted Blending                     |
 # Todo
 
 ### vulkan
