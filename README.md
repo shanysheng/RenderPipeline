@@ -12,6 +12,7 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
   - [PreRender](#PreRender)
   - [RenderPipeline](#RenderPipeline)
 - [Resource](#Resource)
+- [License](#License)
 
 # Overview
 * graphic: vulkan
@@ -84,3 +85,17 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 * [vulkan 3dgs](https://github.com/jaesung-cs/vkgs): Vulkan-based Gaussian Splatting viewer.
 * [tinygltf](https://github.com/syoyo/tinygltf): Header only C++11 tiny glTF 2.0 library
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader): Tiny but powerful single file wavefront obj loader
+
+
+# License
+
+The main project is licensed under MIT.
+
+This project uses several third-party libraries. Here is a list of these libraries along with their respective licenses:
+
+- **GLM**: [MIT License](https://opensource.org/licenses/MIT).
+- **ImGUI**: [MIT License](https://opensource.org/licenses/MIT).
+- **VkRadixSort**: [MIT License](https://opensource.org/licenses/MIT).
+- **glfw**: [zlib/libpng license](https://www.glfw.org/license.html).
+- **tinygltf**: [MIT License](https://www.glfw.org/license.html).
+- **tinyobjloader**: [MIT License](https://www.glfw.org/license.html).
