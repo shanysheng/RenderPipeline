@@ -20,14 +20,11 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 
 # Samples
 ## obj/gltf models
-<img src=./doc/images/obj.jpg width=400 /> 
-<img src=./doc/images/gltf.jpg width=400 />
+<img src=./doc/images/obj.jpg width=400 /> <img src=./doc/images/gltf.jpg width=400 />
 
 ## splat 3dgs models
-<img src=./doc/images/3dgs_points.jpg width=400 />
-<img src=./doc/images/3dgs_quads_blend01.jpg width=400 />
-<img src=./doc/images/3dgs_quads_blend02.jpg width=400 />
-<img src=./doc/images/3dgs_balls_blend_no_sort.jpg width=400 />
+<img src=./doc/images/3dgs_points.jpg width=400 /><img src=./doc/images/3dgs_quads_blend01.jpg width=400 />
+<img src=./doc/images/3dgs_quads_blend02.jpg width=400 /><img src=./doc/images/3dgs_balls_blend_no_sort.jpg width=400 />
 
 
 # Todo
