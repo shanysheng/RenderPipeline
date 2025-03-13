@@ -4,25 +4,31 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 # Table of contents
 
 - [Overview](#Overview)
-- [Resource](#Resource)
+- [Samples](#Samples)
 - [Implementations](#implementations)
 - [Architecture](#Architecture)
   - [RenderEngine](#RenderEngine)
   - [RenderUnit](#RenderUnit)
   - [PreRender](#PreRender)
   - [RenderPipeline](#RenderPipeline)
-- [Samples](#Samples)
+- [Resource](#Resource)
 
 # Overview
 * graphic: vulkan
 * framework: render pipeline
 
-# Resource
-* [vulkan](https://github.com/SaschaWillems/Vulkan): C++ examples for the Vulkan graphics API.
-* [vulkan tutorial](https://github.com/Overv/VulkanTutorial): Tutorial for the Vulkan graphics and compute API.
-* [vulkan 3dgs](https://github.com/jaesung-cs/vkgs): Vulkan-based Gaussian Splatting viewer.
-* [tinygltf](https://github.com/syoyo/tinygltf): Header only C++11 tiny glTF 2.0 library
-* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader): Tiny but powerful single file wavefront obj loader
+
+# Samples
+## obj/gltf models
+<img src=./doc/images/obj.jpg width=400 /> 
+<img src=./doc/images/gltf.jpg width=400 />
+
+## splat 3dgs models
+<img src=./doc/images/3dgs_points.jpg width=400 />
+<img src=./doc/images/3dgs_quads_blend01.jpg width=400 />
+<img src=./doc/images/3dgs_quads_blend02.jpg width=400 />
+<img src=./doc/images/3dgs_balls_blend_no_sort.jpg width=400 />
+
 
 # Todo
 
@@ -32,7 +38,8 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [x] Texture: VkImage, VkImageView, VkDeviceMemory, VkSampler
 - [x] Buffer: VkBuffer, VkDeviceMemory
 - [x] Graphic Pipeline: VkPipeline, VkPipelineLayout, VkDescriptorSetLayout, VkDescriptorSet, VkShaderModule
-- [ ] Computer Pipeline: VkPipeline, VkPipelineLayout, VkDescriptorSetLayout
+- [x] Computer Pipeline: VkPipeline, VkPipelineLayout, VkDescriptorSetLayout
+- [x] Shader: Vertex shader, Geometry shader, Fragment shader, Compute shader
 ### framework
 - [ ] RenderPipeline
 - [ ] PreRender
@@ -49,8 +56,10 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 - [x] gltf
 - [ ] 3dgs
   - [x] Load .splat file
-  - [ ] projection, drawing quad
-  - [ ] sort splat, color blending
+  - [x] projection (compute shader)
+  - [x] drawing quad (geometry shader)
+  - [x] color blending
+  - [ ] sort splat
   - [ ] optimize: computer shader parser
 ### samples
 - [x] model
@@ -72,8 +81,9 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 <img src=./doc/images/renderpipeline.jpg  /><br>
 
 
-# Samples
-
-<img src=./doc/images/obj.jpg width=450 /> 
-<img src=./doc/images/gltf.jpg width=450 />
-<img src=./doc/images/3dgs_01.jpg width=450 />
+# Resource
+* [vulkan](https://github.com/SaschaWillems/Vulkan): C++ examples for the Vulkan graphics API.
+* [vulkan tutorial](https://github.com/Overv/VulkanTutorial): Tutorial for the Vulkan graphics and compute API.
+* [vulkan 3dgs](https://github.com/jaesung-cs/vkgs): Vulkan-based Gaussian Splatting viewer.
+* [tinygltf](https://github.com/syoyo/tinygltf): Header only C++11 tiny glTF 2.0 library
+* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader): Tiny but powerful single file wavefront obj loader
