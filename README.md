@@ -24,9 +24,28 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 <img src=./doc/images/obj.jpg width=400 /> <img src=./doc/images/gltf.jpg width=400 />
 
 ## splat 3dgs models
-<img src=./doc/images/3dgs_points.jpg width=400 /><img src=./doc/images/3dgs_quads_blend01.jpg width=400 />
-<img src=./doc/images/3dgs_quads_blend02.jpg width=400 /><img src=./doc/images/3dgs_balls_blend_no_sort.jpg width=400 />
 
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap">
+  <figure style="margin: 10px">
+    <img src="./doc/images/3dgs_points.jpg" width="400" />
+    <figcaption style="text-align: center">图1: 3D高斯点云基础形态</figcaption>
+  </figure>
+  
+  <figure style="margin: 10px">
+    <img src="./doc/images/3dgs_quads_blend01.jpg" width="400" />
+    <figcaption style="text-align: center">图2: 四边形混合效果（混合前）</figcaption>
+  </figure>
+
+  <figure style="margin: 10px">
+    <img src="./doc/images/3dgs_quads_blend02.jpg" width="400" />
+    <figcaption style="text-align: center">图3: 四边形混合效果（混合后）</figcaption>
+  </figure>
+
+  <figure style="margin: 10px">
+    <img src="./doc/images/3dgs_balls_blend_no_sort.jpg" width="400" />
+    <figcaption style="text-align: center">图4: 球体混合效果（无排序模式）</figcaption>
+  </figure>
+</div>
 
 # Todo
 
