@@ -56,7 +56,7 @@ namespace pipeline {
 
             glfwInit();
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-            window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RenderPipelie, Vulkan, gltf rendering", nullptr, nullptr);
+            window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RenderPipelie, Vulkan, 3dgs rendering", nullptr, nullptr);
 
             glfwSetWindowUserPointer(window, this);
             glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
