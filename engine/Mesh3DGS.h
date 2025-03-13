@@ -94,9 +94,9 @@ namespace pipeline {
         kSplatScene     m_SplatScene;
 
         std::shared_ptr<kRHIBuffer>     m_UniformBuffer;
+
         std::shared_ptr<kRHIBuffer>     m_3DGSVertexBuffer;
         std::shared_ptr<kRHIBuffer>     m_QuadVertexBuffer;
-        std::shared_ptr<kRHIBuffer>     m_QuadIndexBuffer;
 
         VkDescriptorSetLayout	        m_RenderingDSLayout;
         VkDescriptorSet	                m_RenderingDS;

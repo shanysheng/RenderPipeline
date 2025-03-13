@@ -14,23 +14,39 @@ namespace pipeline {
 
         //CreateDescriptorSetLayout(rhidevice);
 
+        std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
         VkShaderModule vertShaderModule = rhidevice.CreateShaderModule(createinfo.vert_shader_file);
-        VkShaderModule fragShaderModule = rhidevice.CreateShaderModule(createinfo.frag_shader_file);
-
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
         vertShaderStageInfo.module = vertShaderModule;
         vertShaderStageInfo.pName = "main";
 
+        shaderStages.push_back(vertShaderStageInfo);
+
+        VkShaderModule fragShaderModule = rhidevice.CreateShaderModule(createinfo.frag_shader_file);
         VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
         fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
         fragShaderStageInfo.module = fragShaderModule;
         fragShaderStageInfo.pName = "main";
 
-        VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+        shaderStages.push_back(fragShaderStageInfo);
+
+        VkShaderModule geomShaderModule = VK_NULL_HANDLE;
+        if (createinfo.geom_shader_file != "") {
+
+            geomShaderModule = rhidevice.CreateShaderModule(createinfo.geom_shader_file);
+            VkPipelineShaderStageCreateInfo geomShaderStageInfo{};
+            geomShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            geomShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+            geomShaderStageInfo.module = geomShaderModule;
+            geomShaderStageInfo.pName = "main";
+
+            shaderStages.push_back(geomShaderStageInfo);
+        }
+
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -78,14 +94,14 @@ namespace pipeline {
 
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
         colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_FALSE;
-        //colorBlendAttachment.blendEnable = VK_TRUE;
-        //colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-        //colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-        //colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        //colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-        //colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        //colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        //colorBlendAttachment.blendEnable = VK_FALSE;
+        colorBlendAttachment.blendEnable = VK_TRUE;
+        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 
         VkPipelineColorBlendStateCreateInfo colorBlending{};
         colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -109,9 +125,9 @@ namespace pipeline {
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = createinfo.descriptor_set_layouts.size();
+        pipelineLayoutInfo.setLayoutCount = (uint32_t)createinfo.descriptor_set_layouts.size();
         pipelineLayoutInfo.pSetLayouts = createinfo.descriptor_set_layouts.data();
-        pipelineLayoutInfo.pushConstantRangeCount = createinfo.push_constant_ranges.size();
+        pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)createinfo.push_constant_ranges.size();
         pipelineLayoutInfo.pPushConstantRanges = createinfo.push_constant_ranges.data();;
 
         if (vkCreatePipelineLayout(rhidevice.GetLogicDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
@@ -120,8 +136,8 @@ namespace pipeline {
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount = 2;
-        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.stageCount = (uint32_t)shaderStages.size();
+        pipelineInfo.pStages = shaderStages.data();
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssembly;
         pipelineInfo.pViewportState = &viewportState;
@@ -142,6 +158,9 @@ namespace pipeline {
 
         vkDestroyShaderModule(rhidevice.GetLogicDevice(), fragShaderModule, nullptr);
         vkDestroyShaderModule(rhidevice.GetLogicDevice(), vertShaderModule, nullptr);
+
+        if(geomShaderModule!=VK_NULL_HANDLE)
+            vkDestroyShaderModule(rhidevice.GetLogicDevice(), geomShaderModule, nullptr);
     }
 
 

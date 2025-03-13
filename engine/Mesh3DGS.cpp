@@ -121,7 +121,7 @@ namespace pipeline {
 	void kMesh3DGS::CreateProjectionComputePipeline(kRHIDevice& rhidevice) {
 
 		kComputePipelineCreateInfo computeCreateInfo;
-		computeCreateInfo.comp_shader_file = "shaders/gs_projection_comp.spv";
+		computeCreateInfo.comp_shader_file = "shaders/gsplat_projection_comp.spv";
 		computeCreateInfo.descriptor_set_layouts = PrepareProjectionDSLayout(rhidevice);
 		m_ProjectionComp.CreateComputePipeline(rhidevice, computeCreateInfo);
 
@@ -222,10 +222,19 @@ namespace pipeline {
 		attributeDescriptions[2].format = VK_FORMAT_R32G32B32A32_SFLOAT;
 		attributeDescriptions[2].offset = offsetof(kSplatQuad, obb);
 
+		bool busing_geom_shader = true;
 		kGraphicsPipelineCreateInfo createinfo;
-		createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
-		createinfo.frag_shader_file = "shaders/gs_point_frag.spv";
-		createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+		if (busing_geom_shader) {
+			createinfo.vert_shader_file = "shaders/gsplat_quad_vert.spv";
+			createinfo.frag_shader_file = "shaders/gsplat_quad_frag.spv";
+			createinfo.geom_shader_file = "shaders/gsplat_quad_geom.spv";
+			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+		}
+		else {
+			createinfo.vert_shader_file = "shaders/gsplat_point_vert.spv";
+			createinfo.frag_shader_file = "shaders/gsplat_point_frag.spv";
+			createinfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+		}
 
 		createinfo.render_pass = rhidevice.GetRenderPass();
 		createinfo.descriptor_set_layouts = this->PrepareRenderingDSLayout(rhidevice);
@@ -246,7 +255,10 @@ namespace pipeline {
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_RenderingPipeline.GetPipeline());
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_RenderingPipeline.GetPipelineLayout(), 0, 1, &m_RenderingDS, 0, nullptr);
+		//vkCmdBindIndexBuffer(commandBuffer, m_QuadIndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		vkCmdDraw(commandBuffer, m_SplatScene.gs_count, 1, 0, 0);
+		//vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
+
 	}
 	//--------------------------------------------------------------------------------------------------------------------
 

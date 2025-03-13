@@ -11,5 +11,6 @@ void main() {
     float alpha = color.a * gaussian_alpha;
 
     // premultiplied alpha
-    outColor = vec4(color.rgb * alpha, alpha);
+    //outColor = vec4(color.rgb * alpha, alpha);
+    outColor = color;
 }

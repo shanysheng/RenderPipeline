@@ -137,7 +137,6 @@
     <ClInclude Include="engine\Mesh3DGS.h" />
     <ClInclude Include="engine\MeshGltf.h" />
     <ClInclude Include="engine\MeshObj.h" />
-    <ClInclude Include="engine\MeshParticles.h" />
     <ClInclude Include="engine\RHIBuffer.h" />
     <ClInclude Include="engine\FileManager.h" />
     <ClInclude Include="engine\RHIComputePipeline.h" />
