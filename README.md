@@ -26,15 +26,15 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 | Fig 1: obj model                           | Fig 2: gltf model   
 
 ## splat 3dgs models
-| ![3dgs points](./doc/images/3dgs_points.jpg) | ![3dgs quad](./doc/images/3dgs_quads_blend01.jpg) |
+| ![3dgs points](./doc/images/3dgs_points.jpg)| ![3dgs quad](./doc/images/3dgs_quads_blend01.jpg) |
 |:------------------------------------------:|:------------------------------------------:|
-| Fig 1: 3D Gaussian Splatting points          | Fig 2: Quad Splat State                       |
+| Fig 1: 3D Gaussian Splatting points         | Fig 2: Quad Splat State                       |
 
 | ![3dgs quad](./doc/images/3dgs_quads_blend02.jpg) | ![3dgs unsorted blending](./doc/images/3dgs_balls_blend_no_sort.jpg) |
 |:------------------------------------------:|:------------------------------------------:|
 | Fig 3: Quad Splat State                     | Fig 4: Splat Unsorted Blending                     |
-# Todo
 
+# Implementations
 ### vulkan
 - [x] Device: VkInstance, VkPhysicalDevice, VkDevice, VkQueue
 - [x] Swapchain: VkSwapchainKHR, VkImage, VkImageView, VkFramebuffer, VkRenderPass
