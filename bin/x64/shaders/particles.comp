@@ -1,8 +1,8 @@
 #version 450
 
 struct Particle {
-	vec3 position;
-	vec3 velocity;
+	vec4 position;
+	vec4 velocity;
     vec4 color;
 };
 
@@ -13,11 +13,11 @@ layout (binding = 0) uniform ParameterUBO {
     float deltaTime;
 } ubo;
 
-layout(std140, binding = 1) readonly buffer ParticlesIn {
+layout( binding = 1) readonly buffer ParticlesIn {
    Particle particlesIn[ ];
 };
 
-layout(std140, binding = 2) buffer ParticlesOut {
+layout( binding = 2) buffer ParticlesOut {
    Particle particlesOut[ ];
 };
 
@@ -29,8 +29,8 @@ void main()
 
     Particle particleIn = particlesIn[index];
 
-    particlesOut[index].position = particleIn.position + particleIn.velocity * ubo.deltaTime;
-    particlesOut[index].velocity = particleIn.velocity;
+    particlesOut[index].position.xyz = particleIn.position.xyz + particleIn.velocity.xyz * ubo.deltaTime;
+    particlesOut[index].velocity.xyz = particleIn.velocity.xyz;
 
     // Flip movement at window border
     if ((particlesOut[index].position.x <= -1.0) || (particlesOut[index].position.x >= 1.0)) {

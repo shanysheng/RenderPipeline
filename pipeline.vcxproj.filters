@@ -144,6 +144,9 @@
     <ClCompile Include="engine\RHIComputePipeline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="engine\MeshParticles.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Material.h">
@@ -273,6 +276,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="engine\RHIComputePipeline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\MeshParticles.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

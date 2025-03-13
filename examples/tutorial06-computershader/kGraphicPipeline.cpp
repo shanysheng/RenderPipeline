@@ -39,8 +39,8 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     //auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
     vertexInputInfo.vertexBindingDescriptionCount = 1;
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(createinfo.input_attributes.size());
     vertexInputInfo.pVertexBindingDescriptions = &createinfo.input_binding;
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(createinfo.input_attributes.size());
     vertexInputInfo.pVertexAttributeDescriptions = createinfo.input_attributes.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -125,7 +125,7 @@ void kGraphicPipeline::createGraphicsPipeline(kContext& contextref, GraphicsPipe
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = &depthStencil;
+    //pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayout;

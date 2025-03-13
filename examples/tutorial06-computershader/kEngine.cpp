@@ -120,7 +120,7 @@ void kEngine::createShaderStorageBuffers() {
 		float y = r * sinTheta * sin(phi);
 		float z = r * cos(theta);
 
-		particle.position = glm::vec3(x, y, z);
+		particle.position = glm::vec4(x, y, z, 0.0f);
 
 		// 速度方向沿法线方向（可改为切向或随机方向）
 		particle.velocity = glm::normalize(particle.position) * 0.00025f;
@@ -153,8 +153,8 @@ void kEngine::updateUniformBuffer(uint32_t currentImage) {
 
 	particleUniformBufferObject ubo{};
 
-	ubo.model = glm::rotate(glm::mat4(1.0f), (float)lastTime * glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = glm::rotate(glm::mat4(1.0f), (float)lastTime * glm::radians(40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.view = glm::lookAt(glm::vec3(4.0f, 4.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_Extent.width / (float)m_Extent.height, 0.1f, 100.0f);
 	ubo.proj[1][1] *= -1;
 
