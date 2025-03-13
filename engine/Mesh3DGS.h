@@ -40,17 +40,16 @@ namespace pipeline {
         };
 
         struct kSplatVertex {
-            glm::vec3 pos;
+            glm::vec4 pos;
             glm::vec4 color;
-            glm::vec3 cov3d_1;
-            glm::vec3 cov3d_2;
+            glm::vec4 cov3d_1;
+            glm::vec4 cov3d_2;
         };
 
         struct kSplatQuad {
-            glm::vec3 pos;
+            glm::vec4 pos;
             glm::vec4 color;
-            glm::vec3 cov3d_1;
-            glm::vec3 cov3d_2;
+            glm::vec4 obb;
         };
 
         struct kSplatScene
@@ -68,12 +67,12 @@ namespace pipeline {
             }
         };
 
-
         struct ModelObjShaderData {
             alignas(16) glm::mat4 model;
             alignas(16) glm::mat4 view;
             alignas(16) glm::mat4 proj;
-            uint32_t particleCount;
+            // xy is screen size, y is particle count
+            glm::vec4  params;
         };
 
         bool LoadGSSplatFile(const std::string& filepath, kSplatScene& splatscene);

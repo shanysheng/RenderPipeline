@@ -1,35 +1,100 @@
 #version 450
 
-struct Particle {
-    vec3 pos;
+struct kSplatVertex {
+    vec4 pos;
     vec4 color;
-    vec3 cov3d_1;
-    vec3 cov3d_2;
+    vec4 cov3d_1;
+    vec4 cov3d_2;
+};
+
+struct kSplatQuad {
+    vec4 pos;
+    vec4 color;
+    vec4 obb;
 };
 
 layout (binding = 0) uniform ParameterUBO {
     mat4 model;
     mat4 view;
     mat4 proj;
-    uint particleCount;
+    vec4 param; // xy is screen size, y is particle count
 } ubo;
 
-layout(std140, binding = 1) readonly buffer ParticlesIn {
-   Particle particlesIn[ ];
+layout(binding = 1) readonly buffer ParticlesIn {
+   kSplatVertex particlesIn[ ];
 };
 
-layout(std140, binding = 2) buffer ParticlesOut {
-   Particle particlesOut[ ];
+layout(binding = 2) buffer QuadsOut {
+   kSplatQuad quadsOut[ ];
 };
 
 layout (local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 void main() 
 {
+    int particle_count = int(ubo.param.z);
+    vec2 screen_size = ubo.param.xy;
+
     uint index = gl_GlobalInvocationID.x;  
-    if(index>ubo.particleCount)
+    if(index>particle_count)
       return;
 
-    particlesOut[index].pos = particlesIn[index].pos;
-    particlesOut[index].color = particlesIn[index].color;
+    quadsOut[index].pos = particlesIn[index].pos;
+    quadsOut[index].color = particlesIn[index].color;
+
+    vec3 v0 = particlesIn[index].cov3d_1.xyz;
+    vec3 v1 = particlesIn[index].cov3d_2.xyz;
+    vec4 pos = vec4(particlesIn[index].pos.xyz, 1.f);
+
+    // [v0.x v0.y v0.z]
+    // [v0.y v1.x v1.y]
+    // [v0.z v1.y v1.z]
+    mat3 cov3d = mat3(v0, v0.y, v1.xy, v0.z, v1.yz);
+
+    // model matrix
+    mat3 model3d = mat3(ubo.model);
+    cov3d = model3d * cov3d * transpose(model3d);
+    pos = ubo.model * pos;
+
+    // view matrix
+    mat3 view3d = mat3(ubo.view);
+    cov3d = view3d * cov3d * transpose(view3d);
+    pos = ubo.view * pos;    
+
+    // projection
+    float r = length(vec3(pos));
+    mat3 J = mat3(-1.f / pos.z, 0.f, -2.f * pos.x / r, 0.f, -1.f / pos.z,
+                    -2.f * pos.y / r, pos.x / pos.z / pos.z, pos.y / pos.z / pos.z,
+                    -2.f * pos.z / r);
+    cov3d = J * cov3d * transpose(J);
+
+    // projection xy
+    mat2 projection_scale = mat2(ubo.proj);
+    mat2 cov2d = projection_scale * mat2(cov3d) * projection_scale;
+
+    // low-pass filter
+    cov2d[0][0] += 1.f / screen_size.x / screen_size.x;
+    cov2d[1][1] += 1.f / screen_size.y / screen_size.y;
+
+    // eigendecomposition
+    // [a c] = [x y]
+    // [c b]   [y z]
+    float a = cov2d[0][0];
+    float b = cov2d[1][1];
+    float c = cov2d[1][0];
+    float D = sqrt((a - b) * (a - b) + 4.f * c * c);
+    float s0 = sqrt(0.5f * (a + b + D));
+    float s1 = sqrt(0.5f * (a + b - D));
+    // decompose to R^T S^2 R
+    float sin2t = 2.f * c / D;
+    float cos2t = (a - b) / D;
+    float theta = atan(sin2t, cos2t) / 2.f;
+
+    pos = ubo.proj * pos;
+    pos = pos / pos.w;
+
+    quadsOut[index].obb.x = s0;
+    quadsOut[index].obb.y = s1;
+    quadsOut[index].obb.z = theta;
+
 }

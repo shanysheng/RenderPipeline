@@ -20,7 +20,7 @@ namespace pipeline {
 		VkSwapchainKHR GetSwapchain() { return m_Swapchain; }
 		VkRenderPass GetRenderPass() { return m_RenderPass; }
 		VkFramebuffer GetFramebuffer(int index) { return m_SwapchainFramebuffers[index]; }
-
+		VkExtent2D GetExtent() { return m_SwapchainExtent; }
 	protected:
 
 		void CreateRenderpass(kRHIDevice& rhidevice);

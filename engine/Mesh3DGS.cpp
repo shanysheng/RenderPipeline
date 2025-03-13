@@ -134,7 +134,8 @@ namespace pipeline {
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_ProjectionComp.GetPipelineLayout(), 0, 1, &m_ProjectionDS, 0, nullptr);
 
 		constexpr int local_size = 256;
-		vkCmdDispatch(commandBuffer, (m_SplatScene.gs_points.size()+ local_size - 1) / local_size, 1, 1);
+		uint32_t group_size_x = (uint32_t)(m_SplatScene.gs_points.size() + local_size - 1) / local_size;
+		vkCmdDispatch(commandBuffer, group_size_x, 1, 1);
 
 		VkMemoryBarrier barrier;
 		barrier = { VK_STRUCTURE_TYPE_MEMORY_BARRIER };
@@ -204,11 +205,11 @@ namespace pipeline {
 		bindingDescription.stride = sizeof(kSplatQuad);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(4);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions(3);
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
 		attributeDescriptions[0].offset = offsetof(kSplatQuad, pos);
 
 		attributeDescriptions[1].binding = 0;
@@ -218,13 +219,8 @@ namespace pipeline {
 
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(kSplatQuad, cov3d_1);
-
-		attributeDescriptions[3].binding = 0;
-		attributeDescriptions[3].location = 3;
-		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[3].offset = offsetof(kSplatQuad, cov3d_2);
+		attributeDescriptions[2].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(kSplatQuad, obb);
 
 		kGraphicsPipelineCreateInfo createinfo;
 		createinfo.vert_shader_file = "shaders/gs_point_vert.spv";
@@ -264,7 +260,9 @@ namespace pipeline {
 		temp_shaderdat.model = glm::mat4(1.0f);
 		temp_shaderdat.view = camera.GetViewMat();
 		temp_shaderdat.proj = camera.GetProjMat();
-		temp_shaderdat.particleCount = m_SplatScene.gs_points.size();
+		temp_shaderdat.params.x = (float)rhidevice.GetExtent().width;
+		temp_shaderdat.params.y = (float)rhidevice.GetExtent().height;
+		temp_shaderdat.params.z = (float)m_SplatScene.gs_points.size();
 
 		m_UniformBuffer->UpdateBuffer(&temp_shaderdat, sizeof(temp_shaderdat));
     }

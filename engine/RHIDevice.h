@@ -42,10 +42,10 @@ namespace pipeline {
 		VkQueue GetPresentQueue() { return m_PresentQueue; }
 		VkCommandPool GetCommandPool() { return m_CommandPool; }
 
-
 		VkSwapchainKHR GetSwapchain() { return m_RHISwapchain.GetSwapchain(); }
 		VkRenderPass GetRenderPass() { return m_RHISwapchain.GetRenderPass(); }
 		VkFramebuffer GetFramebuffer(int index) { return m_RHISwapchain.GetFramebuffer(index); }
+		VkExtent2D GetExtent() { return m_RHISwapchain.GetExtent(); }
 
 		/**
 		* Create a buffer

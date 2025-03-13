@@ -20,6 +20,13 @@ namespace pipeline{
         
         virtual IRenderingAttribute * CreateAttribute( kSGNode * pFeature ) = 0;
         virtual IRenderingAttribute * DeleteAttribute( kSGNode * pFeature ) = 0;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pFI"></param>
+        /// <param name="pFeature"></param>
+        /// <param name="pAttrib"></param>
         virtual void AfterFreeGPUResources(CFrameInfo*pFI, kSGNode * pFeature, IRenderingAttribute * pAttrib ){};
         
         
