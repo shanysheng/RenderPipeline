@@ -97,4 +97,5 @@ void main()
     quadsOut[index].obb.y = s1;
     quadsOut[index].obb.z = theta;
 
+    quadsOut[index].pos = pos;
 }
