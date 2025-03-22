@@ -39,14 +39,9 @@ namespace pipeline {
 
 		VkPipeline GetPipeline() { return m_Pipeline; }
 		VkPipelineLayout GetPipelineLayout() { return m_PipelineLayout; }
-		//VkDescriptorSetLayout GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
-
-	protected:
-		//void CreateDescriptorSetLayout(kRHIDevice& rhidevice);
 
 	protected:
 		VkPipelineLayout				m_PipelineLayout;
-		//VkDescriptorSetLayout			m_DescriptorSetLayout;
 		VkPipeline						m_Pipeline;
 	};
 }
