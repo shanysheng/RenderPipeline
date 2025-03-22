@@ -31,8 +31,8 @@ RenderPipeline is an open-source implementation of the book 'Real-Time Graphics 
 | Fig 1: 3D Gaussian Splatting points         | Fig 2: Quad Splat State                       |
 
 | ![3dgs unsorted blending](./doc/images/3dgs_balls_blend_no_sort.jpg) | ![3dgs sorted blending](./doc/images/3dgs_balls_blend_sort01.jpg) |
-|:------------------------------------------:|:------------------------------------------:|
-| Fig 3: Splat Unsorted Blending                 | Fig 4: Splat Sorted Blending                     |
+|:-------------------------------------:|:------------------------------------------:|
+| Fig 3: Splat Unsorted Blending        | Fig 4: Splat Sorted Blending                     |
 
 # Implementations
 ### vulkan
